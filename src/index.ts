@@ -18,17 +18,17 @@ app.use(router);
 
 app.get("/", async (req, res) => {
   const transporter = nodemailer.createTransport({
-    host: 'smtp.office365.com',
+    host: 'smtp.gmail.com',
     port: 587,
     secure: false,
     auth: {
-      user: 'gcuameatelles@hotmail.com',
+      user: 'gcuameatelles@gmail.com',
       pass: 'cuam3at3ll3s',
       },
     });
   const email = {
     from: 'F3',
-    to: "gcuameatelles@gmail.com",
+    to: "gcuameatelles@hotmail.com",
     subject: 'Registro Completo F3',
     body: 'Registro Completo, password',
   };
