@@ -23,7 +23,7 @@ const loginService = async ({ user, password }: Partial<User>) => {
     user: user.toUpperCase(),
     status: "ACTIVO",
   });
-  console.log(checkIs);
+
   if (!checkIs || checkIs == null) throw Error("USER OR PASSWORD INCORRECT");
 
   const passwordHash = checkIs.password;
@@ -36,6 +36,14 @@ const loginService = async ({ user, password }: Partial<User>) => {
 };
 
 const registerService = async (body: Partial<User>) => {
+  console.log(body)
+  let checkIs = await UserModel.findOne({
+    user: body.user?.toUpperCase(),
+    status: "ACTIVO",
+  });
+  
+  if (checkIs) throw Error("YA EXISTE USUARIO");
+
   const customer: Partial<OpenpayCustomer> = {
     name: body.name ?? "",
     last_name: body.lastName ?? "",
@@ -43,12 +51,12 @@ const registerService = async (body: Partial<User>) => {
     email: body.user ?? "",
   };
 
-  const newCustomer = (await createCustomer(customer)) as any;
-  if (newCustomer.success) {
-    body.customerOpenPayId = newCustomer.success.id;
-  } else {
-    throw Error(`Error Crear Cliente OpenPay ${newCustomer.error.description}`);
-  }
+  // const newCustomer = (await createCustomer(customer)) as any;
+  // if (newCustomer.success) {
+  //   body.customerOpenPayId = newCustomer.success.id;
+  // } else {
+  //   throw Error(`Error Crear Cliente OpenPay ${newCustomer.error.description}`);
+  // }
 
   const card: Partial<OpenpayCard> = {
     card_number: body.payment?.cardNumber ?? "",
@@ -60,7 +68,6 @@ const registerService = async (body: Partial<User>) => {
   };
 
   const newCustomerCard = (await createCard(
-    body.customerOpenPayId ?? "",
     card
   )) as any;
   if (newCustomerCard.error) {
@@ -79,10 +86,10 @@ const registerService = async (body: Partial<User>) => {
     description: "Pago inscripcion F3",
     order_id: `F3-${String(body.payment?.order).padStart(9, "0")}`,
     device_session_id: body.payment?.deviceSessionId ?? "",
+    customer: customer
   };
 
   const newCustomerCharge = (await createCharge(
-    body.customerOpenPayId ?? "",
     charge
   )) as any;
   if (newCustomerCharge.error) {
@@ -100,8 +107,8 @@ const registerService = async (body: Partial<User>) => {
     password: passHash,
     dateOfBirth: body.dateOfBirth,
     celphone: body.celphone,
-    city: body.city,
-    country: body.country,
+    city: body.city?.toUpperCase(),
+    country: body.country?.toUpperCase(),
     place: body.place,
     type: body.type,
     photo: body.photo,
@@ -129,11 +136,25 @@ const registerService = async (body: Partial<User>) => {
   if (!newUser) throw Error("ERROR CREATE PAYMENT");
 
   const email = {
-    from: 'F3',
+    from: 'MÉXICO FUNCIONAL FITNESS FEDERACIÓN',
     to: newUser.user,
     cc: process.env.SMTP_USERNAME,
     subject: 'Registro Completo F3',
     body: 'Registro Completo, password' + body.password,
+    html: `
+      <Html>
+        <body>
+          <div style="display: flex; flex-direction: column; text-align:center">
+            <h3><b>REGISTRO COMPLETO</b></h3>
+            <p>Su registro se ha completado correctamente</p>
+            <p>Bienvenido ${newUser.name} ${newUser.lastName}</p>
+            <h4>Usuario: ${newUser.user}</h4>
+            <h4>Contraseña: ${body.password}</h4>
+            <a href="https://kinderemprendedor.com/">Sitio WEB<a>
+          </div>
+        </body>
+      </Html>
+    `
   };
   await smtpTransport.sendMail(email).catch((error:any) => {
     console.log(error)

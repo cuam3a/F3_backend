@@ -23,14 +23,14 @@ export const createCustomer = async (customer: Partial<OpenpayCustomer>) => {
   });
 };
 
-export const createCard = async (customerId: string, card: Partial<OpenpayCard>) => {
+export const createCard = async (card: Partial<OpenpayCard>) => {
     return new Promise((resolve) => {
       var openpay = new Openpay(
         process.env.OPENPAY_ID ?? "",
         process.env.OPENPAY_KEY ?? "",
         //true
       );
-      openpay.customers.cards.create(customerId, card, function (error, body) {
+      openpay.cards.create(card, function (error, body) {
         let response;
         if (error) {
           response = { error: error };
@@ -43,14 +43,14 @@ export const createCard = async (customerId: string, card: Partial<OpenpayCard>)
     });
   };
 
-export const createCharge = async (customerId: string, charge: Partial<OpenpayCharge>) => {
+export const createCharge = async (charge: Partial<OpenpayCharge>) => {
     return new Promise((resolve) => {
       var openpay = new Openpay(
         process.env.OPENPAY_ID ?? "",
         process.env.OPENPAY_KEY ?? "",
         //true
       );
-      openpay.customers.charges.create(customerId, charge, function (error, body) {
+      openpay.charges.create(charge, function (error, body) {
         let response;
         if (error) {
           response = { error: error };

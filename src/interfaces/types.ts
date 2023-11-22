@@ -57,7 +57,7 @@ export type OpenpayCharge = {
   description: string;
   order_id: string;
   device_session_id: string;
-  customer: OpenpayCustomer;
+  customer: Partial<OpenpayCustomer>;
 };
 
 export type OpenpayCustomer = {

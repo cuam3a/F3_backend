@@ -14,7 +14,7 @@ import {
 } from "../services/auth";
 import { handleError } from "../utils/error.handle";
 import path from "path";
-const fs = require("fs").promises;
+const fs = require("fs");
 
 const login = async ({ body }: Request, res: Response) => {
   const { user, password } = body;
@@ -34,14 +34,21 @@ const login = async ({ body }: Request, res: Response) => {
 
 const register = async ({ body, files }: Request, res: Response) => {
   try {
-    
+
+    if (body.payment != "undefined") {
+      body.payment = JSON.parse(body.payment);
+    } else {
+      body.payment = null;
+    }
+
     if (files && Array.isArray(files)) {
       files.forEach((ele) => {
         if (ele.fieldname == "photoFile") {
           body.photoFile = ele.filename;
           fs.rename(
             ele.path,
-            path.resolve(`${process.cwd()}/upload/`, ele.filename)
+            path.resolve(`${process.cwd()}/upload/`, ele.filename),
+            (error:any) => { console.log(error); }
           );
         }
       });
@@ -58,7 +65,20 @@ const register = async ({ body, files }: Request, res: Response) => {
 
     res.send(response);
   } catch (e: any) {
-    handleError(res, "ERROR LOGIN", e);
+
+    //delete files
+    if (files && Array.isArray(files)) {
+      files.forEach((ele) => {
+        if (fs.existsSync(`${process.cwd()}/temp/${ele.filename}`)) {
+          fs.unlinkSync(`${process.cwd()}/temp/${ele.filename}`);
+        }
+        if (fs.existsSync(`${process.cwd()}/upload/${ele.filename}`)) {
+          fs.unlinkSync(`${process.cwd()}/upload/${ele.filename}`);
+        }
+      });
+    }
+
+    handleError(res, "ERROR REGISTRO", e);
   }
 };
 
