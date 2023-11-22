@@ -15,6 +15,7 @@ import { smtpTransport } from "../utils/mail";
 import { formatUserData } from "../utils/modelToType";
 import { createCard, createCharge, createCustomer } from "../utils/openpay";
 import { getByCode } from "./constantValue";
+var nodemailer = require("nodemailer");
 
 const loginService = async ({ user, password }: Partial<User>) => {
   if (user == "" || password == "" || user == null || password == null)
@@ -139,12 +140,24 @@ const registerService = async (body: Partial<User>) => {
 
   if (!newPayment) throw Error("ERROR CREATE PAYMENT");
 
+  const transporter = nodemailer.createTransport({
+    host: "p3plcpnl0995.prod.phx3.secureserver.net",
+    port: 587,
+    secure: false,
+    auth: {
+      user: "servicios@corporativoreco.com",
+      pass: "Tonicol08",
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
   const email = {
     from: 'MÉXICO FUNCIONAL FITNESS FEDERACIÓN',
     to: newUser.user,
     cc: process.env.SMTP_USERNAME,
     subject: 'Registro Completo F3',
-    body: 'Registro Completo, password' + body.password,
     html: `
       <Html>
         <body>
@@ -160,7 +173,7 @@ const registerService = async (body: Partial<User>) => {
       </Html>
     `
   };
-  await smtpTransport.sendMail(email).catch((error:any) => {
+  await transporter.sendMail(email).catch((error:any) => {
     console.log(error)
   });
 
