@@ -10,7 +10,7 @@ const getSingleUser = async (id: string): Promise<Partial<User>> => {
 };
 
 const getListUser = async (): Promise<Partial<User>[]> => {
-  const users = await UserModel.find<User>({ status: ["ACTIVO", "INACTIVO"] });
+  const users = await UserModel.find<User>({ status: ["ACTIVO", "INACTIVO"], rol: ["ADMIN"] });
   return users.map((user) => {
     return formatUserData({ model: user });
   });

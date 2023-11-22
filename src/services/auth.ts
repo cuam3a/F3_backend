@@ -121,22 +121,23 @@ const registerService = async (body: Partial<User>) => {
 
   if (!newUser) throw Error("ERROR CREATE USER");
 
+  const ccvHash = await encrypt(body.payment?.ccv ?? "");
   const newPayment = await PaymentModel.create({
     userId: newUser.id,
     cardName: body.payment?.cardName,
     cardNumber: body.payment?.cardNumber,
     year: body.payment?.year,
     month: body.payment?.month,
-    ccv: body.payment?.ccv,
+    ccv: ccvHash,
     amount: body.payment?.amount,
     date: new Date(),
-    authorization: body.payment?.authorization,
-    reference: body.payment?.reference,
+    authorization: newCharge.success.authorization,
+    reference: newCharge.success.description,
     order: body.payment?.order,
     transactionOpenPayId: body.payment?.transactionOpenPayId,
   });
 
-  if (!newUser) throw Error("ERROR CREATE PAYMENT");
+  if (!newPayment) throw Error("ERROR CREATE PAYMENT");
 
   const email = {
     from: 'MÉXICO FUNCIONAL FITNESS FEDERACIÓN',
