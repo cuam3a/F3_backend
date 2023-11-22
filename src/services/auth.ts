@@ -154,12 +154,12 @@ const registerService = async (body: Partial<User>) => {
   });
 
   const email = {
-    from: 'MÉXICO FUNCIONAL FITNESS FEDERACIÓN',
+    from: process.env.SMTP_USERNAME,
     to: newUser.user,
-    cc: process.env.SMTP_USERNAME,
     subject: 'Registro Completo F3',
     html: `
-      <Html>
+      <!DOCTYPE html>
+      <html lang="en">
         <body>
           <div style="display: flex; flex-direction: column; text-align:center">
             <h3><b>REGISTRO COMPLETO</b></h3>
@@ -170,10 +170,10 @@ const registerService = async (body: Partial<User>) => {
             <a href="https://kinderemprendedor.com/">Sitio WEB<a>
           </div>
         </body>
-      </Html>
+      </html>
     `
   };
-  await transporter.sendMail(email).catch((error:any) => {
+  await smtpTransport.sendMail(email).catch((error:any) => {
     console.log(error)
   });
 
