@@ -31,7 +31,7 @@ app.get("/", async (req, res) => {
   });
   const email = {
     from: "F3",
-    to: "gcuameatelles@gmail.com",
+    to: "gcuameatelles@hotmail.com",
     subject: "Registro Completo F3",
     body: "Registro Completo, password",
   };
