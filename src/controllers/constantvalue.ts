@@ -89,15 +89,12 @@ const remove = async ({ params, idUser }: RequestExt, res: Response) => {
   }
 };
 
-const getCode = async ({ params, idUser }: RequestExt, res: Response) => {
+const getCode = async ({ params }: Request, res: Response) => {
   try {
     const { code } = params
-    const idU = idUser?.idUser
     const constanValue = await getByCode(code)
-    const token = generateToken(`${idU}`);
     const response: Partial<ActionResponse> = {
       status: 200,
-      token: token,
       message: 'OK',
       data: constanValue
     }

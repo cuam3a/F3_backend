@@ -14,6 +14,7 @@ import { generateToken } from "../utils/jwt.handle";
 import { smtpTransport } from "../utils/mail";
 import { formatUserData } from "../utils/modelToType";
 import { createCard, createCharge, createCustomer } from "../utils/openpay";
+import { getByCode } from "./constantValue";
 
 const loginService = async ({ user, password }: Partial<User>) => {
   if (user == "" || password == "" || user == null || password == null)
@@ -76,12 +77,14 @@ const registerService = async (body: Partial<User>) => {
     );
   }
 
-  if (body.payment) body.payment.order = await getOrder();
-
+  if (body.payment){ 
+    body.payment.order = await getOrder();
+    body.payment.amount = parseFloat(await getByCode("COSTO_INSCRIPCION"));
+  }
   const charge: Partial<OpenpayCharge> = {
     source_id: newCustomerCard.success.id,
     method: "card",
-    amount: 500,
+    amount: body.payment?.amount,
     currency: "MXN",
     description: "Pago inscripcion F3",
     order_id: `F3-${String(body.payment?.order).padStart(9, "0")}`,
@@ -89,11 +92,11 @@ const registerService = async (body: Partial<User>) => {
     customer: customer
   };
 
-  const newCustomerCharge = (await createCharge(
+  const newCharge = (await createCharge(
     charge
   )) as any;
-  if (newCustomerCharge.error) {
-    throw Error(`Error Pago OpenPay ${newCustomerCharge.error.description}`);
+  if (newCharge.error) {
+    throw Error(`Error Pago OpenPay ${newCharge.error.description}`);
   }
 
   body.password = getPassword(8);

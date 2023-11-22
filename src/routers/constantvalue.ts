@@ -8,6 +8,6 @@ router.get("/:id", checkJwt, single);
 router.post("/", checkJwt, add);
 router.put("/:id", checkJwt, update);
 router.delete("/:id", checkJwt, remove);
-router.get("/getcode/:code", checkJwt, getCode);
+router.get("/getcode/:code", getCode);
 
 export { router };
