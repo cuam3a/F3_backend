@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import { RequestExt } from "../interfaces/interfaces";
 import { ActionResponse, GetListResponse } from "../interfaces/types";
-import { getListUser, getSingleUser, addUser, updateUser, removeUser, resetpasswordUser } from "../services/user";
+import { getListUser, getSingleUser, addUser, updateUser, removeUser, resetpasswordUser, updateProfileUser } from "../services/user";
 import { handleError } from "../utils/error.handle";
 import { generateToken } from "../utils/jwt.handle";
+import path from "path";
+const fs = require("fs");
 
 const single = async ({ params }: Request, res: Response) => {
   try {
@@ -110,11 +112,46 @@ const resetpassword = async ({ params, body, idUser }: RequestExt, res: Response
   }
 }
 
+const updateProfile = async ({ body, files, idUser }: RequestExt, res: Response) => {
+  try {
+    console.log(body)
+    if (files && Array.isArray(files)) {
+      files.forEach((ele) => {
+        if (ele.fieldname == "photoFile") {
+          body.photo = ele.filename;
+          fs.rename(
+            ele.path,
+            path.resolve(`${process.cwd()}/upload/`, ele.filename),
+            (error:any) => { console.log(error); }
+          );
+        }
+      });
+    }
+
+    const idU = idUser?.idUser
+    const editUser = await updateProfileUser(body);
+    const token = generateToken(`${idU}`);
+
+    const response: Partial<ActionResponse> = {
+      status: 200,
+      token: token,
+      message: 'OK',
+      user: editUser
+    }
+    res.send(response);
+  }
+  catch (e) {
+    console.log(e)
+    handleError(res, "ERROR ACTUALIZAR PERFIL", e)
+  }
+};
+
 export {
   single,
   list,
   add,
   update,
   remove,
-  resetpassword
+  resetpassword,
+  updateProfile
 }

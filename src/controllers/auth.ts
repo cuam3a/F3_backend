@@ -44,7 +44,7 @@ const register = async ({ body, files }: Request, res: Response) => {
     if (files && Array.isArray(files)) {
       files.forEach((ele) => {
         if (ele.fieldname == "photoFile") {
-          body.photoFile = ele.filename;
+          body.photo = ele.filename;
           fs.rename(
             ele.path,
             path.resolve(`${process.cwd()}/upload/`, ele.filename),

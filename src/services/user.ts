@@ -76,6 +76,18 @@ const resetpasswordUser = async (
   return formatUserData({ model: updateUser });
 };
 
+const updateProfileUser = async (
+  item: Partial<User>
+): Promise<Partial<User>> => {
+  const updateUser = await UserModel.findOneAndUpdate({ _id: item.id }, item, {
+    new: true,
+  });
+
+  if (!updateUser) throw Error("NO FOUND USER");
+
+  return formatUserData({ model: updateUser });
+};
+
 export {
   getSingleUser,
   getListUser,
@@ -83,4 +95,5 @@ export {
   updateUser,
   removeUser,
   resetpasswordUser,
+  updateProfileUser
 };

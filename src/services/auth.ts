@@ -135,7 +135,7 @@ const registerService = async (body: Partial<User>) => {
     authorization: newCharge.success.authorization,
     reference: newCharge.success.description,
     order: body.payment?.order,
-    transactionOpenPayId: body.payment?.transactionOpenPayId,
+    transactionOpenPayId: newCharge.success.id,
   });
 
   if (!newPayment) throw Error("ERROR CREATE PAYMENT");
