@@ -6,6 +6,7 @@ import {
   Status,
   User,
 } from "../interfaces/types";
+import { welcomeHtml } from "../mail/welcome";
 import PaymentModel from "../models/payment.model";
 import UserModel from "../models/user.model";
 import { encrypt, verified } from "../utils/bcypt.handle";
@@ -22,7 +23,7 @@ const loginService = async ({ user, password }: Partial<User>) => {
     throw Error("USER OR PASSWORD INCORRECT");
 
   let checkIs = await UserModel.findOne({
-    user: user.toUpperCase(),
+    user: user.trim().toUpperCase(),
     status: "ACTIVO",
   });
 
@@ -107,7 +108,7 @@ const registerService = async (body: Partial<User>) => {
     customerOpenPayId: body.customerOpenPayId,
     name: body.name,
     lastName: body.lastName,
-    user: body.user,
+    user: body.user?.trim(),
     password: passHash,
     dateOfBirth: body.dateOfBirth,
     celphone: body.celphone,
@@ -116,6 +117,7 @@ const registerService = async (body: Partial<User>) => {
     place: body.place,
     type: body.type,
     photo: body.photo,
+    gender: body.gender,
     rol: Rol.USER,
     status: Status.ACTIVO,
   });
@@ -157,21 +159,7 @@ const registerService = async (body: Partial<User>) => {
     from: process.env.SMTP_USERNAME,
     to: newUser.user,
     subject: 'Registro Completo F3',
-    html: `
-      <!DOCTYPE html>
-      <html lang="en">
-        <body>
-          <div style="display: flex; flex-direction: column; text-align:center">
-            <h3><b>REGISTRO COMPLETO</b></h3>
-            <p>Su registro se ha completado correctamente</p>
-            <p>Bienvenido ${newUser.name} ${newUser.lastName}</p>
-            <h4>Usuario: ${newUser.user}</h4>
-            <h4>Contraseña: ${body.password}</h4>
-            <a href="https://kinderemprendedor.com/">Sitio WEB<a>
-          </div>
-        </body>
-      </html>
-    `
+    html: welcomeHtml(newUser)
   };
   await smtpTransport.sendMail(email).catch((error:any) => {
     console.log(error)

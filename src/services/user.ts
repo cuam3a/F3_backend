@@ -82,7 +82,7 @@ const updateProfileUser = async (
   const updateUser = await UserModel.findOneAndUpdate({ _id: item.id }, item, {
     new: true,
   });
-
+  console.log("updateProfile")
   if (!updateUser) throw Error("NO FOUND USER");
 
   return formatUserData({ model: updateUser });

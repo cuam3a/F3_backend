@@ -44,6 +44,9 @@ const UserSchema = new Schema<User>(
     photo: {
       type: String,
     },
+    gender: {
+      type: String,
+    },
     rol: {
       type: String,
       enum: ["ADMIN", "USUARIO"],
