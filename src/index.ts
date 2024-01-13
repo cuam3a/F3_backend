@@ -42,7 +42,7 @@ app.get("/", async (req, res) => {
       to: "gcuameatelles@gmail.com",
       subject: "Registro Completo F3",
       body: "Registro Completo, password",
-      html: await welcomeHtml(newUser),
+      html: await welcomeHtml(newUser, '123456F3'),
     };
 
     await transporter.sendMail(email).catch((error: any) => {

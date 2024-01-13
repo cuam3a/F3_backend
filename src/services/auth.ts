@@ -243,7 +243,7 @@ const registerService = async (body: Partial<User>) => {
     from: process.env.SMTP_USERNAME,
     to: newUser.user,
     subject: 'Registro Completo F3',
-    html: await welcomeHtml(newUser)
+    html: await welcomeHtml(newUser, body.password)
   };
   await smtpTransport.sendMail(email).catch((error:any) => {
     console.log(error)
