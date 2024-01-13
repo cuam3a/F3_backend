@@ -261,26 +261,52 @@ const preRegisterService = async (body: Partial<User>) => {
   
   if (checkIs) throw Error("YA EXISTE USUARIO");
 
-  const newUserLost = await UserLostModel.create({
-    customerOpenPayId: body.customerOpenPayId,
-    name: body.name,
-    lastName: body.lastName,
-    user: body.user?.trim(),
-    dateOfBirth: body.dateOfBirth,
-    celphone: body.celphone,
-    city: body.city?.toUpperCase(),
-    country: body.country?.toUpperCase(),
-    place: body.place,
-    type: body.type,
-    photo: body.photo,
-    gender: body.gender,
-    rol: Rol.USER,
-    status: Status.ACTIVO,
-  });
+  if(body.id){
+    const updateUser = await UserLostModel.findOneAndUpdate({ _id: body.id }, {
+      name: body.name,
+      lastName: body.lastName,
+      user: body.user?.trim(),
+      dateOfBirth: body.dateOfBirth,
+      celphone: body.celphone,
+      city: body.city?.toUpperCase(),
+      country: body.country?.toUpperCase(),
+      place: body.place,
+      type: body.type,
+      photo: body.photo,
+      gender: body.gender,
+    }, {
+      new: true,
+    });
+  
+    if (!updateUser) throw Error("NO FOUND USER");
+  
+    return formatUserLostData({ model: updateUser });
+  }
+  else{
+    const newUserLost = await UserLostModel.create({
+      customerOpenPayId: body.customerOpenPayId,
+      name: body.name,
+      lastName: body.lastName,
+      user: body.user?.trim(),
+      dateOfBirth: body.dateOfBirth,
+      celphone: body.celphone,
+      city: body.city?.toUpperCase(),
+      country: body.country?.toUpperCase(),
+      place: body.place,
+      type: body.type,
+      photo: body.photo,
+      gender: body.gender,
+      rol: Rol.USER,
+      status: Status.ACTIVO,
+    });
 
-  if (!newUserLost) throw Error("ERROR CREATE USER");
+    if (!newUserLost) throw Error("ERROR CREATE USER");
 
   return formatUserLostData({ model: newUserLost });
+  }
+  
+
+  
 };
 
 const userInformationService = async (id: String) => {
