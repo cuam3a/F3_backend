@@ -18,7 +18,6 @@ const UserLostSchema = new Schema<User>(
     },
     user: {
       type: String,
-      required: true,
       uppercase: true,
     },
     dateOfBirth: {
