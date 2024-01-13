@@ -54,7 +54,7 @@ const getByCode = async (code: string) : Promise<string> => {
 export {
   getSingleConstant,
   getListConstant,
-  addConstant,
+  addDocument,
   updateConstant,
   removeConstant,
   getByCode,
