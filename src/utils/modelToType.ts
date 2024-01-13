@@ -122,10 +122,42 @@ const formatDocument = (model: Document): Partial<Document> => {
   return documentType;
 };
 
+type UserLostProps = {
+  model: User | null;
+};
+const formatUserLostData = ({
+  model,
+}: UserLostProps): Partial<User> => {
+  if (model === null) return {};
+
+  var userLostType: Partial<User> = {
+    id: model.id,
+    name: model.name,
+    lastName: model.lastName,
+    photo: fs.existsSync(`${process.cwd()}/upload/${model.photo}`)
+      ? fs.readFileSync(`${process.cwd()}/upload/${model.photo}`, {
+          encoding: "base64",
+        })
+      : imgPhotoDefault,
+    user: model.user,
+    dateOfBirth: model.dateOfBirth,
+    celphone: model.celphone,
+    city: model.city,
+    country: model.country,
+    place: model.place,
+    type: model.type,
+    gender: model.gender,
+    rol: model.rol,
+    status: model.status,
+  };
+  return userLostType;
+};
+
 export {
   formatUserData,
   formatConstantData,
   formatLogData,
   formatNotificationData,
   formatDocument,
+  formatUserLostData,
 };

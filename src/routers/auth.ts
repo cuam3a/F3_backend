@@ -1,5 +1,5 @@
 import { Router, Request } from "express";
-import { login, register, userInformation } from "../controllers/auth";
+import { login, register, preRegister, userInformation } from "../controllers/auth";
 import { checkJwt } from "../middlewares/session";
 import multer, { FileFilterCallback } from "multer";
 
@@ -43,6 +43,7 @@ let upload = multer({
 
 const router = Router();
 router.post("/login", login);
+router.post("/preRegister", upload.any(), preRegister);
 router.post("/register", upload.any(), register);
 router.get("/userInformation", checkJwt, userInformation);
 

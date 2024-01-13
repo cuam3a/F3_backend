@@ -115,6 +115,7 @@ const resetpassword = async ({ params, body, idUser }: RequestExt, res: Response
 const updateProfile = async ({ body, files, idUser }: RequestExt, res: Response) => {
   try {
     console.log(body)
+    console.log(files)
     if (files && Array.isArray(files)) {
       files.forEach((ele) => {
         if (ele.fieldname == "photoFile") {

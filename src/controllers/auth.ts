@@ -9,6 +9,7 @@ import {
 } from "../interfaces/types";
 import {
   loginService,
+  preRegisterService,
   registerService,
   userInformationService,
 } from "../services/auth";
@@ -32,14 +33,60 @@ const login = async ({ body }: Request, res: Response) => {
   }
 };
 
-const register = async ({ body, files }: Request, res: Response) => {
+const register = async ({ body }: Request, res: Response) => {
   try {
 
-    if (body.payment != "undefined") {
-      body.payment = JSON.parse(body.payment);
-    } else {
-      body.payment = null;
-    }
+    // if (body.payment != "undefined") {
+    //   body.payment = JSON.parse(body.payment);
+    // } else {
+    //   body.payment = null;
+    // }
+
+    // if (files && Array.isArray(files)) {
+    //   files.forEach((ele) => {
+    //     if (ele.fieldname == "photoFile") {
+    //       body.photo = ele.filename;
+    //       fs.rename(
+    //         ele.path,
+    //         path.resolve(`${process.cwd()}/upload/`, ele.filename),
+    //         (error:any) => { console.log(error); }
+    //       );
+    //     }
+    //   });
+    // }
+
+    const user = await registerService(body as Partial<User>);
+    const response: ActionResponse = {
+      status: 200,
+      token: "",
+      user: user,
+      message: "",
+      data: {},
+    };
+
+    res.send(response);
+  } catch (e: any) {
+
+    //delete files
+    // if (files && Array.isArray(files)) {
+    //   files.forEach((ele) => {
+    //     if (fs.existsSync(`${process.cwd()}/temp/${ele.filename}`)) {
+    //       fs.unlinkSync(`${process.cwd()}/temp/${ele.filename}`);
+    //     }
+    //     if (fs.existsSync(`${process.cwd()}/upload/${ele.filename}`)) {
+    //       fs.unlinkSync(`${process.cwd()}/upload/${ele.filename}`);
+    //     }
+    //   });
+    // }
+
+    handleError(res, "ERROR REGISTRO", e);
+  }
+};
+
+const preRegister = async ({ body, files }: Request, res: Response) => {
+  try {
+
+    
 
     if (files && Array.isArray(files)) {
       files.forEach((ele) => {
@@ -54,7 +101,7 @@ const register = async ({ body, files }: Request, res: Response) => {
       });
     }
 
-    const user = await registerService(body as Partial<User>);
+    const user = await preRegisterService(body as Partial<User>);
     const response: ActionResponse = {
       status: 200,
       token: "",
@@ -99,4 +146,4 @@ const userInformation = async ({ idUser }: RequestExt, res: Response) => {
   }
 };
 
-export { login, register, userInformation };
+export { login, register, preRegister, userInformation };
