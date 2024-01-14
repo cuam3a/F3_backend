@@ -44,7 +44,7 @@ let upload = multer({
 const router = Router();
 router.post("/login", login);
 router.post("/preRegister", upload.any(), preRegister);
-router.post("/register", upload.any(), register);
+router.post("/register", register);
 router.get("/userInformation", checkJwt, userInformation);
 
 export { router };

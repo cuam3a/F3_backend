@@ -17,6 +17,13 @@ export type User = {
   status: Status;
   rol: Rol;
   payment: Partial<Payment>;
+  //MERCADO PAGO
+  transaction_amount: number;
+  payment_method_id: string;
+  email: string;
+  descripcion: string;
+  installments: number;
+  token: string
 };
 
 export enum Rol {

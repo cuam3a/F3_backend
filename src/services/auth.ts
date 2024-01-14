@@ -47,7 +47,7 @@ const loginService = async ({ user, password }: Partial<User>) => {
 //     user: body.user?.toUpperCase(),
 //     status: "ACTIVO",
 //   });
-  
+
 //   if (checkIs) throw Error("YA EXISTE USUARIO");
 
 //   const customer: Partial<OpenpayCustomer> = {
@@ -82,7 +82,7 @@ const loginService = async ({ user, password }: Partial<User>) => {
 //     );
 //   }
 
-//   if (body.payment){ 
+//   if (body.payment){
 //     body.payment.order = await getOrder();
 //     body.payment.amount = parseFloat(await getByCode("COSTO_INSCRIPCION"));
 //   }
@@ -172,35 +172,47 @@ const loginService = async ({ user, password }: Partial<User>) => {
 // };
 
 const registerService = async (body: Partial<User>) => {
-  console.log(body.id)
+  console.log(body);
   let checkIs = await UserModel.findOne({
     user: body.user?.toUpperCase(),
     status: "ACTIVO",
   });
-  
-  if (checkIs) throw Error("YA EXISTE USUARIO");
 
+  if (checkIs) throw Error("YA EXISTE USUARIO");
 
   const userLost = await UserLostModel.findOne({ _id: body.id });
   if (!userLost) throw Error("NO EXISTE REGISTRO USUARIO");
 
-  if(body.customerOpenPayId){
-    const client = new MercadoPagoConfig({ accessToken: 'TEST-913357541633645-060718-fa612659d993e6d3b66c919efde4b187-1135472336' });
-    const payment = new Payment(client);
-  
-    await payment.get({
-      id: body.customerOpenPayId,
-    }).then(console.log).catch(console.log);
-  }
-  else{
-    throw Error("NO EXISTE PAGO");
-  }
+  //let newUser : Partial<User> = {};
+  const client = new MercadoPagoConfig({
+    accessToken:
+      "TEST-913357541633645-060718-fa612659d993e6d3b66c919efde4b187-1135472336",
+    options: { timeout: 5000 },
+  });
+
+  const payment = new Payment(client);
+
+  const resp = await payment.create({
+    body: {
+      token: body.token,
+      installments: body.installments,
+      transaction_amount: body.transaction_amount,
+      description: body.descripcion,
+      payment_method_id: body.payment_method_id,
+      payer: {
+        email: body.email,
+      },
+    },
+  });
+  console.log(resp);
+  if (resp.status !== "approved")
+    throw Error("PAGO INCORRECTO, MERCADOPAGO: " + resp.status_detail);
 
   body.password = getPassword(8);
   const passHash = await encrypt(body.password ?? "");
 
-  const newUser = await UserModel.create({
-    customerOpenPayId: body.customerOpenPayId,
+  let newUser = await UserModel.create({
+    customerOpenPayId: resp.id,
     name: userLost.name,
     lastName: userLost.lastName,
     user: userLost.user?.trim(),
@@ -225,7 +237,7 @@ const registerService = async (body: Partial<User>) => {
       new: true,
     }
   );
-  
+
   const transporter = nodemailer.createTransport({
     host: "p3plcpnl0995.prod.phx3.secureserver.net",
     port: 587,
@@ -242,47 +254,65 @@ const registerService = async (body: Partial<User>) => {
   const email = {
     from: process.env.SMTP_USERNAME,
     to: newUser.user,
-    subject: 'Registro Completo F3',
-    html: await welcomeHtml(newUser, body.password)
+    subject: "Registro Completo F3",
+    html: await welcomeHtml(newUser, body.password),
   };
-  await smtpTransport.sendMail(email).catch((error:any) => {
-    console.log(error)
+  await smtpTransport.sendMail(email).catch((error: any) => {
+    console.log(error);
   });
 
+  // .catch((error: any) => {
+  //   throw Error("ERROR PAGO MERCADOPAGO");
+  // });
+
   return formatUserData({ model: newUser });
+  // if(body.customerOpenPayId){
+  //   const client = new MercadoPagoConfig({ accessToken: 'TEST-913357541633645-060718-fa612659d993e6d3b66c919efde4b187-1135472336' });
+  //   const payment = new Payment(client);
+
+  //   await payment.get({
+  //     id: body.customerOpenPayId,
+  //   }).then(console.log).catch(console.log);
+  // }
+  // else{
+  //   throw Error("NO EXISTE PAGO");
+  // }
 };
 
 const preRegisterService = async (body: Partial<User>) => {
-  console.log(body)
+  console.log(body);
   let checkIs = await UserModel.findOne({
     user: body.user?.toUpperCase(),
     status: "ACTIVO",
   });
-  
+
   if (checkIs) throw Error("YA EXISTE USUARIO");
 
-  if(body.id){
-    const updateUser = await UserLostModel.findOneAndUpdate({ _id: body.id }, {
-      name: body.name,
-      lastName: body.lastName,
-      user: body.user?.trim(),
-      dateOfBirth: body.dateOfBirth,
-      celphone: body.celphone,
-      city: body.city?.toUpperCase(),
-      country: body.country?.toUpperCase(),
-      place: body.place,
-      type: body.type,
-      photo: body.photo,
-      gender: body.gender,
-    }, {
-      new: true,
-    });
-  
+  if (body.id) {
+    const updateUser = await UserLostModel.findOneAndUpdate(
+      { _id: body.id },
+      {
+        name: body.name,
+        lastName: body.lastName,
+        user: body.user?.trim(),
+        dateOfBirth: body.dateOfBirth,
+        celphone: body.celphone,
+        city: body.city?.toUpperCase(),
+        country: body.country?.toUpperCase(),
+        place: body.place,
+        type: body.type,
+        photo: body.photo,
+        gender: body.gender,
+      },
+      {
+        new: true,
+      }
+    );
+
     if (!updateUser) throw Error("NO FOUND USER");
-  
+
     return formatUserLostData({ model: updateUser });
-  }
-  else{
+  } else {
     const newUserLost = await UserLostModel.create({
       customerOpenPayId: body.customerOpenPayId,
       name: body.name,
@@ -302,11 +332,8 @@ const preRegisterService = async (body: Partial<User>) => {
 
     if (!newUserLost) throw Error("ERROR CREATE USER");
 
-  return formatUserLostData({ model: newUserLost });
+    return formatUserLostData({ model: newUserLost });
   }
-  
-
-  
 };
 
 const userInformationService = async (id: String) => {
@@ -319,4 +346,9 @@ const userInformationService = async (id: String) => {
   });
 };
 
-export { loginService, registerService, preRegisterService, userInformationService };
+export {
+  loginService,
+  registerService,
+  preRegisterService,
+  userInformationService,
+};
