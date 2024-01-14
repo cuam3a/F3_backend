@@ -409,7 +409,7 @@ const resetPasswordService = async (code: string, password: string) => {
 
   const updateUser = await UserModel.findOneAndUpdate(
     { _id: existUser.id },
-    { password: passHash },
+    { password: passHash, passwordCode: '' },
     {
       new: true,
     }
