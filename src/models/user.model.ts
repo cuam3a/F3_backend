@@ -47,6 +47,9 @@ const UserSchema = new Schema<User>(
     gender: {
       type: String,
     },
+    passwordCode: {
+      type: String,
+    },
     rol: {
       type: String,
       enum: ["ADMIN", "USUARIO"],

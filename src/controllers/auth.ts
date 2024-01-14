@@ -8,9 +8,11 @@ import {
   UserResponse,
 } from "../interfaces/types";
 import {
+  getResetPasswordService,
   loginService,
   preRegisterService,
   registerService,
+  resetPasswordService,
   userInformationService,
 } from "../services/auth";
 import { handleError } from "../utils/error.handle";
@@ -146,4 +148,36 @@ const userInformation = async ({ idUser }: RequestExt, res: Response) => {
   }
 };
 
-export { login, register, preRegister, userInformation };
+const getResetPassword = async ({ body }: Request, res: Response) => {
+  try {
+    console.log(body);
+    const userInformation = await getResetPasswordService(body.user);
+
+    const response: UserResponse = {
+      status: 200,
+      user: userInformation,
+    };
+    
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR RECUPERAR CONTRASEÑA", e);
+  }
+};
+
+const resetPassword = async ({ body }: RequestExt, res: Response) => {
+  try {
+    console.log(body);
+    const userInformation = await resetPasswordService(body.code, body.password);
+
+    const response: UserResponse = {
+      status: 200,
+      user: userInformation,
+    };
+
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR REINICIAR CONTRASEÑA", e);
+  }
+};
+
+export { login, register, preRegister, userInformation, getResetPassword, resetPassword };

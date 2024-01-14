@@ -1,5 +1,5 @@
 import { Router, Request } from "express";
-import { login, register, preRegister, userInformation } from "../controllers/auth";
+import { login, register, preRegister, userInformation, getResetPassword, resetPassword } from "../controllers/auth";
 import { checkJwt } from "../middlewares/session";
 import multer, { FileFilterCallback } from "multer";
 
@@ -46,5 +46,7 @@ router.post("/login", login);
 router.post("/preRegister", upload.any(), preRegister);
 router.post("/register", register);
 router.get("/userInformation", checkJwt, userInformation);
+router.post("/getResetPassword", getResetPassword);
+router.post("/resetPassword", resetPassword);
 
 export { router };

@@ -6,6 +6,7 @@ import {
   Status,
   User,
 } from "../interfaces/types";
+import { resetPasswordHtml } from "../mail/resetPassword";
 import { welcomeHtml } from "../mail/welcome";
 import PaymentModel from "../models/payment.model";
 import UserModel from "../models/user.model";
@@ -239,12 +240,22 @@ const registerService = async (body: Partial<User>) => {
   );
 
   const transporter = nodemailer.createTransport({
-    host: "p3plcpnl0995.prod.phx3.secureserver.net",
+    // host: "p3plcpnl0995.prod.phx3.secureserver.net",
+    // port: 587,
+    // secure: false,
+    // auth: {
+    //   user: "servicios@corporativoreco.com",
+    //   pass: "Tonicol08",
+    // },
+    // tls: {
+    //   rejectUnauthorized: false,
+    // },
+    host: "smtp.zoho.com",
     port: 587,
     secure: false,
     auth: {
-      user: "servicios@corporativoreco.com",
-      pass: "Tonicol08",
+      user: "hola@mexicof3.com",
+      pass: "2EBHKpbcqh9AA9X.",
     },
     tls: {
       rejectUnauthorized: false,
@@ -252,12 +263,12 @@ const registerService = async (body: Partial<User>) => {
   });
 
   const email = {
-    from: process.env.SMTP_USERNAME,
+    from: "hola@mexicof3.com",
     to: newUser.user,
     subject: "Registro Completo F3",
     html: await welcomeHtml(newUser, body.password),
   };
-  await smtpTransport.sendMail(email).catch((error: any) => {
+  await transporter.sendMail(email).catch((error: any) => {
     console.log(error);
   });
 
@@ -346,9 +357,74 @@ const userInformationService = async (id: String) => {
   });
 };
 
+const getResetPasswordService = async (user: String) => {
+  const existUser = await UserModel.findOne({ user: user });
+
+  if (!existUser) throw Error("USER NO FOUND");
+
+  const code = getPassword(20);
+
+  const updateUser = await UserModel.findOneAndUpdate(
+    { _id: existUser.id },
+    { passwordCode: code },
+    {
+      new: true,
+    }
+  );
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.zoho.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: "hola@mexicof3.com",
+      pass: "2EBHKpbcqh9AA9X.",
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  const email = {
+    from: "hola@mexicof3.com",
+    to: existUser.user,
+    subject: "Recuperar Constraseña Mexico F3",
+    html: await resetPasswordHtml(code),
+  };
+  await transporter.sendMail(email).catch((error: any) => {
+    console.log(error);
+  });
+
+  return formatUserData({
+    model: existUser,
+  });
+};
+
+const resetPasswordService = async (code: string, password: string) => {
+  const existUser = await UserModel.findOne({ passwordCode: code });
+
+  if (!existUser) throw Error("USER NO FOUND");
+
+  const passHash = await encrypt(password);
+
+  const updateUser = await UserModel.findOneAndUpdate(
+    { _id: existUser.id },
+    { password: passHash },
+    {
+      new: true,
+    }
+  );
+
+  return formatUserData({
+    model: existUser,
+  });
+};
+
 export {
   loginService,
   registerService,
   preRegisterService,
   userInformationService,
+  getResetPasswordService,
+  resetPasswordService,
 };

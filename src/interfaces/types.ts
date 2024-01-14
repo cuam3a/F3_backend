@@ -16,6 +16,7 @@ export type User = {
   photoFile: File | null;
   status: Status;
   rol: Rol;
+  passwordCode: string;
   payment: Partial<Payment>;
   //MERCADO PAGO
   transaction_amount: number;

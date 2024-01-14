@@ -6,6 +6,7 @@ import { smtpTransport } from "./utils/mail";
 import MercadoPagoConfig, { Preference } from "mercadopago";
 import UserModel from "./models/user.model";
 import { welcomeHtml } from "./mail/welcome";
+import { resetPasswordHtml } from "./mail/resetPassword";
 require("dotenv").config();
 var nodemailer = require("nodemailer");
 
@@ -26,23 +27,23 @@ app.get("/", async (req, res) => {
   const newUser = await UserModel.findOne({ _id: "65a29ffa15f97ab66a5985a4" });
   if (newUser) {
     const transporter = nodemailer.createTransport({
-      host: "p3plcpnl0995.prod.phx3.secureserver.net",
+      host: "smtp.zoho.com",
       port: 587,
       secure: false,
       auth: {
-        user: "servicios@corporativoreco.com",
-        pass: "Tonicol08",
+        user: "hola@mexicof3.com",
+        pass: "2EBHKpbcqh9AA9X.",
       },
       tls: {
         rejectUnauthorized: false,
       },
     });
     const email = {
-      from: "servicios@corporativoreco.com",
+      from: "hola@mexicof3.com",
       to: "gcuameatelles@gmail.com",
       subject: "Registro Completo F3",
       body: "Registro Completo, password",
-      html: await welcomeHtml(newUser, '123456F3'),
+      html: await resetPasswordHtml('123456F3'),
     };
 
     await transporter.sendMail(email).catch((error: any) => {
