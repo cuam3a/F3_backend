@@ -187,7 +187,7 @@ const registerService = async (body: Partial<User>) => {
   //let newUser : Partial<User> = {};
   const client = new MercadoPagoConfig({
     accessToken:
-      "TEST-913357541633645-060718-fa612659d993e6d3b66c919efde4b187-1135472336",
+      "APP_USR-913357541633645-060718-4787491c0ca96bdc245134bacb38901a-1135472336",
     options: { timeout: 5000 },
   });
 
