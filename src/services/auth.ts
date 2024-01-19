@@ -18,6 +18,7 @@ import { smtpTransport } from "../utils/mail";
 import { formatUserData, formatUserLostData } from "../utils/modelToType";
 import { createCard, createCharge, createCustomer } from "../utils/openpay";
 import { getByCode } from "./constantValue";
+import {paymentError} from "../utils/dictionary";
 var nodemailer = require("nodemailer");
 // SDK de Mercado Pago
 import MercadoPagoConfig, { Payment } from "mercadopago";
@@ -207,7 +208,7 @@ const registerService = async (body: Partial<User>) => {
   });
   console.log(resp);
   if (resp.status !== "approved")
-    throw Error("PAGO INCORRECTO, MERCADOPAGO: " + resp.status_detail);
+    throw Error("PAGO INCORRECTO, MERCADOPAGO: " + paymentError(resp.status_detail as string));
 
   body.password = getPassword(8);
   const passHash = await encrypt(body.password ?? "");
@@ -226,6 +227,7 @@ const registerService = async (body: Partial<User>) => {
     type: userLost.type,
     photo: userLost.photo,
     gender: userLost.gender,
+    region: userLost.region,
     rol: Rol.USER,
     status: Status.ACTIVO,
   });
@@ -314,6 +316,7 @@ const preRegisterService = async (body: Partial<User>) => {
         type: body.type,
         photo: body.photo,
         gender: body.gender,
+        region: body.region,
       },
       {
         new: true,

@@ -17,6 +17,7 @@ export type User = {
   status: Status;
   rol: Rol;
   passwordCode: string;
+  region: string;
   payment: Partial<Payment>;
   //MERCADO PAGO
   transaction_amount: number;

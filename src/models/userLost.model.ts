@@ -44,6 +44,9 @@ const UserLostSchema = new Schema<User>(
     gender: {
       type: String,
     },
+    region: {
+      type: String,
+    },
     rol: {
       type: String,
       enum: ["ADMIN", "USUARIO"],

@@ -1,5 +1,5 @@
 import { Router, Request } from "express";
-import { add, list, remove, resetpassword, single, update, updateProfile } from "../controllers/user";
+import { add, addUsers, list, listUsers, remove, removeUsers, resetpassword, single, singleUsers, update, updateProfile, updateUsers } from "../controllers/user";
 import { checkJwt } from "../middlewares/session";
 import multer, { FileFilterCallback } from "multer";
 
@@ -44,7 +44,12 @@ router.post("/", checkJwt, add);
 router.put("/profile", checkJwt,  upload.any(), updateProfile)
 router.put("/:id", checkJwt, update);
 router.delete("/:id", checkJwt, remove);
-router.post("/resetpassword/:id", checkJwt, resetpassword)
-;
+router.post("/resetpassword/:id", checkJwt, resetpassword);
+//Users
+router.get("/users/:id", checkJwt, singleUsers);
+router.get("/users/", checkJwt, listUsers);
+router.post("/users/", checkJwt, addUsers);
+router.put("/users/:id", checkJwt, updateUsers);
+router.delete("/users/:id", checkJwt, removeUsers);
 
 export { router };

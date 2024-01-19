@@ -43,6 +43,7 @@ const formatUserData = ({
     place: model.place,
     type: model.type,
     gender: model.gender,
+    region: model.region,
     rol: model.rol,
     status: model.status,
     payment: payment ?? {},

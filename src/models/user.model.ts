@@ -47,6 +47,9 @@ const UserSchema = new Schema<User>(
     gender: {
       type: String,
     },
+    region: {
+      type: String,
+    },
     passwordCode: {
       type: String,
     },
