@@ -182,20 +182,76 @@ const registerService = async (body: Partial<User>) => {
 
   if (checkIs) throw Error("YA EXISTE USUARIO");
 
+  const userLost = await UserLostModel.findOne({ _id: body.id });
+  if (!userLost) throw Error("NO EXISTE REGISTRO USUARIO");
+
+  //let newUser : Partial<User> = {};
+  const client = new MercadoPagoConfig({
+    accessToken:
+      "APP_USR-913357541633645-060718-4787491c0ca96bdc245134bacb38901a-1135472336",
+    options: { timeout: 5000 },
+  });
+
+  const payment = new Payment(client);
+
+  const resp = await payment.create({
+    body: {
+      token: body.token,
+      installments: body.installments,
+      transaction_amount: body.transaction_amount,
+      description: body.descripcion,
+      payment_method_id: body.payment_method_id,
+      payer: {
+        email: body.email,
+      },
+    },
+  });
+  console.log(resp);
+  if (resp.status !== "approved")
+    throw Error("PAGO INCORRECTO, MERCADOPAGO: " + paymentError(resp.status_detail as string));
+
+  body.password = getPassword(8);
   const passHash = await encrypt(body.password ?? "");
 
   let newUser = await UserModel.create({
-    name: body.name,
-    lastName: body.lastName,
-    user: body.user?.trim(),
+    customerOpenPayId: resp.id,
+    name: userLost.name,
+    lastName: userLost.lastName,
+    user: userLost.user?.trim(),
     password: passHash,
+    dateOfBirth: userLost.dateOfBirth,
+    celphone: userLost.celphone,
+    city: userLost.city?.toUpperCase(),
+    country: userLost.country?.toUpperCase(),
+    place: userLost.place,
+    type: userLost.type,
+    photo: userLost.photo,
+    gender: userLost.gender,
+    region: userLost.region,
     rol: Rol.USER,
     status: Status.ACTIVO,
   });
 
   if (!newUser) throw Error("ERROR CREATE USER");
 
+  const deletedUserLost = await UserLostModel.findByIdAndDelete(
+    { _id: userLost.id },
+    {
+      new: true,
+    }
+  );
+
   const transporter = nodemailer.createTransport({
+    // host: "p3plcpnl0995.prod.phx3.secureserver.net",
+    // port: 587,
+    // secure: false,
+    // auth: {
+    //   user: "servicios@corporativoreco.com",
+    //   pass: "Tonicol08",
+    // },
+    // tls: {
+    //   rejectUnauthorized: false,
+    // },
     host: "smtp.zoho.com",
     port: 587,
     secure: false,

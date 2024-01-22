@@ -46,6 +46,31 @@ const formatUserData = ({
     region: model.region,
     rol: model.rol,
     status: model.status,
+    isAthlete: model.isAthlete,
+    isCoach: model.isCoach,
+    isJudge: model.isJudge,
+    height: model.height,
+    weight: model.weight,
+    tshirtSize: model.tshirtSize,
+    blood: model.blood,
+    fran: model.fran,
+    sprint: model.sprint,
+    helen: model.helen,
+    run: model.run,
+    grace: model.grace,
+    filthy: model.filthy,
+    fightGoneBad: model.fightGoneBad,
+    murph: model.murph,
+    maxPullUps: model.maxPullUps,
+    cleanJerk: model.cleanJerk,
+    snatch: model.snatch,
+    deadlift: model.deadlift,
+    backSquat: model.backSquat,
+    benchPress: model.benchPress,
+    overheadSquat: model.overheadSquat,
+    facebook: model.facebook,
+    instagram: model.instagram,
+    twitter: model.twitter,
     payment: payment ?? {},
   };
   return userType;
@@ -126,9 +151,7 @@ const formatDocument = (model: Document): Partial<Document> => {
 type UserLostProps = {
   model: User | null;
 };
-const formatUserLostData = ({
-  model,
-}: UserLostProps): Partial<User> => {
+const formatUserLostData = ({ model }: UserLostProps): Partial<User> => {
   if (model === null) return {};
 
   var userLostType: Partial<User> = {

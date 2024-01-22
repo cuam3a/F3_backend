@@ -2,7 +2,6 @@ import { User } from "../interfaces/types";
 
 export const welcomeHtml = async (
   user: Partial<User>,
-  password: string
 ): Promise<string> => {
   return `
     <p style='margin-right:0cm;margin-left:0cm;font-size:16px;font-family:"Calibri",sans-serif;margin-top:0cm;margin-bottom:8.0pt;font-size:11.0pt;text-align:center;'><img src="https://perfil.mexicof3.com/images/logoColor.png" alt="image" style="width: 203px; height: 84.1px;"></p>
@@ -26,7 +25,6 @@ export const welcomeHtml = async (
 <p style='margin-right:0cm;margin-left:0cm;font-size:16px;font-family:"Calibri",sans-serif;margin-top:0cm;margin-bottom:0cm;font-size:11.0pt;text-align:center;line-height:normal;'><span style='font-size:19px;font-family:"Arial",sans-serif;color:black;background:white;'>y completa tu proceso</span></p>
 <p style='margin-right:0cm;margin-left:0cm;font-size:16px;font-family:"Calibri",sans-serif;margin-top:0cm;margin-bottom:0cm;font-size:11.0pt;text-align:justify;line-height:normal;'><strong><span style='font-size:19px;font-family:"Arial",sans-serif;color:#4472C4;background:white;'>&nbsp;</span></strong></p>
 <p style='margin-right:0cm;margin-left:0cm;font-size:16px;font-family:"Calibri",sans-serif;margin-top:0cm;margin-bottom:8.0pt;font-size:11.0pt;line-height:normal;background:white;'><strong><span style='font-size:16px;font-family:"Arial",sans-serif;color:#222222;'>Usuario:&nbsp;</span></strong><span style="color:black;"><strong><span style='font-size:16px;font-family:"Arial",sans-serif;color:#1155CC;'>${user.user}</span></strong></span></p>
-<p style='margin-right:0cm;margin-left:0cm;font-size:16px;font-family:"Calibri",sans-serif;margin-top:0cm;margin-bottom:8.0pt;font-size:11.0pt;line-height:normal;background:white;'><strong><span style='font-size:16px;font-family:"Arial",sans-serif;color:#222222;'>Contrase&ntilde;a&nbsp;${password}</span></strong></p>
 <p style='margin-right:0cm;margin-left:0cm;font-size:16px;font-family:"Calibri",sans-serif;margin-top:0cm;margin-bottom:0cm;font-size:11.0pt;text-align:justify;line-height:normal;'><strong><span style='font-size:19px;font-family:"Arial",sans-serif;color:#4472C4;background:white;'>&nbsp;</span></strong></p>
 <p style='margin-right:0cm;margin-left:0cm;font-size:16px;font-family:"Calibri",sans-serif;margin-top:0cm;margin-bottom:0cm;font-size:11.0pt;text-align:center;line-height:normal;'><span style='font-family:"Arial",sans-serif;color:#222222;background:white;'>M&eacute;xico Funcional Fitness Federaci&oacute;n.</span></p>
 <p style='margin-right:0cm;margin-left:0cm;font-size:16px;font-family:"Calibri",sans-serif;margin-top:0cm;margin-bottom:0cm;font-size:11.0pt;text-align:center;line-height:normal;'><span style='font-family:"Arial",sans-serif;color:#222222;background:white;'>Comit&eacute; Deportivo.</span></p>

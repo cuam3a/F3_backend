@@ -1,7 +1,9 @@
 import { User } from "../interfaces/types";
 import UserModel from "../models/user.model";
 import { encrypt } from "../utils/bcypt.handle";
+import { paymentError } from "../utils/dictionary";
 import { formatUserData } from "../utils/modelToType";
+import MercadoPagoConfig, { Payment } from "mercadopago";
 
 const getSingleUser = async (id: string): Promise<Partial<User>> => {
   const user = await UserModel.findOne({ _id: id });
@@ -10,7 +12,10 @@ const getSingleUser = async (id: string): Promise<Partial<User>> => {
 };
 
 const getListUser = async (): Promise<Partial<User>[]> => {
-  const users = await UserModel.find<User>({ status: ["ACTIVO", "INACTIVO"], rol: ["ADMIN"] });
+  const users = await UserModel.find<User>({
+    status: ["ACTIVO", "INACTIVO"],
+    rol: ["ADMIN"],
+  });
   return users.map((user) => {
     return formatUserData({ model: user });
   });
@@ -82,7 +87,7 @@ const updateProfileUser = async (
   const updateUser = await UserModel.findOneAndUpdate({ _id: item.id }, item, {
     new: true,
   });
-  console.log("updateProfile")
+  console.log("updateProfile");
   if (!updateUser) throw Error("NO FOUND USER");
 
   return formatUserData({ model: updateUser });
@@ -95,7 +100,10 @@ const getSingleUsersService = async (id: string): Promise<Partial<User>> => {
 };
 
 const getListUsersService = async (): Promise<Partial<User>[]> => {
-  const users = await UserModel.find<User>({ status: ["ACTIVO", "INACTIVO"], rol: ["USUARIO"] });
+  const users = await UserModel.find<User>({
+    status: ["ACTIVO", "INACTIVO"],
+    rol: ["USUARIO"],
+  });
   return users.map((user) => {
     return formatUserData({ model: user });
   });
@@ -129,9 +137,13 @@ const updateUsersService = async (
   id: string,
   item: Partial<User>
 ): Promise<Partial<User>> => {
-  const updateUser = await UserModel.findOneAndUpdate({ _id: id, rol: "USUARIO" }, item, {
-    new: true,
-  });
+  const updateUser = await UserModel.findOneAndUpdate(
+    { _id: id, rol: "USUARIO" },
+    item,
+    {
+      new: true,
+    }
+  );
 
   if (!updateUser) throw Error("NO FOUND USER");
 
@@ -152,6 +164,63 @@ const removeUsersService = async (id: string): Promise<Partial<User>> => {
   return formatUserData({ model: deletedUser });
 };
 
+const paymentUser = async (item: Partial<User>): Promise<Partial<User>> => {
+  const user = await UserModel.findOne({ _id: item.id });
+  if (!user) throw Error("NO EXISTE REGISTRO USUARIO");
+
+  //let newUser : Partial<User> = {};
+  const client = new MercadoPagoConfig({
+    accessToken:
+      "APP_USR-913357541633645-060718-4787491c0ca96bdc245134bacb38901a-1135472336",
+    options: { timeout: 5000 },
+  });
+
+  const payment = new Payment(client);
+
+  const resp = await payment.create({
+    body: {
+      token: item.token,
+      installments: item.installments,
+      transaction_amount: item.transaction_amount,
+      description: item.descripcion,
+      payment_method_id: item.payment_method_id,
+      payer: {
+        email: item.email,
+      },
+    },
+  });
+  console.log(resp);
+  if (resp.status !== "approved")
+    throw Error(
+      "PAGO INCORRECTO, MERCADOPAGO: " +
+        paymentError(resp.status_detail as string)
+    );
+
+  var isAthlete = user.isAthlete ?? false;
+  var isCoach = user.isCoach ?? false;
+  var isJudge = user.isJudge ?? false;
+
+  if (item.descripcion == "AFILIACION DE ATLETA") isAthlete = true;
+  if (item.descripcion == "AFILIACION DE ENTRENADOR") isCoach = true;
+  if (item.descripcion == "AFILIACION DE JUEZ") isJudge = true;
+
+  const updateUser = await UserModel.findOneAndUpdate(
+    { _id: item.id, rol: "USUARIO" },
+    {
+      isAthlete,
+      isCoach,
+      isJudge,
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!updateUser) throw Error("NO FOUND USER");
+
+  return formatUserData({ model: updateUser });
+};
+
 export {
   getSingleUser,
   getListUser,
@@ -165,4 +234,5 @@ export {
   addUsersService,
   updateUsersService,
   removeUsersService,
+  paymentUser,
 };

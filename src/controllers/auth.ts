@@ -17,6 +17,7 @@ import {
 } from "../services/auth";
 import { handleError } from "../utils/error.handle";
 import path from "path";
+import { generateToken } from "../utils/jwt.handle";
 const fs = require("fs");
 
 const login = async ({ body }: Request, res: Response) => {
@@ -58,9 +59,10 @@ const register = async ({ body }: Request, res: Response) => {
     // }
 
     const user = await registerService(body as Partial<User>);
+    const token = generateToken(user.id ?? "");
     const response: ActionResponse = {
       status: 200,
-      token: "",
+      token: token,
       user: user,
       message: "",
       data: {},
@@ -87,9 +89,6 @@ const register = async ({ body }: Request, res: Response) => {
 
 const preRegister = async ({ body, files }: Request, res: Response) => {
   try {
-
-    
-
     if (files && Array.isArray(files)) {
       files.forEach((ele) => {
         if (ele.fieldname == "photoFile") {
