@@ -189,6 +189,7 @@ const addUsers = async ({ body, idUser }: RequestExt, res: Response) => {
     res.send(response);
   }
   catch (e:any) {
+    console.log(e)
     handleError(res, "ERROR ADD USER", e)
   }
 };
@@ -196,9 +197,8 @@ const addUsers = async ({ body, idUser }: RequestExt, res: Response) => {
 const updateUsers = async ({ params, body, idUser }: RequestExt, res: Response) => {
   try {
     const { id } = params;
-    const { name, user, password, rol, status } = body
     const idU = idUser?.idUser
-    const editUser = await updateUsersService(id, { name, user, password, rol, status });
+    const editUser = await updateUsersService(id, body);
     const token = generateToken(`${idU}`);
 
     const response: Partial<ActionResponse> = {

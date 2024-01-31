@@ -39,18 +39,24 @@ var storage = multer.diskStorage({
 
 const router = Router();
 router.get("/", checkJwt, list);
+router.get("/users/", checkJwt, listUsers);
+router.get("/users/:id", checkJwt, singleUsers);
 router.get("/:id", checkJwt, single);
 router.post("/", checkJwt, add);
+router.post("/users/", checkJwt, addUsers);
 router.put("/profile", checkJwt,  upload.any(), updateProfile)
+router.put("/users/:id", checkJwt, updateUsers);
 router.put("/:id", checkJwt, update);
+router.delete("/users/:id", checkJwt, removeUsers);
 router.delete("/:id", checkJwt, remove);
 router.post("/resetpassword/:id", checkJwt, resetpassword);
 //Users
-router.get("/users/:id", checkJwt, singleUsers);
-router.get("/users/", checkJwt, listUsers);
-router.post("/users/", checkJwt, addUsers);
-router.put("/users/:id", checkJwt, updateUsers);
-router.delete("/users/:id", checkJwt, removeUsers);
+
+
+
+
+
+
 
 router.post("/payment/", checkJwt, paymentUsers);
 

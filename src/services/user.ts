@@ -1,9 +1,11 @@
 import { User } from "../interfaces/types";
+import { welcomeHtml2 } from "../mail/welcome2";
 import UserModel from "../models/user.model";
 import { encrypt } from "../utils/bcypt.handle";
 import { paymentError } from "../utils/dictionary";
 import { formatUserData } from "../utils/modelToType";
 import MercadoPagoConfig, { Payment } from "mercadopago";
+var nodemailer = require("nodemailer");
 
 const getSingleUser = async (id: string): Promise<Partial<User>> => {
   const user = await UserModel.findOne({ _id: id });
@@ -94,12 +96,14 @@ const updateProfileUser = async (
 };
 
 const getSingleUsersService = async (id: string): Promise<Partial<User>> => {
+  console.log("single")
   const user = await UserModel.findOne({ _id: id, rol: "USUARIO" });
   if (!user) throw Error("NO FOUND USER");
   return formatUserData({ model: user });
 };
 
 const getListUsersService = async (): Promise<Partial<User>[]> => {
+  console.log("Lista")
   const users = await UserModel.find<User>({
     status: ["ACTIVO", "INACTIVO"],
     rol: ["USUARIO"],
@@ -110,7 +114,10 @@ const getListUsersService = async (): Promise<Partial<User>[]> => {
 };
 
 const addUsersService = async (item: Partial<User>): Promise<Partial<User>> => {
+  console.log("entro")
+  console.log(item)
   const passHash = await encrypt(item.password ?? "");
+  console.log(passHash)
   const newUser = await UserModel.create({
     name: item.name,
     lastName: item.lastName,
@@ -127,8 +134,31 @@ const addUsersService = async (item: Partial<User>): Promise<Partial<User>> => {
     rol: "USUARIO",
     status: "ACTIVO",
   });
-
+  console.log(newUser)
   if (!newUser) throw Error("ERROR CREATE USER");
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.zoho.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: "hola@mexicof3.com",
+      pass: "2EBHKpbcqh9AA9X.",
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  const email = {
+    from: "hola@mexicof3.com",
+    to: newUser.user,
+    subject: "Registro Completo F3",
+    html: await welcomeHtml2(newUser, (item.password ?? "")),
+  };
+  await transporter.sendMail(email).catch((error: any) => {
+    console.log(error);
+  });
 
   return formatUserData({ model: newUser });
 };
@@ -137,6 +167,8 @@ const updateUsersService = async (
   id: string,
   item: Partial<User>
 ): Promise<Partial<User>> => {
+  console.log(id)
+  console.log(item)
   const updateUser = await UserModel.findOneAndUpdate(
     { _id: id, rol: "USUARIO" },
     item,
