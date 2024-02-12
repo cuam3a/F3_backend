@@ -43,14 +43,18 @@ export type User = {
   facebook: string;
   instagram: string;
   twitter: string;
+  folio: string;
   payment: Partial<Payment>;
+  competence: Partial<CompetenceUser>[];
   //MERCADO PAGO
   transaction_amount: number;
   payment_method_id: string;
   email: string;
   descripcion: string;
   installments: number;
-  token: string
+  token: string;
+  competenceId:string;
+  typeAthlete: string;
 };
 
 export enum Rol {
@@ -207,3 +211,27 @@ export enum UserPermissionType {
   DELETE_DEMAND = "ELIMINAR DEMANDA",
   DELETE_CREDIT = "ELIMINAR CREDITO",
 }
+
+export type Competence = {
+  id: string;
+  name: string;
+  description: string;
+  madeBy: string;
+  startDate: Date;
+  endDate: Date;
+  status: string;
+  places: number;
+  active: boolean;
+  userId: string;
+};
+
+export type CompetenceUser = {
+  id: string;
+  competenceId: string;
+  userId: string;
+  years: number;
+  category: string;
+  typeAthlete:string;
+  competence: Partial<Competence>;
+  user: Partial<User>;
+};

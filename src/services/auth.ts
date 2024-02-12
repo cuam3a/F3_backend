@@ -1,4 +1,6 @@
 import {
+  Competence,
+  CompetenceUser,
   OpenpayCard,
   OpenpayCharge,
   OpenpayCustomer,
@@ -12,16 +14,23 @@ import PaymentModel from "../models/payment.model";
 import UserModel from "../models/user.model";
 import UserLostModel from "../models/userLost.model";
 import { encrypt, verified } from "../utils/bcypt.handle";
-import { getOrder, getPassword } from "../utils/init";
+import { getFolio, getOrder, getPassword } from "../utils/init";
 import { generateToken } from "../utils/jwt.handle";
 import { smtpTransport } from "../utils/mail";
-import { formatUserData, formatUserLostData } from "../utils/modelToType";
+import {
+  formatCompetenceData,
+  formatCompetenceUserData,
+  formatUserData,
+  formatUserLostData,
+} from "../utils/modelToType";
 import { createCard, createCharge, createCustomer } from "../utils/openpay";
 import { getByCode } from "./constantValue";
-import {paymentError} from "../utils/dictionary";
+import { paymentError } from "../utils/dictionary";
 var nodemailer = require("nodemailer");
 // SDK de Mercado Pago
 import MercadoPagoConfig, { Payment } from "mercadopago";
+import CompetenceModel from "../models/competence.model";
+import CompetenceUserModel from "../models/competenceUser.model";
 
 const loginService = async ({ user, password }: Partial<User>) => {
   if (user == "" || password == "" || user == null || password == null)
@@ -189,6 +198,8 @@ const registerService = async (body: Partial<User>) => {
     lastName: body.lastName,
     user: body.user?.trim(),
     password: passHash,
+    region: body.region,
+    folio: await getFolio(body.region ?? ""),
     rol: Rol.USER,
     status: Status.ACTIVO,
   });
@@ -299,8 +310,31 @@ const userInformationService = async (id: String) => {
 
   if (!existUser) throw Error("USER NO FOUND");
 
+  const competences = await CompetenceUserModel.find({ userId: existUser._id });
+
+  const listcompetences = await Promise.all(
+    competences.map(async (data: CompetenceUser) => {
+      var competence =
+        data.competenceId !== ""
+          ? await CompetenceModel.findOne<Competence>({
+              _id: data.competenceId,
+            })
+          : null;
+      var user =
+        data.userId !== ""
+          ? await UserModel.findOne<User>({ _id: data.userId })
+          : null;
+      return formatCompetenceUserData({
+        model: data,
+        competence: formatCompetenceData({ model: competence }),
+        user: formatUserData({ model: user }),
+      });
+    })
+  );
+
   return formatUserData({
     model: existUser,
+    competenceUser: listcompetences,
   });
 };
 
@@ -356,7 +390,7 @@ const resetPasswordService = async (code: string, password: string) => {
 
   const updateUser = await UserModel.findOneAndUpdate(
     { _id: existUser.id },
-    { password: passHash, passwordCode: '' },
+    { password: passHash, passwordCode: "" },
     {
       new: true,
     }

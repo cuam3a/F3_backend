@@ -131,6 +131,9 @@ const UserSchema = new Schema<User>(
     twitter: {
       type: String,
     },
+    folio: {
+      type: String,
+    },
     rol: {
       type: String,
       enum: ["ADMIN", "USUARIO"],

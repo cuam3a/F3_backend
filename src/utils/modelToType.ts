@@ -6,6 +6,8 @@ import {
   UserPermission,
   Payment,
   Document,
+  Competence,
+  CompetenceUser,
 } from "../interfaces/types";
 const fs = require("fs");
 
@@ -17,12 +19,14 @@ type UserProps = {
   payment?: Partial<Payment>;
   userPermission?: Partial<UserPermission>[];
   notification?: Partial<Notification>[];
+  competenceUser?: Partial<CompetenceUser>[];
 };
 const formatUserData = ({
   model,
   payment,
   userPermission,
   notification,
+  competenceUser,
 }: UserProps): Partial<User> => {
   if (model === null) return {};
 
@@ -71,7 +75,9 @@ const formatUserData = ({
     facebook: model.facebook,
     instagram: model.instagram,
     twitter: model.twitter,
+    folio: model.folio,
     payment: payment ?? {},
+    competence: competenceUser ?? [],
   };
   return userType;
 };
@@ -177,6 +183,54 @@ const formatUserLostData = ({ model }: UserLostProps): Partial<User> => {
   return userLostType;
 };
 
+type CompetenceProps = {
+  model: Partial<Competence> | null;
+};
+const formatCompetenceData = ({
+  model
+}: CompetenceProps): Partial<Competence> => {
+  if (model === null) return {};
+
+  var competenceType: Partial<Competence> = {
+    id: model.id,
+    name: model.name,
+    description: model.description,
+    madeBy: model.madeBy,
+    startDate: model.startDate,
+    endDate: model.endDate,
+    status: model.status,
+    places: model.places,
+    active: model.active,
+    userId: model.userId,
+  };
+  return competenceType;
+};
+
+type CompetenceUserProps = {
+  model: Partial<CompetenceUser> | null;
+  competence?: Partial<Competence>;
+  user?: Partial<User>;
+};
+const formatCompetenceUserData = ({
+  model,
+  competence,
+  user,
+}: CompetenceUserProps): Partial<CompetenceUser> => {
+  if (model === null) return {};
+
+  var competenceUserType: Partial<CompetenceUser> = {
+    id: model.id,
+    competenceId: model.competenceId,
+    userId: model.userId,
+    years: model.years,
+    category: model.category,
+    typeAthlete: model.typeAthlete,
+    competence: competence,
+    user: user,
+  };
+  return competenceUserType;
+};
+
 export {
   formatUserData,
   formatConstantData,
@@ -184,4 +238,6 @@ export {
   formatNotificationData,
   formatDocument,
   formatUserLostData,
+  formatCompetenceData,
+  formatCompetenceUserData,
 };

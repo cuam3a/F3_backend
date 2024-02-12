@@ -1,8 +1,11 @@
-import { User } from "../interfaces/types";
+import { CompetenceUser, User } from "../interfaces/types";
 import { welcomeHtml2 } from "../mail/welcome2";
+import CompetenceModel from "../models/competence.model";
+import CompetenceUserModel from "../models/competenceUser.model";
 import UserModel from "../models/user.model";
 import { encrypt } from "../utils/bcypt.handle";
 import { paymentError } from "../utils/dictionary";
+import { getFolio, getYears } from "../utils/init";
 import { formatUserData } from "../utils/modelToType";
 import MercadoPagoConfig, { Payment } from "mercadopago";
 var nodemailer = require("nodemailer");
@@ -96,14 +99,14 @@ const updateProfileUser = async (
 };
 
 const getSingleUsersService = async (id: string): Promise<Partial<User>> => {
-  console.log("single")
+  console.log("single");
   const user = await UserModel.findOne({ _id: id, rol: "USUARIO" });
   if (!user) throw Error("NO FOUND USER");
   return formatUserData({ model: user });
 };
 
 const getListUsersService = async (): Promise<Partial<User>[]> => {
-  console.log("Lista")
+  console.log("Lista");
   const users = await UserModel.find<User>({
     status: ["ACTIVO", "INACTIVO"],
     rol: ["USUARIO"],
@@ -114,10 +117,10 @@ const getListUsersService = async (): Promise<Partial<User>[]> => {
 };
 
 const addUsersService = async (item: Partial<User>): Promise<Partial<User>> => {
-  console.log("entro")
-  console.log(item)
+  console.log("entro");
+  console.log(item);
   const passHash = await encrypt(item.password ?? "");
-  console.log(passHash)
+  console.log(passHash);
   const newUser = await UserModel.create({
     name: item.name,
     lastName: item.lastName,
@@ -131,10 +134,11 @@ const addUsersService = async (item: Partial<User>): Promise<Partial<User>> => {
     type: item.type,
     gender: item.gender,
     region: item.region,
+    folio: await getFolio(item.region ?? ""),
     rol: "USUARIO",
     status: "ACTIVO",
   });
-  console.log(newUser)
+  console.log(newUser);
   if (!newUser) throw Error("ERROR CREATE USER");
 
   const transporter = nodemailer.createTransport({
@@ -154,7 +158,7 @@ const addUsersService = async (item: Partial<User>): Promise<Partial<User>> => {
     from: "hola@mexicof3.com",
     to: newUser.user,
     subject: "Registro Completo F3",
-    html: await welcomeHtml2(newUser, (item.password ?? "")),
+    html: await welcomeHtml2(newUser, item.password ?? ""),
   };
   await transporter.sendMail(email).catch((error: any) => {
     console.log(error);
@@ -167,8 +171,8 @@ const updateUsersService = async (
   id: string,
   item: Partial<User>
 ): Promise<Partial<User>> => {
-  console.log(id)
-  console.log(item)
+  console.log(id);
+  console.log(item);
   const updateUser = await UserModel.findOneAndUpdate(
     { _id: id, rol: "USUARIO" },
     item,
@@ -253,6 +257,71 @@ const paymentUser = async (item: Partial<User>): Promise<Partial<User>> => {
   return formatUserData({ model: updateUser });
 };
 
+const paymentCompetenceService = async (
+  item: Partial<User>
+): Promise<Partial<User>> => {
+  const user = await UserModel.findOne({ _id: item.id });
+  if (!user) throw Error("NO EXISTE REGISTRO USUARIO");
+
+  //let newUser : Partial<User> = {};
+  const client = new MercadoPagoConfig({
+    accessToken:
+      "APP_USR-913357541633645-060718-4787491c0ca96bdc245134bacb38901a-1135472336",
+    options: { timeout: 5000 },
+  });
+
+  const payment = new Payment(client);
+
+  const resp = await payment.create({
+    body: {
+      token: item.token,
+      installments: item.installments,
+      transaction_amount: item.transaction_amount,
+      description: item.descripcion,
+      payment_method_id: item.payment_method_id,
+      payer: {
+        email: item.email,
+      },
+    },
+  });
+  console.log(resp);
+  if (resp.status !== "approved")
+    throw Error(
+      "PAGO INCORRECTO, MERCADOPAGO: " +
+        paymentError(resp.status_detail as string)
+    );
+
+  var competence = await CompetenceModel.findOne({ _id: item.competenceId });
+  if (competence) {
+    const year = await getYears(user.dateOfBirth ?? new Date());
+    let category = "";
+    if(year >= 13 && year <= 14) category= "13-14 años";
+    if(year >= 15 && year <= 16) category= "15-16 años";
+    if(year >= 17 && year <= 18) category= "17-18 años";
+    if(year >= 19 && year <= 20) category= "19-20 años";
+    if(year >= 21 && year <= 29) category= "21-29 años";
+    if(year >= 30 && year <= 34) category= "30-34 años";
+    if(year >= 35 && year <= 39) category= "35-39 años";
+    if(year >= 40 && year <= 44) category= "40-44 años";
+    if(year >= 45 && year <= 49) category= "45-49 años";
+    if(year >= 50 && year <= 54) category= "50-54 años";
+    if(year >= 55 && year <= 59) category= "55-59 años";
+    if(year >= 60 && year <= 64) category= "60-64 años";
+    if(year >= 65) category= "65+ años";
+
+    const competenceUser = await CompetenceUserModel.create({
+      competenceId: competence.id,
+      userId: user.id,
+      years: year,
+      category: category,
+      typeAthlete: item.typeAthlete,
+    });
+    console.log(competenceUser);
+  }
+
+  return formatUserData({ model: user });
+};
+
 export {
   getSingleUser,
   getListUser,
@@ -267,4 +336,5 @@ export {
   updateUsersService,
   removeUsersService,
   paymentUser,
+  paymentCompetenceService,
 };
