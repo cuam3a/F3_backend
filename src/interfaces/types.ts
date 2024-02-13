@@ -230,8 +230,10 @@ export type CompetenceUser = {
   competenceId: string;
   userId: string;
   years: number;
+  amount: number;
   category: string;
   typeAthlete:string;
+  createdAt: Date;
   competence: Partial<Competence>;
   user: Partial<User>;
 };

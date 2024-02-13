@@ -12,6 +12,9 @@ const CompetenceUser = new Schema<CompetenceUser>(
         years: {
             type: Number,
         },
+        amount: {
+            type: Number,
+        },
         category: {
             type: String,
         },

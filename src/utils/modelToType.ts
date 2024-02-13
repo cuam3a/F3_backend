@@ -223,8 +223,10 @@ const formatCompetenceUserData = ({
     competenceId: model.competenceId,
     userId: model.userId,
     years: model.years,
+    amount: model.amount,
     category: model.category,
     typeAthlete: model.typeAthlete,
+    createdAt: model.createdAt,
     competence: competence,
     user: user,
   };

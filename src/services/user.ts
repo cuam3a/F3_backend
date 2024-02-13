@@ -313,6 +313,7 @@ const paymentCompetenceService = async (
       competenceId: competence.id,
       userId: user.id,
       years: year,
+      amount: item.transaction_amount,
       category: category,
       typeAthlete: item.typeAthlete,
     });
