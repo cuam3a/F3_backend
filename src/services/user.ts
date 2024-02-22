@@ -269,7 +269,7 @@ const paymentCompetenceService = async (
       "APP_USR-913357541633645-060718-4787491c0ca96bdc245134bacb38901a-1135472336",
     options: { timeout: 5000 },
   });
-
+  console.log(item)
   const payment = new Payment(client);
 
   const resp = await payment.create({
