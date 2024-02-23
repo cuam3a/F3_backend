@@ -52,7 +52,7 @@ export const getFolio = async (region:string) => {
       let zeros = (num.toString().length < 8) ?  (8 - num.toString().length) : 0;
       return String(num).padStart(zeros, '0')
     } else {
-      return "00000001";
+      return "000001";
     }
   }
   catch(e){

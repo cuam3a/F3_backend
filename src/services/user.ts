@@ -134,6 +134,7 @@ const addUsersService = async (item: Partial<User>): Promise<Partial<User>> => {
     type: item.type,
     gender: item.gender,
     region: item.region,
+    isAthlete: item.isAthlete,
     folio: await getFolio(item.region ?? ""),
     rol: "USUARIO",
     status: "ACTIVO",
