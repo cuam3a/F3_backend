@@ -48,7 +48,7 @@ export const getFolio = async (region:string) => {
   try{
     var last = await UserModel.find({ region: region }).sort({ folio: -1 });
     if (last) {
-      let num = parseInt(last[0].folio) + 1;
+      let num = parseInt(last[0].folio ?? 0) + 1;
       let zeros = (num.toString().length < 8) ?  (8 - num.toString().length) : 0;
       return String(num).padStart(zeros, '0')
     } else {
@@ -56,7 +56,7 @@ export const getFolio = async (region:string) => {
     }
   }
   catch(e){
-    return 1
+    return "000001";
   }
 }
 
