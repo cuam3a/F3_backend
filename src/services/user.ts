@@ -348,7 +348,7 @@ const sendCoachUsers = async (body:any) => {
 
   const email = {
     from: "hola@mexicof3.com",
-    to: "gcuameatelles@gmail.com",//"hola@mexicof3.com",
+    to: "hola@mexicof3.com",
     subject: "Registro Entrenador F3",
     html: `
     <div>
