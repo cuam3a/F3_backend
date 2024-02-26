@@ -8,6 +8,8 @@ import UserModel from "./models/user.model";
 import { welcomeHtml } from "./mail/welcome";
 import { resetPasswordHtml } from "./mail/resetPassword";
 import { welcomeHtml2 } from "./mail/welcome2";
+import { getFolio } from "./utils/init";
+import { User } from "./interfaces/types";
 require("dotenv").config();
 var nodemailer = require("nodemailer");
 
@@ -25,33 +27,61 @@ app.use(express.urlencoded({ extended: true }));
 app.use(router);
 
 app.get("/", async (req, res) => {
-  const newUser = await UserModel.findOne({ _id: "65a70d4deb1d06a3b1b24277" });
-  if (newUser) {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.zoho.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: "hola@mexicof3.com",
-        pass: "2EBHKpbcqh9AA9X.",
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-    const email = {
-      from: "hola@mexicof3.com",
-      to: "gcuameatelles@gmail.com",
-      subject: "Registro Completo F3",
-      body: "Registro Completo, password",
-      html: await welcomeHtml2(newUser,'123456F3'),
-    };
+  // const newUser = await UserModel.findOne({ _id: "65a70d4deb1d06a3b1b24277" });
+  // if (newUser) {
+  //   const transporter = nodemailer.createTransport({
+  //     host: "smtp.zoho.com",
+  //     port: 587,
+  //     secure: false,
+  //     auth: {
+  //       user: "hola@mexicof3.com",
+  //       pass: "2EBHKpbcqh9AA9X.",
+  //     },
+  //     tls: {
+  //       rejectUnauthorized: false,
+  //     },
+  //   });
+  //   const email = {
+  //     from: "hola@mexicof3.com",
+  //     to: "gcuameatelles@gmail.com",
+  //     subject: "Registro Completo F3",
+  //     body: "Registro Completo, password",
+  //     html: await welcomeHtml2(newUser,'123456F3'),
+  //   };
 
-    await transporter.sendMail(email).catch((error: any) => {
-      console.log(error);
-      console.log("EMAIL ENVIADO");
-    });
-  }
+  //   await transporter.sendMail(email).catch((error: any) => {
+  //     console.log(error);
+  //     console.log("EMAIL ENVIADO");
+  //   });
+  // }
+  // getFolio("SONORA");
+  // const users = await UserModel.find<User>({
+  //   status: ["ACTIVO", "INACTIVO"],
+  //   rol: ["USUARIO"],
+  //   region: "CHIAPAS",
+  //   folio: { $ne: "SON999999" }
+  // });
+
+  // for(var i=0; i< users.length; i++){
+  //   let folio = await getFolio("CHIAPAS");
+  //   const newUser = await UserModel.findOneAndUpdate(
+  //     { _id: users[i].id },
+  //     { folio: folio },
+  //     {
+  //       new: true,
+  //     }
+  //   );
+  // }
+  // users.forEach(async user => {
+  //   let folio = await getFolio("SONORA");
+  //   const newUser = await UserModel.findOneAndUpdate(
+  //     { _id: user.id },
+  //     { folio: folio },
+  //     {
+  //       new: true,
+  //     }
+  //   );
+  // });
   res.send("Hello World!");
 });
 

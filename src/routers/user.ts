@@ -1,5 +1,5 @@
 import { Router, Request } from "express";
-import { add, addUsers, list, listUsers, paymentCompetence, paymentUsers, remove, removeUsers, resetpassword, single, singleUsers, update, updateProfile, updateUsers } from "../controllers/user";
+import { add, addUsers, list, listUsers, paymentCompetence, paymentUsers, remove, removeUsers, resetpassword, single, singleUsers, update, updateProfile, updateUsers, sendCoach } from "../controllers/user";
 import { checkJwt } from "../middlewares/session";
 import multer, { FileFilterCallback } from "multer";
 
@@ -51,7 +51,7 @@ router.delete("/users/:id", checkJwt, removeUsers);
 router.delete("/:id", checkJwt, remove);
 router.post("/resetpassword/:id", checkJwt, resetpassword);
 //Users
-
+router.post("/sendcoach/", checkJwt, sendCoach);
 
 
 
