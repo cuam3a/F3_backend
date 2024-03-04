@@ -119,6 +119,14 @@ const getListUsersService = async (): Promise<Partial<User>[]> => {
 const addUsersService = async (item: Partial<User>): Promise<Partial<User>> => {
   console.log("entro");
   console.log(item);
+  const newUser = await UserModel.findOneAndUpdate(
+    { user: item.user?.toUpperCase() },
+    { dateOfBirth: item.dateOfBirth },
+    {
+      new: true,
+    }
+  );
+/*
   const passHash = await encrypt(item.password ?? "");
   console.log(passHash);
   const newUser = await UserModel.create({
@@ -164,7 +172,7 @@ const addUsersService = async (item: Partial<User>): Promise<Partial<User>> => {
   await transporter.sendMail(email).catch((error: any) => {
     console.log(error);
   });
-
+*/
   return formatUserData({ model: newUser });
 };
 
@@ -324,6 +332,40 @@ const paymentCompetenceService = async (
   return formatUserData({ model: user });
 };
 
+const sendCoachUsers = async (body:any) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.zoho.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: "hola@mexicof3.com",
+      pass: "2EBHKpbcqh9AA9X.",
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  const email = {
+    from: "hola@mexicof3.com",
+    to: "hola@mexicof3.com",
+    subject: "Registro Entrenador F3",
+    html: `
+    <div>
+      <p>Nombre: ${body.name}</p>
+      <p>Correo: ${body.email}</p>
+      <p>Edad: ${body.age}</p>
+      <p>Genero: ${body.gender}</p>
+      <p>Texto: ${body.text}</p>
+    </div>
+    `,
+  };
+  await transporter.sendMail(email).catch((error: any) => {
+    console.log(error);
+  });
+  return true;
+}
+
 export {
   getSingleUser,
   getListUser,
@@ -339,4 +381,5 @@ export {
   removeUsersService,
   paymentUser,
   paymentCompetenceService,
+  sendCoachUsers,
 };

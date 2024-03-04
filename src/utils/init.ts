@@ -45,18 +45,23 @@ export const getPassword = (lng: number) => {
 };
 
 export const getFolio = async (region:string) => {
+  let start = region.substring(0,3);
   try{
-    var last = await UserModel.find({ region: region }).sort({ folio: -1 });
+    var last = await UserModel.find({ region: region, folio: { $ne: "SON999999" } }).sort({ folio: -1 });
     if (last) {
-      let num = parseInt(last[0].folio ?? 0) + 1;
-      let zeros = (num.toString().length < 8) ?  (8 - num.toString().length) : 0;
-      return String(num).padStart(zeros, '0')
+      let num = parseInt(last[0].folio?.replace(start,"") ?? 0) + 1;
+      //let zeros = (num.toString().length < 6) ?  (6 - num.toString().length) : 0;
+      console.log(last[0])
+      //console.log(zeros)
+      console.log(num)
+      console.log(start + String(num).padStart(6, '0'))
+      return start + String(num).padStart(6, '0')
     } else {
-      return "000001";
+      return start +"000001";
     }
   }
   catch(e){
-    return "000001";
+    return start + "000001";
   }
 }
 

@@ -134,6 +134,10 @@ const UserSchema = new Schema<User>(
     folio: {
       type: String,
     },
+    coachAccepted: {
+      type: Boolean,
+      default:false
+    },
     rol: {
       type: String,
       enum: ["ADMIN", "USUARIO"],

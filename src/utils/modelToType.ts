@@ -76,6 +76,7 @@ const formatUserData = ({
     instagram: model.instagram,
     twitter: model.twitter,
     folio: model.folio,
+    coachAccepted: model.coachAccepted,
     payment: payment ?? {},
     competence: competenceUser ?? [],
   };

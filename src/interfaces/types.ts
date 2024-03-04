@@ -55,6 +55,7 @@ export type User = {
   token: string;
   competenceId:string;
   typeAthlete: string;
+  coachAccepted: boolean;
 };
 
 export enum Rol {
