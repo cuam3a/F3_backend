@@ -2,6 +2,7 @@ import { CompetenceUser, User } from "../interfaces/types";
 import { welcomeHtml2 } from "../mail/welcome2";
 import CompetenceModel from "../models/competence.model";
 import CompetenceUserModel from "../models/competenceUser.model";
+import PaymentModel from "../models/payment.model";
 import UserModel from "../models/user.model";
 import { encrypt } from "../utils/bcypt.handle";
 import { paymentError } from "../utils/dictionary";
@@ -126,7 +127,7 @@ const addUsersService = async (item: Partial<User>): Promise<Partial<User>> => {
       new: true,
     }
   );
-/*
+  /*
   const passHash = await encrypt(item.password ?? "");
   console.log(passHash);
   const newUser = await UserModel.create({
@@ -241,6 +242,14 @@ const paymentUser = async (item: Partial<User>): Promise<Partial<User>> => {
         paymentError(resp.status_detail as string)
     );
 
+  const newPayment = await PaymentModel.create({
+    userId: item.id,
+    amount: item.transaction_amount,
+    reference: item.user,
+    password: item.descripcion,
+    date: new Date(),
+  });
+
   var isAthlete = user.isAthlete ?? false;
   var isCoach = user.isCoach ?? false;
   var isJudge = user.isJudge ?? false;
@@ -278,7 +287,7 @@ const paymentCompetenceService = async (
       "APP_USR-913357541633645-060718-4787491c0ca96bdc245134bacb38901a-1135472336",
     options: { timeout: 5000 },
   });
-  console.log(item)
+  console.log(item);
   const payment = new Payment(client);
 
   const resp = await payment.create({
@@ -304,19 +313,19 @@ const paymentCompetenceService = async (
   if (competence) {
     const year = await getYears(user.dateOfBirth ?? new Date());
     let category = "";
-    if(year >= 13 && year <= 14) category= "13-14 años";
-    if(year >= 15 && year <= 16) category= "15-16 años";
-    if(year >= 17 && year <= 18) category= "17-18 años";
-    if(year >= 19 && year <= 20) category= "19-20 años";
-    if(year >= 21 && year <= 29) category= "21-29 años";
-    if(year >= 30 && year <= 34) category= "30-34 años";
-    if(year >= 35 && year <= 39) category= "35-39 años";
-    if(year >= 40 && year <= 44) category= "40-44 años";
-    if(year >= 45 && year <= 49) category= "45-49 años";
-    if(year >= 50 && year <= 54) category= "50-54 años";
-    if(year >= 55 && year <= 59) category= "55-59 años";
-    if(year >= 60 && year <= 64) category= "60-64 años";
-    if(year >= 65) category= "65+ años";
+    if (year >= 13 && year <= 14) category = "13-14 años";
+    if (year >= 15 && year <= 16) category = "15-16 años";
+    if (year >= 17 && year <= 18) category = "17-18 años";
+    if (year >= 19 && year <= 20) category = "19-20 años";
+    if (year >= 21 && year <= 29) category = "21-29 años";
+    if (year >= 30 && year <= 34) category = "30-34 años";
+    if (year >= 35 && year <= 39) category = "35-39 años";
+    if (year >= 40 && year <= 44) category = "40-44 años";
+    if (year >= 45 && year <= 49) category = "45-49 años";
+    if (year >= 50 && year <= 54) category = "50-54 años";
+    if (year >= 55 && year <= 59) category = "55-59 años";
+    if (year >= 60 && year <= 64) category = "60-64 años";
+    if (year >= 65) category = "65+ años";
 
     const competenceUser = await CompetenceUserModel.create({
       competenceId: competence.id,
@@ -332,7 +341,7 @@ const paymentCompetenceService = async (
   return formatUserData({ model: user });
 };
 
-const sendCoachUsers = async (body:any) => {
+const sendCoachUsers = async (body: any) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.zoho.com",
     port: 587,
@@ -364,7 +373,7 @@ const sendCoachUsers = async (body:any) => {
     console.log(error);
   });
   return true;
-}
+};
 
 export {
   getSingleUser,
