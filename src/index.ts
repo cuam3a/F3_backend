@@ -31,14 +31,21 @@ app.use(router);
 app.get("/", async (req, res) => {
   var users = await UserModel.find<User>({ _id: "65bac18d05b8164ef60b5ef4" });
   console.log(users)
-  users.forEach(f => {
-    if(f.photo){
+  users.forEach(async f => {
+    if(f.photo && f.photo.endsWith(".png")){
       var name = f.folio + ".png";
       fs.rename(
         path.resolve(`${process.cwd()}/upload/`, f.photo),
         path.resolve(`${process.cwd()}/upload/`, name),
-        (error:any) => { console.log(error); }
+        (error:any) => { 
+          if (error) {
+            console.log(error); 
+          }
+        }
       );
+      const updateUser = await UserModel.findOneAndUpdate({ _id: f.id }, { photo: name }, {
+        new: true,
+      });
     }
   })
 
