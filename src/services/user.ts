@@ -348,7 +348,7 @@ const sendCoachUsers = async (body: any) => {
     secure: false,
     auth: {
       user: "hola@mexicof3.com",
-      pass: "2EBHKpbcqh9AA9X.",
+      pass: "2EBHKpbcqh9.",
     },
     tls: {
       rejectUnauthorized: false,

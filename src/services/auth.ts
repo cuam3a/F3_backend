@@ -212,7 +212,7 @@ const registerService = async (body: Partial<User>) => {
     secure: false,
     auth: {
       user: "hola@mexicof3.com",
-      pass: "2EBHKpbcqh9AA9X.",
+      pass: "2EBHKpbcqh9.",
     },
     tls: {
       rejectUnauthorized: false,
@@ -359,7 +359,7 @@ const getResetPasswordService = async (user: String) => {
     secure: false,
     auth: {
       user: "hola@mexicof3.com",
-      pass: "2EBHKpbcqh9AA9X.",
+      pass: "2EBHKpbcqh9.",
     },
     tls: {
       rejectUnauthorized: false,
