@@ -52,4 +52,39 @@ const getCompetenceUsers = async (): Promise<Partial<CompetenceUser>[]> => {
   return list;
 };
 
+// const getUserComplete = async (): Promise<Partial<User>[]> => {
+//   const competenceUsers = await UserModel.aggregate([
+//     {
+//       $lookup:{
+//         from: "competenceUser",
+//         localField: "_id",
+//         foreignField: "userId",
+//         as:"competenceUser"
+//       }
+//     }
+//   ]);
+
+//   const list = await Promise.all(
+//     competenceUsers.map(async (data) => {
+//       var competence =
+//         data.competenceId !== ""
+//           ? await CompetenceModel.findOne<Competence>({
+//               _id: data.competenceId,
+//             })
+//           : null;
+//       var user =
+//         data.userId !== ""
+//           ? await UserModel.findOne<User>({ _id: data.userId })
+//           : null;
+//       return formatCompetenceUserData({
+//         model: data,
+//         competence: formatCompetenceData({ model: competence }),
+//         user: formatUserData({ model: user }),
+//       });
+//     })
+//   );
+
+//   return list;
+// };
+
 export { getUsers, getCompetenceUsers };
