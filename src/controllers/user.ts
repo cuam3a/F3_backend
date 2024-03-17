@@ -94,10 +94,10 @@ const remove = async ({ params, idUser }: RequestExt, res: Response) => {
 
 const resetpassword = async ({ params, body, idUser }: RequestExt, res: Response) => {
   try {
-    const { id } = params;
-    const { password } = body
+    //const { id } = params;
+    const { id, oldPassword, newPassword } = body
     const idU = idUser?.idUser
-    const editUser = await resetpasswordUser(id, password);
+    const editUser = await resetpasswordUser(id,oldPassword,newPassword);
     const token = generateToken(`${idU}`);
 
     const response: Partial<ActionResponse> = {
@@ -109,7 +109,7 @@ const resetpassword = async ({ params, body, idUser }: RequestExt, res: Response
     res.send(response);
   }
   catch (e) {
-    handleError(res, "ERROR REMOVE USER")
+    handleError(res, "ERROR CAMBIO CONTRASEÑA", e)
   }
 }
 

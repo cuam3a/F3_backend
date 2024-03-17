@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { RequestExt } from "../interfaces/interfaces";
 import {
   ActionResponse,
-  LogType,
   LoginResponse,
   User,
   UserResponse,

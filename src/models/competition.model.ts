@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { Competition } from "../interfaces/types";
 
-const Competence = new Schema<Competition>(
+const Competition = new Schema<Competition>(
   {
     name: {
       type: String,
@@ -62,5 +62,5 @@ const Competence = new Schema<Competition>(
   }
 );
 
-const CompetenceModel = model("competence", Competence);
-export default CompetenceModel;
+const CompetitionModel = model("competition", Competition);
+export default CompetitionModel;

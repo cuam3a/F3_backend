@@ -1,6 +1,8 @@
 import {
   Competence,
   CompetenceUser,
+  Competition,
+  CompetitionUser,
   OpenpayCard,
   OpenpayCharge,
   OpenpayCustomer,
@@ -20,6 +22,7 @@ import { smtpTransport } from "../utils/mail";
 import {
   formatCompetenceData,
   formatCompetenceUserData,
+  formatCompetitionData,
   formatUserData,
   formatUserLostData,
 } from "../utils/modelToType";
@@ -29,7 +32,8 @@ import { paymentError } from "../utils/dictionary";
 var nodemailer = require("nodemailer");
 // SDK de Mercado Pago
 import MercadoPagoConfig, { Payment } from "mercadopago";
-import CompetenceModel from "../models/competence.model";
+import CompetenceModel from "../models/competition.model";
+import CompetitionUserModel from "../models/competitionUser.model";
 import CompetenceUserModel from "../models/competenceUser.model";
 
 const loginService = async ({ user, password }: Partial<User>) => {

@@ -1,14 +1,15 @@
 import {
   ConstantValue,
-  Log,
   User,
-  Notification,
-  UserPermission,
   Payment,
   Document,
-  Competence,
+  Competition,
+  CompetitionUser,
+  CompetitionSteps,
   CompetenceUser,
+  Competence,
 } from "../interfaces/types";
+import { getFullName } from "./init";
 const fs = require("fs");
 
 const imgPhotoDefault =
@@ -17,14 +18,14 @@ const imgPhotoDefault =
 type UserProps = {
   model: Partial<User> | null;
   payment?: Partial<Payment>;
-  userPermission?: Partial<UserPermission>[];
+  //userPermission?: Partial<UserPermission>[];
   notification?: Partial<Notification>[];
   competenceUser?: Partial<CompetenceUser>[];
 };
 const formatUserData = ({
   model,
   payment,
-  userPermission,
+  //userPermission,
   notification,
   competenceUser,
 }: UserProps): Partial<User> => {
@@ -78,6 +79,7 @@ const formatUserData = ({
     folio: model.folio,
     coachAccepted: model.coachAccepted,
     payment: payment ?? {},
+    //competition: competenceUser ?? [],
     competence: competenceUser ?? [],
   };
   return userType;
@@ -93,49 +95,6 @@ const formatConstantData = (model: ConstantValue): Partial<ConstantValue> => {
     description: model.description,
   };
   return constantType;
-};
-
-type LogProps = {
-  model: Log;
-  user?: Partial<User>;
-};
-const formatLogData = ({ model, user }: LogProps): Partial<Log> => {
-  if (model === null) return {};
-
-  var logType: Partial<Log> = {
-    id: model.id,
-    type: model.type,
-    isError: model.isError,
-    description: model.description,
-    code: model.code,
-    userId: model.userId,
-    user: user,
-  };
-  return logType;
-};
-
-type NotificationProps = {
-  model: Notification;
-  user?: Partial<User>;
-};
-const formatNotificationData = ({
-  model,
-  user,
-}: NotificationProps): Partial<Notification> => {
-  if (model === null) return {};
-
-  var notificationType: Partial<Notification> = {
-    id: model.id,
-    folio: model.folio,
-    title: model.title,
-    description: model.description,
-    new: model.new,
-    url: model.url,
-    userId: model.userId,
-    createdAt: model.createdAt,
-    user: user,
-  };
-  return notificationType;
 };
 
 const formatDocument = (model: Document): Partial<Document> => {
@@ -182,6 +141,55 @@ const formatUserLostData = ({ model }: UserLostProps): Partial<User> => {
     status: model.status,
   };
   return userLostType;
+};
+
+const formatCompetitionData = (model: any): Partial<Competition> => {
+  if (!model || model === null) return {};
+  var competitionType: Partial<Competition> = {
+    id: model._id,
+    name: model.name,
+    description: model.description,
+    location: model.location,
+    cost: model.cost,
+    startDate: model.startDate,
+    endDate: model.endDate,
+    by: model.by,
+    facebookUrl: model.facebookUrl,
+    instagramUsername: model.instagramUsername,
+    twitterUsername: model.twitterUsername,
+    image: model.image,
+    bgImage: model.bgImage,
+    userId: model.userId,
+    status: model.status,
+    competitionSteps: model.competitionSteps?.map((itemStep:any) => {return formatCompetitionStepsData(itemStep)}) ?? [],
+  };
+  return competitionType;
+};
+
+const formatCompetitionStepsData = (model: any): Partial<CompetitionSteps> => {
+  if (model === null) return {};
+  var competitionStepType: Partial<CompetitionSteps> = {
+    id: model._id,
+    name: model.name,
+    start: model.start,
+  };
+  return competitionStepType;
+};
+
+const formatCompetitionUserData = (model: any): Partial<CompetitionUser> => {
+  if (model === null) return {};
+  var competitionType: Partial<CompetitionUser> = {
+    id: model._id,
+    fullName: (model.user?.name ?? "") + " " + (model.user?.lastName ?? ""),
+    years: model.years,
+    amount: model.amount,
+    category: model.category,
+    place: model.place,
+    points: model.points,
+    createdAt: model.createdAt,
+    competition: formatCompetitionData(model.competition),
+  };
+  return competitionType;
 };
 
 type CompetenceProps = {
@@ -234,13 +242,15 @@ const formatCompetenceUserData = ({
   return competenceUserType;
 };
 
+
 export {
   formatUserData,
   formatConstantData,
-  formatLogData,
-  formatNotificationData,
   formatDocument,
   formatUserLostData,
-  formatCompetenceData,
+  formatCompetitionData,
+  formatCompetitionUserData,
+//ELIMINAR
   formatCompetenceUserData,
+  formatCompetenceData
 };

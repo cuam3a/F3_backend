@@ -1,10 +1,10 @@
-import { CompetenceUser, User } from "../interfaces/types";
+import { CompetitionUser, User } from "../interfaces/types";
 import { welcomeHtml2 } from "../mail/welcome2";
-import CompetenceModel from "../models/competence.model";
-import CompetenceUserModel from "../models/competenceUser.model";
+import CompetitioModel from "../models/competition.model";
+import CompetitionUserModel from "../models/competitionUser.model";
 import PaymentModel from "../models/payment.model";
 import UserModel from "../models/user.model";
-import { encrypt } from "../utils/bcypt.handle";
+import { encrypt, verified } from "../utils/bcypt.handle";
 import { paymentError } from "../utils/dictionary";
 import { getFolio, getYears } from "../utils/init";
 import { formatUserData } from "../utils/modelToType";
@@ -71,9 +71,18 @@ const removeUser = async (id: string): Promise<Partial<User>> => {
 
 const resetpasswordUser = async (
   id: string,
-  newpassword: string
+  oldPassword:string,
+  newPassword: string
 ): Promise<Partial<User>> => {
-  const passHash = await encrypt(newpassword);
+ 
+  var exist = await UserModel.findOne<User>({ _id: id });
+  if(!exist) throw Error("NO EXISTE USUARIO");
+
+  const isCorrect = await verified(oldPassword, exist?.password ?? "");
+  if (!isCorrect) throw Error("CONTRASEÑA ANTERIOR INCORRECTO");
+  
+
+  const passHash = await encrypt(newPassword);
   const updateUser = await UserModel.findOneAndUpdate(
     { _id: id },
     { password: passHash },
@@ -82,7 +91,7 @@ const resetpasswordUser = async (
     }
   );
 
-  if (!updateUser) throw Error("NO FOUND USER");
+  if (!updateUser) throw Error("ERROR CAMBIO DE CONTRASEÑA");
 
   return formatUserData({ model: updateUser });
 };
@@ -309,7 +318,7 @@ const paymentCompetenceService = async (
         paymentError(resp.status_detail as string)
     );
 
-  var competence = await CompetenceModel.findOne({ _id: item.competenceId });
+  var competence = await CompetitioModel.findOne({ _id: item.competenceId });
   if (competence) {
     const year = await getYears(user.dateOfBirth ?? new Date());
     let category = "";
@@ -327,7 +336,7 @@ const paymentCompetenceService = async (
     if (year >= 60 && year <= 64) category = "60-64 años";
     if (year >= 65) category = "65+ años";
 
-    const competenceUser = await CompetenceUserModel.create({
+    const competenceUser = await CompetitionUserModel.create({
       competenceId: competence.id,
       userId: user.id,
       years: year,

@@ -49,7 +49,7 @@ router.put("/users/:id", checkJwt, updateUsers);
 router.put("/:id", checkJwt, update);
 router.delete("/users/:id", checkJwt, removeUsers);
 router.delete("/:id", checkJwt, remove);
-router.post("/resetpassword/:id", checkJwt, resetpassword);
+router.post("/resetpassword", checkJwt, resetpassword);
 //Users
 router.post("/sendcoach/", checkJwt, sendCoach);
 

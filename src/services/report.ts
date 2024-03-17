@@ -1,10 +1,10 @@
-import { User, Status, Rol, Payment, Competence, CompetenceUser } from "../interfaces/types";
-import CompetenceModel from "../models/competence.model";
-import CompetenceUserModel from "../models/competenceUser.model";
+import { User, Status, Rol, Payment, Competition, CompetitionUser } from "../interfaces/types";
+import CompetitionModel from "../models/competition.model";
+import CompetitionUserModel from "../models/competitionUser.model";
 import PaymentModel from "../models/payment.model";
 import UserModel from "../models/user.model";
 
-import { formatCompetenceData, formatCompetenceUserData, formatUserData } from "../utils/modelToType";
+import { formatCompetitionData, formatCompetenceUserData, formatUserData } from "../utils/modelToType";
 
 const getUsers = async (): Promise<Partial<User>[]> => {
   const users = await UserModel.find<User>({
@@ -26,30 +26,30 @@ const getUsers = async (): Promise<Partial<User>[]> => {
   return list;
 };
 
-const getCompetenceUsers = async (): Promise<Partial<CompetenceUser>[]> => {
-  const competenceUsers = await CompetenceUserModel.find<CompetenceUser>({});
+const getCompetenceUsers = async (): Promise<Partial<CompetitionUser>[]> => {
+  const competenceUsers = await CompetitionUserModel.find<CompetitionUser>({});
 
-  const list = await Promise.all(
-    competenceUsers.map(async (data) => {
-      var competence =
-        data.competenceId !== ""
-          ? await CompetenceModel.findOne<Competence>({
-              _id: data.competenceId,
-            })
-          : null;
-      var user =
-        data.userId !== ""
-          ? await UserModel.findOne<User>({ _id: data.userId })
-          : null;
-      return formatCompetenceUserData({
-        model: data,
-        competence: formatCompetenceData({ model: competence }),
-        user: formatUserData({ model: user }),
-      });
-    })
-  );
+  // const list = await Promise.all(
+  //   competenceUsers.map(async (data) => {
+  //     var competence =
+  //       data.competitionId !== ""
+  //         ? await CompetitionModel.findOne<Competition>({
+  //             _id: data.competitionId,
+  //           })
+  //         : null;
+  //     var user =
+  //       data.userId !== ""
+  //         ? await UserModel.findOne<User>({ _id: data.userId })
+  //         : null;
+  //     return formatCompetenceUserData({
+  //       model: data,
+  //       competition: formatCompetitionData( competence ),
+  //       user: formatUserData({ model: user }),
+  //     });
+  //   })
+  // );
 
-  return list;
+  return [];
 };
 
 // const getUserComplete = async (): Promise<Partial<User>[]> => {

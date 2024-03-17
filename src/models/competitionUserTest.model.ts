@@ -1,46 +1,39 @@
 import { Schema, model } from "mongoose";
-import { Competition } from "../interfaces/types";
+import { CompetitionUserTest } from "../interfaces/types";
 
-const Competence = new Schema<Competition>(
+const CompetitionUserTest = new Schema<CompetitionUserTest>(
   {
-    name: {
-      type: String,
-    },
-    description: {
-      type: String,
-    },
-    location: {
-      type: String,
-    },
-    startDate: {
-      type: Date,
-    },
-    endDate: {
-      type: Date,
-    },
-    by: {
-      type: String,
-    },
-    facebookUrl: {
-      type: String,
-    },
-    instagramUsername: {
-      type: String,
-    },
-    twitterUsername: {
-      type: String,
-    },
-    cost: {
-      type: Number,
-    },
-    image: {
-      type: String,
-    },
-    bgImage: {
-      type: String,
+    competitionUserId: {
+      type: Schema.Types.ObjectId,
     },
     userId: {
       type: Schema.Types.ObjectId,
+    },
+    testType: {
+      type: String,
+      enum: ["TEST1", "TEST2", "TEST3"],
+      required: true,
+    },
+    url: {
+      type: String,
+    },
+    time: {
+      type: String,
+    },
+    reps: {
+      type: Number,
+    },
+    judgeTime: {
+      type: String,
+    },
+    judgeReps: {
+      type: Number,
+    },
+    judgeQualification: {
+      type: Number,
+    },
+    observation: {
+      type: String,
     },
     status: {
       type: String,
@@ -62,5 +55,8 @@ const Competence = new Schema<Competition>(
   }
 );
 
-const CompetenceModel = model("competence", Competence);
-export default CompetenceModel;
+const CompetitionUserTestModel = model(
+  "competitionUserTest",
+  CompetitionUserTest
+);
+export default CompetitionUserTestModel;

@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export type User = {
   id: string;
   customerOpenPayId: string;
@@ -45,6 +47,7 @@ export type User = {
   twitter: string;
   folio: string;
   payment: Partial<Payment>;
+  competition: Partial<CompetitionUser>[];
   competence: Partial<CompetenceUser>[];
   //MERCADO PAGO
   transaction_amount: number;
@@ -164,54 +167,70 @@ export type Document = {
   fileFile: string;
 };
 
-export type Log = {
+export type Competition = {
   id: string;
-  type: LogType;
-  isError: boolean;
-  description: string;
-  code: string;
-  userId: string;
-  user: Partial<User>;
+  name: string;
+  description:string;
+  location: string;
+  cost:number;
+  startDate: Date;
+  endDate?: Date;
+  by: string;
+  facebookUrl?: string;
+  instagramUsername?: string;
+  twitterUsername?: string;
+  image?: string;
+  bgImage?: string;
+  userId: Types.ObjectId;
+  status: Status;
+  competitionSteps: CompetitionSteps[]
 };
 
-export enum LogType {
-  USUARIO = "USUARIO",
-  DEMANDA = "DEMANDA",
-  EMAIL = "EMAIL",
-  CONSTANTES = "CONSTANTES",
-  CREDITO = "CREDITO",
-}
-
-export type Notification = {
+export type CompetitionSteps = {
   id: string;
-  folio: string;
-  title: string;
-  description: string;
-  url: string;
-  new: boolean;
-  userId: string;
+  name: string;
+  start:string;
+  end: string;
+  competition: Types.ObjectId | Partial<Competition>;
+};
+
+export type CompetitionUser = {
+  id: string;
+  years: number;
+  amount: number;
+  category: string;
+  place: number;
+  points: number;
+  registeredAs?: 'atleta' | 'entrenador' | 'juez';
   createdAt: Date;
-  user: Partial<User>;
+  status: Status;
+  fullName: string;
+  competition: Types.ObjectId | Partial<Competition>;
+  user: Types.ObjectId | Partial<User>;
 };
 
-export type UserPermission = {
+export type CompetitionUserTest = {
   id: string;
-  type: UserPermissionType;
-  allow: boolean;
-  userId: string;
+  competitionUserId: Types.ObjectId;
+  testType: TestType;
+  url:string;
+  time: string;
+  reps: number;
+  judgeTime: string;
+  judgeReps: number;
+  judgeQualification :number;
+  observation: string;
+  userId: Types.ObjectId;
+  status: Status;
 };
 
-export enum UserPermissionType {
-  ADD_DEMAND = "AGREGAR DEMANDA",
-  EDIT_DEMAND = "EDITAR DEMANDA",
-  NOTIFICATION = "NOTIFICACIONES",
-  REPORT = "REPORTES",
-  CONFIG = "CONFIGURACION",
-  ADD_CREDIT = "AGREGAR CREDITO",
-  EDIT_CREDIT = "EDITAR CREDITO",
-  DELETE_DEMAND = "ELIMINAR DEMANDA",
-  DELETE_CREDIT = "ELIMINAR CREDITO",
+export enum TestType {
+  TEST1 = "TEST1",
+  TEST2 = "TEST2",
+  TEST3 = "TEST3",
 }
+
+
 
 export type Competence = {
   id: string;
