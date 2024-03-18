@@ -8,6 +8,7 @@ import {
   CompetitionSteps,
   CompetenceUser,
   Competence,
+  Region,
 } from "../interfaces/types";
 import { getFullName } from "./init";
 const fs = require("fs");
@@ -161,6 +162,7 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     bgImage: model.bgImage,
     user: model.user,
     status: model.status,
+    region: formatRegionData(model.region ?? null),
     competitionSteps: model.competitionSteps?.map((itemStep:any) => {return formatCompetitionStepsData(itemStep)}) ?? [],
   };
   return competitionType;
@@ -190,6 +192,16 @@ const formatCompetitionUserData = (model: any): Partial<CompetitionUser> => {
     competition: formatCompetitionData(model.competition),
   };
   return competitionType;
+};
+
+const formatRegionData = (model: any): Partial<Region> => {
+  if (model === null) return {};
+  var competitionStepType: Partial<Region> = {
+    id: model._id,
+    name: model.name,
+    description: model.description,
+  };
+  return competitionStepType;
 };
 
 type CompetenceProps = {
@@ -250,6 +262,7 @@ export {
   formatUserLostData,
   formatCompetitionData,
   formatCompetitionUserData,
+  formatRegionData,
 //ELIMINAR
   formatCompetenceUserData,
   formatCompetenceData

@@ -171,6 +171,7 @@ export type Competition = {
   id: string;
   name: string;
   description:string;
+  region: Types.ObjectId | Partial<Region>;
   location: string;
   cost:number;
   startDate: Date;
@@ -228,6 +229,12 @@ export enum TestType {
   TEST1 = "TEST1",
   TEST2 = "TEST2",
   TEST3 = "TEST3",
+}
+
+export type Region = {
+  id:string
+  name:string
+  description:string;
 }
 
 

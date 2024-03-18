@@ -43,6 +43,10 @@ const Competition = new Schema<Competition>(
       type: Schema.Types.ObjectId,
       ref:"user"
     },
+    region: {
+      type: Schema.Types.ObjectId,
+      ref:"region"
+    },
     status: {
       type: String,
       enum: ["ACTIVO", "INACTIVO", "ELIMINADO"],

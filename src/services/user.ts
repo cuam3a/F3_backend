@@ -1,5 +1,7 @@
 import { CompetitionUser, User } from "../interfaces/types";
 import { welcomeHtml2 } from "../mail/welcome2";
+import CompetenceModel from "../models/competence.model";
+import CompetenceUserModel from "../models/competenceUser.model";
 import CompetitioModel from "../models/competition.model";
 import CompetitionUserModel from "../models/competitionUser.model";
 import PaymentModel from "../models/payment.model";
@@ -318,7 +320,7 @@ const paymentCompetenceService = async (
         paymentError(resp.status_detail as string)
     );
 
-  var competence = await CompetitioModel.findOne({ _id: item.competenceId });
+  var competence = await CompetenceModel.findOne({ _id: item.competenceId });
   if (competence) {
     const year = await getYears(user.dateOfBirth ?? new Date());
     let category = "";
@@ -336,7 +338,7 @@ const paymentCompetenceService = async (
     if (year >= 60 && year <= 64) category = "60-64 años";
     if (year >= 65) category = "65+ años";
 
-    const competenceUser = await CompetitionUserModel.create({
+    const competenceUser = await CompetenceUserModel.create({
       competenceId: competence.id,
       userId: user.id,
       years: year,
