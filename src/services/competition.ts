@@ -40,12 +40,15 @@ const competitionsService = async (
   ]);
   await CompetitionModel.populate(list, "region");
   for (var item in list) {
-    var exist = await CompetitionUserModel.findOne({ user: new Types.ObjectId(idU), competition: new Types.ObjectId(list[item]._id) });
+    var exist = await CompetitionUserModel.findOne({
+      user: new Types.ObjectId(idU),
+      competition: new Types.ObjectId(list[item]._id),
+    });
     list[item].registered = exist ? true : false;
     list[item].registeredAs = list[item].registered ? "atleta" : "";
-    list[item].registeredCategory = exist ? (exist.category??"") : "";
-    list[item].registeredScore = exist ? (exist.points??0) : 0;
-    list[item].registeredPlace = exist ? (exist.place??0) : 0;
+    list[item].registeredCategory = exist ? exist.category ?? "" : "";
+    list[item].registeredScore = exist ? exist.points ?? 0 : 0;
+    list[item].registeredPlace = exist ? exist.place ?? 0 : 0;
   }
   list.forEach(async (f) => {
     f.registered = await RegisteredCompetition(idU, f._id);
@@ -72,15 +75,17 @@ const competitionByIdService = async (
     },
   ]);
   await CompetitionModel.populate(item, "region");
-  
-  if (item.length > 0) {
 
-    var exist = await CompetitionUserModel.findOne({ user: new Types.ObjectId(idU), competition: new Types.ObjectId(item[0]._id) });
+  if (item.length > 0) {
+    var exist = await CompetitionUserModel.findOne({
+      user: new Types.ObjectId(idU),
+      competition: new Types.ObjectId(item[0]._id),
+    });
     item[0].registered = exist ? true : false;
     item[0].registeredAs = item[0].registered ? "atleta" : "";
-    item[0].registeredCategory = exist ? (exist.category??"") : "";
-    item[0].registeredScore = exist ? (exist.points??0) : 0;
-    item[0].registeredPlace = exist ? (exist.place??0) : 0;
+    item[0].registeredCategory = exist ? exist.category ?? "" : "";
+    item[0].registeredScore = exist ? exist.points ?? 0 : 0;
+    item[0].registeredPlace = exist ? exist.place ?? 0 : 0;
 
     return formatCompetitionData(item[0]);
   } else {
@@ -132,6 +137,10 @@ const competitionAddService = async (
     discount: data.discount,
     discountCode: data.discountCode,
     limitInscriptionDate: data.limitInscriptionDate,
+    playbookDoc: data.playbookDoc,
+    scordcardDoc: data.scordcardDoc,
+    additionalDoc1: data.additionalDoc1,
+    additionalDoc2: data.additionalDoc2,
     region: data.region,
     status: Status.ACTIVO,
   });
@@ -193,7 +202,7 @@ const competitionSendResultService = async (
     status: Status.ACTIVO,
   });
 
-  if (!add)throw Error("ERROR AGREGAR RESULTADOS PRUEBAS");
+  if (!add) throw Error("ERROR AGREGAR RESULTADOS PRUEBAS");
 
   return formatCompetitionUserTestData(add);
 };
@@ -203,7 +212,12 @@ const competitionGetResultService = async (
   userId: string
 ): Promise<Partial<CompetitionUser>> => {
   const list = await CompetitionUserModel.aggregate([
-    { $match: { competition: new Types.ObjectId(id), user: new Types.ObjectId(userId) } },
+    {
+      $match: {
+        competition: new Types.ObjectId(id),
+        user: new Types.ObjectId(userId),
+      },
+    },
     {
       $lookup: {
         as: "competitionUserTest",
@@ -214,13 +228,43 @@ const competitionGetResultService = async (
     },
   ]);
   await CompetitionUserModel.populate(list, "user");
-  console.log(list)
+  console.log(list);
   if (list.length > 0) {
     return formatCompetitionUserData(list[0]);
   } else {
     return formatCompetitionUserData(null);
   }
 };
+
+const competitionUpdateResultService = async (
+  data: CompetitionUserTest,
+  competitionId: string,
+  userId: string
+): Promise<Partial<CompetitionUserTest>> => {
+  const exist = await CompetitionUserTestModel.findOne({
+    _id: data.id
+  });
+  if (!exist) throw Error("NO EXISTE REGISTRO PRUEBAS USUARIO");
+
+  const update = await CompetitionUserTestModel.findOneAndUpdate(
+    { _id: data.id },
+    {
+      url: data.url,
+      files: data.files,
+      time: data.time,
+      reps: data.reps,
+      weight: data.weight,
+    },
+    {
+      new: true,
+    }
+  );
+    console.log(update)
+  if (!update) throw Error("ERROR ACTUALIZAR RESULTADOS PRUEBAS");
+
+  return formatCompetitionUserTestData(update);
+};
+
 
 const competitionUpdateService = async (): Promise<Partial<User>[]> => {
   const users = await UserModel.find<User>({
@@ -264,4 +308,5 @@ export {
   competitionUpdateService,
   competitionUsersService,
   competitionGetResultService,
+  competitionUpdateResultService,
 };

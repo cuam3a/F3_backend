@@ -10,6 +10,7 @@ import {
   competitionUpdate,
   competitionUsers,
   competitionGetResult,
+  competitionUpdateResult,
 } from "../controllers/competition";
 import multer, { FileFilterCallback } from "multer";
 
@@ -59,4 +60,5 @@ router.post("/", checkJwt, competitionAdd);
 router.post("/registration", checkJwt, competitionRegistration);
 router.post("/sendResult/:id", checkJwt, upload.any(), competitionSendResult);
 router.put("/", checkJwt, competitionUpdate);
+router.put("/updateResult/:id", checkJwt, upload.any(), competitionUpdateResult);
 export { router };

@@ -190,6 +190,10 @@ export type Competition = {
   discount: number;
   discountCode: string;
   limitInscriptionDate: Date;
+  playbookDoc: string;
+  scordcardDoc: string;
+  additionalDoc1: string;
+  additionalDoc2: string;
   user: Types.ObjectId;
   status: Status;
   registered?: boolean;

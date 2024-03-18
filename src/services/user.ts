@@ -1,4 +1,4 @@
-import { CompetitionUser, User } from "../interfaces/types";
+import { CompetitionUser, Status, User } from "../interfaces/types";
 import { welcomeHtml2 } from "../mail/welcome2";
 import CompetenceModel from "../models/competence.model";
 import CompetenceUserModel from "../models/competenceUser.model";
@@ -347,6 +347,20 @@ const paymentCompetenceService = async (
       typeAthlete: item.typeAthlete,
     });
     console.log(competenceUser);
+
+    const competitionUser = await CompetitionUserModel.create({
+      competition: competence.id,
+      user: user.id,
+      years: year,
+      amount: item.transaction_amount,
+      category: category,
+      typeAthlete: item.typeAthlete,
+      place:0,
+      points:0,
+      registeredAs:'atleta',
+      status: Status.ACTIVO,
+    });
+    console.log(competitionUser);
   }
 
   return formatUserData({ model: user });

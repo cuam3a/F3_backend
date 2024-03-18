@@ -29,6 +29,9 @@ const CompetitionUser = new Schema<CompetitionUser>(
         points: {
             type: Number,
         },
+        registeredAs: {
+            type: String,
+        },
         status: {
             type: String,
             enum: ["ACTIVO", "INACTIVO", "ELIMINADO"],

@@ -11,6 +11,7 @@ import {
   competitionUpdateService,
   competitionUsersService,
   competitionGetResultService,
+  competitionUpdateResultService,
 } from "../services/competition";
 import { handleError } from "../utils/error.handle";
 import path from "path";
@@ -154,6 +155,67 @@ const competitionSendResult = async (
   }
 };
 
+const competitionUpdateResult = async (
+  { params, body, files, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const { id } = params;
+
+    if (files && Array.isArray(files)) {
+      body.files = (body.files?.replace("[","").replace("]","").replace(/["]+/g, '').replaceAll(" ", '').split(",") ?? [] );
+      let index = body.files?.length ?? 0;
+      index++;
+      files.forEach((ele) => {
+        if (ele.fieldname.startsWith(`evidence`)) {
+          const fileName = `evidence_${index}_${new Date().getTime()}.${ele.mimetype.substring(
+            ele.mimetype.indexOf("/") + 1,
+            ele.mimetype.length
+          )}`;
+
+          fs.mkdir(
+            `${process.cwd()}/upload/competitions/${id}/${idU}`,
+            { recursive: true },
+            (err: any) => {
+              if (err) {
+                //note: this does NOT get triggered if the directory already existed
+                console.log(err);
+              } else {
+                //directory now exists
+              }
+            }
+          );
+          fs.rename(
+            ele.path,
+            path.resolve(
+              `${process.cwd()}/upload/competitions/${id}/${idU}`,
+              fileName
+            ),
+            (error: any) => {
+              console.log(error);
+            }
+          );
+          body.files.push(`${id}/${idU}/${fileName}`);
+          index++;
+        }
+      });
+    }
+
+    const item = await competitionUpdateResultService(body, id, idU);
+    const response: GetListResponse = {
+      status: 200,
+      data: item,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR REPORT COMPETENCE USERS", e);
+  }
+};
+
+
+
+
 const competitionUpdate = async ({ idUser }: RequestExt, res: Response) => {
   try {
     const idU = idUser?.idUser;
@@ -213,4 +275,5 @@ export {
   competitionUpdate,
   competitionUsers,
   competitionGetResult,
+  competitionUpdateResult,
 };
