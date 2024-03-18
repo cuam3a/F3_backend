@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { RequestExt } from "../interfaces/interfaces";
 import { ActionResponse, GetListResponse } from "../interfaces/types";
-import { getListConstant, getSingleConstant, addConstant, updateConstant, removeConstant, getByCode } from "../services/constantValue";
+import { getListConstant, getSingleConstant, addConstant, updateConstant, removeConstant } from "../services/constantValue";
 import { handleError } from "../utils/error.handle";
 import { generateToken } from "../utils/jwt.handle";
 import path from "path";
@@ -111,16 +111,11 @@ const remove = async ({ params, idUser }: RequestExt, res: Response) => {
   }
 };
 
-const getFile = async ({ params }: Request, res: Response) => {
+const getFile = async ({ body }: Request, res: Response) => {
   try {
-    const { code } = params
-    const constanValue = await getByCode(code)
-    const response: Partial<ActionResponse> = {
-      status: 200,
-      message: 'OK',
-      data: constanValue
-    }
-    res.send(response);
+    const { code, name } = body
+    const file = `${process.cwd()}/upload/${code}/${name}`;
+    res.download(file);
   }
   catch (e:any) {
     handleError(res, "ERROR SINGLE CONSTANT VALUE", e)

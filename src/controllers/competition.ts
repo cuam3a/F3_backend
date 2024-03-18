@@ -7,11 +7,14 @@ import {
   competitionByUserIdService,
   competitionAddService,
   competitionRegistrationService,
-  competitionSendResultsService,
+  competitionSendResultService,
   competitionUpdateService,
   competitionUsersService,
+  competitionGetResultService,
 } from "../services/competition";
 import { handleError } from "../utils/error.handle";
+import path from "path";
+const fs = require("fs");
 
 const competitions = async ({ idUser }: RequestExt, res: Response) => {
   try {
@@ -27,7 +30,10 @@ const competitions = async ({ idUser }: RequestExt, res: Response) => {
   }
 };
 
-const competitionById = async ({ params, idUser }: RequestExt, res: Response) => {
+const competitionById = async (
+  { params, idUser }: RequestExt,
+  res: Response
+) => {
   try {
     const idU = idUser?.idUser;
     const { id } = params;
@@ -42,7 +48,10 @@ const competitionById = async ({ params, idUser }: RequestExt, res: Response) =>
   }
 };
 
-const competitionByUserId = async ({ params, idUser }: RequestExt, res: Response) => {
+const competitionByUserId = async (
+  { params, idUser }: RequestExt,
+  res: Response
+) => {
   try {
     const idU = idUser?.idUser;
     const { userId } = params;
@@ -88,16 +97,56 @@ const competitionRegistration = async (
   }
 };
 
-const competitionSendResults = async (
-  { idUser }: RequestExt,
+const competitionSendResult = async (
+  { params, body, files, idUser }: RequestExt,
   res: Response
 ) => {
   try {
     const idU = idUser?.idUser;
-    const dashboard = await competitionSendResultsService();
+    const { id } = params;
+
+    if (files && Array.isArray(files)) {
+      let index = 1;
+      body.files = [];
+      files.forEach((ele) => {
+        if (ele.fieldname.startsWith(`evidence`)) {
+          const fileName = `evidence_${index}_${new Date().getTime()}.${ele.mimetype.substring(
+            ele.mimetype.indexOf("/") + 1,
+            ele.mimetype.length
+          )}`;
+
+          fs.mkdir(
+            `${process.cwd()}/upload/competitions/${id}/${idU}`,
+            { recursive: true },
+            (err: any) => {
+              if (err) {
+                //note: this does NOT get triggered if the directory already existed
+                console.log(err);
+              } else {
+                //directory now exists
+              }
+            }
+          );
+          fs.rename(
+            ele.path,
+            path.resolve(
+              `${process.cwd()}/upload/competitions/${id}/${idU}`,
+              fileName
+            ),
+            (error: any) => {
+              console.log(error);
+            }
+          );
+          body.files.push(`${id}/${idU}/${fileName}`);
+          index++;
+        }
+      });
+    }
+
+    const item = await competitionSendResultService(body, id, idU);
     const response: GetListResponse = {
       status: 200,
-      data: dashboard,
+      data: item,
     };
     res.send(response);
   } catch (e: any) {
@@ -119,10 +168,13 @@ const competitionUpdate = async ({ idUser }: RequestExt, res: Response) => {
   }
 };
 
-const competitionUsers = async ({ params, idUser }: RequestExt, res: Response) => {
+const competitionUsers = async (
+  { params, idUser }: RequestExt,
+  res: Response
+) => {
   try {
     const idU = idUser?.idUser;
-    const { competitionId } = params
+    const { competitionId } = params;
     const array = await competitionUsersService(competitionId);
     const response: GetListResponse = {
       status: 200,
@@ -134,13 +186,31 @@ const competitionUsers = async ({ params, idUser }: RequestExt, res: Response) =
   }
 };
 
+const competitionGetResult = async (
+  { params, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const {id, userId} = params
+    const item = await competitionGetResultService(id, userId);
+    const response: GetListResponse = {
+      status: 200,
+      data: item,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR AGREGAR COMPETENCIA", e);
+  }
+};
 export {
   competitions,
   competitionById,
   competitionByUserId,
   competitionAdd,
   competitionRegistration,
-  competitionSendResults,
+  competitionSendResult,
   competitionUpdate,
   competitionUsers,
+  competitionGetResult,
 };

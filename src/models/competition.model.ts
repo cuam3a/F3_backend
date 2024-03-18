@@ -41,11 +41,35 @@ const Competition = new Schema<Competition>(
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref:"user"
+      ref: "user",
+    },
+    typeCompetence: {
+      type: String,
+    },
+    categoriesSupported: {
+      type: [String],
+    },
+    typeEvent: {
+      type: String,
+    },
+    publicationDate: {
+      type: Date,
+    },
+    withDiscount: {
+      type: Boolean,
+    },
+    discount: {
+      type: Number,
+    },
+    discountCode: {
+      type: String,
+    },
+    limitInscriptionDate: {
+      type: Date,
     },
     region: {
       type: Schema.Types.ObjectId,
-      ref:"region"
+      ref: "region",
     },
     status: {
       type: String,

@@ -3,24 +3,32 @@ import { CompetitionUserTest } from "../interfaces/types";
 
 const CompetitionUserTest = new Schema<CompetitionUserTest>(
   {
-    competitionUserId: {
+    competitionUser: {
       type: Schema.Types.ObjectId,
+      ref:"competitionuser"
     },
-    userId: {
+    judgeUser: {
       type: Schema.Types.ObjectId,
+      ref:"user"
     },
     testType: {
       type: String,
-      enum: ["TEST1", "TEST2", "TEST3"],
+      enum: ["AMRAP_10", "ROUNDS_FOR_TIME_CAP_12", "FOR_TIME_CAP_10"],
       required: true,
     },
     url: {
       type: String,
     },
+    files:{
+      type:[String],
+    },
     time: {
       type: String,
     },
     reps: {
+      type: Number,
+    },
+    weight:{
       type: Number,
     },
     judgeTime: {

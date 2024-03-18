@@ -54,6 +54,6 @@ router.get("/:id", checkJwt, single);
 router.post("/", checkJwt, upload.any(), add);
 router.put("/:id", checkJwt, upload.any(), update);
 router.delete("/:id", checkJwt, remove);
-router.get("/getcode/:code", getFile);
+router.post("/getFile", checkJwt, getFile);
 
 export { router };

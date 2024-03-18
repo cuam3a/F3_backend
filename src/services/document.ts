@@ -1,4 +1,5 @@
 import { ConstantValue, User } from "../interfaces/types";
+import CompetitionUserTestModel from "../models/competitionUserTest.model";
 import ConstantValueModel from "../models/constantValue.model";
 import { formatConstantData } from "../utils/modelToType";
 
@@ -45,17 +46,10 @@ const removeConstant = async (id: string) : Promise<Partial<ConstantValue>> => {
   return formatConstantData(deletedConstant);
 }
 
-const getByCode = async (code: string) : Promise<string> => {
-  const constant = await ConstantValueModel.findOne({ code: code });
-  if(!constant) throw Error("NO FOUND CONSTANT VALUE")
-  return constant.value;
-}
-
 export {
   getSingleConstant,
   getListConstant,
   addDocument,
   updateConstant,
   removeConstant,
-  getByCode,
 }

@@ -20,6 +20,9 @@ const CompetitionUser = new Schema<CompetitionUser>(
         category: {
             type: String,
         },
+        typeAthlete: {
+            type: String,
+        },
         place: {
             type: Number,
         },

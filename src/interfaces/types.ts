@@ -56,7 +56,7 @@ export type User = {
   descripcion: string;
   installments: number;
   token: string;
-  competenceId:string;
+  competenceId: string;
   typeAthlete: string;
   coachAccepted: boolean;
 };
@@ -170,10 +170,10 @@ export type Document = {
 export type Competition = {
   id: string;
   name: string;
-  description:string;
+  description: string;
   region: Types.ObjectId | Partial<Region>;
   location: string;
-  cost:number;
+  cost: number;
   startDate: Date;
   endDate?: Date;
   by: string;
@@ -182,17 +182,25 @@ export type Competition = {
   twitterUsername?: string;
   image?: string;
   bgImage?: string;
+  typeCompetence: "individual" | "equipo" | "mixto";
+  categoriesSupported: string[];
+  typeEvent: "presencial" | "online";
+  publicationDate: Date;
+  withDiscount: boolean;
+  discount: number;
+  discountCode: string;
+  limitInscriptionDate: Date;
   user: Types.ObjectId;
   status: Status;
   registered?: boolean;
-  registeredAs?: 'atleta' | 'entrenador' | 'juez';
-  competitionSteps: CompetitionSteps[]
+  registeredAs?: "atleta" | "entrenador" | "juez";
+  competitionSteps: CompetitionSteps[];
 };
 
 export type CompetitionSteps = {
   id: string;
   name: string;
-  start:string;
+  start: string;
   end: string;
   competition: Types.ObjectId | Partial<Competition>;
 };
@@ -202,44 +210,46 @@ export type CompetitionUser = {
   years: number;
   amount: number;
   category: string;
+  typeAthlete: string;
   place: number;
   points: number;
-  registeredAs?: 'atleta' | 'entrenador' | 'juez';
+  registeredAs?: "atleta" | "entrenador" | "juez";
   createdAt: Date;
   status: Status;
   fullName: string;
   competition: Types.ObjectId | Partial<Competition>;
   user: Types.ObjectId | Partial<User>;
+  competitionUserTest: Partial<CompetitionUserTest>[];
 };
 
 export type CompetitionUserTest = {
   id: string;
-  competitionUserId: Types.ObjectId;
+  competitionUser: Types.ObjectId | Partial<CompetitionUser>;
   testType: TestType;
-  url:string;
+  url: string;
+  files: string[];
   time: string;
   reps: number;
+  weight: number;
   judgeTime: string;
   judgeReps: number;
-  judgeQualification :number;
+  judgeQualification: number;
   observation: string;
-  userId: Types.ObjectId;
+  judgeUser: Types.ObjectId | Partial<User>;
   status: Status;
 };
 
 export enum TestType {
-  TEST1 = "TEST1",
-  TEST2 = "TEST2",
-  TEST3 = "TEST3",
+  AMRAP_10 = "AMRAP_10",
+  ROUNDS_FOR_TIME_CAP_12 = "ROUNDS_FOR_TIME_CAP_12",
+  FOR_TIME_CAP_10 = "FOR_TIME_CAP_10",
 }
 
 export type Region = {
-  id:string
-  name:string
-  description:string;
-}
-
-
+  id: string;
+  name: string;
+  description: string;
+};
 
 export type Competence = {
   id: string;
@@ -261,7 +271,7 @@ export type CompetenceUser = {
   years: number;
   amount: number;
   category: string;
-  typeAthlete:string;
+  typeAthlete: string;
   createdAt: Date;
   competence: Partial<Competence>;
   user: Partial<User>;

@@ -9,6 +9,7 @@ import {
   CompetenceUser,
   Competence,
   Region,
+  CompetitionUserTest,
 } from "../interfaces/types";
 const fs = require("fs");
 
@@ -160,11 +161,22 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     image: model.image,
     bgImage: model.bgImage,
     user: model.user,
+    typeCompetence: model.typeCompetence,
+    categoriesSupported: model.categoriesSupported,
+    typeEvent: model.typeEvent,
+    publicationDate: model.publicationDate,
+    withDiscount: model.withDiscount,
+    discount: model.discount,
+    discountCode: model.discountCode,
+    limitInscriptionDate: model.limitInscriptionDate,
     registered: model.registered,
     registeredAs: model.registeredAs,
     status: model.status,
     region: formatRegionData(model.region ?? null),
-    competitionSteps: model.competitionSteps?.map((itemStep:any) => {return formatCompetitionStepsData(itemStep)}) ?? [],
+    competitionSteps:
+      model.competitionSteps?.map((itemStep: any) => {
+        return formatCompetitionStepsData(itemStep);
+      }) ?? [],
   };
   return competitionType;
 };
@@ -187,10 +199,14 @@ const formatCompetitionUserData = (model: any): Partial<CompetitionUser> => {
     years: model.years,
     amount: model.amount,
     category: model.category,
+    typeAthlete: model.typeAthlete,
     place: model.place,
     points: model.points,
     createdAt: model.createdAt,
     competition: formatCompetitionData(model.competition),
+    competitionUserTest: model.competitionUserTest?.map((itemTest: any) => {
+      return formatCompetitionUserTestData(itemTest);
+    }) ?? [],
   };
   return competitionType;
 };
@@ -205,11 +221,34 @@ const formatRegionData = (model: any): Partial<Region> => {
   return competitionStepType;
 };
 
+const formatCompetitionUserTestData = (
+  model: any
+): Partial<CompetitionUserTest> => {
+  if (model === null) return {};
+  var competitionUserTestType: Partial<CompetitionUserTest> = {
+    id: model._id,
+    competitionUser: model.competitionUser,
+    testType: model.testType ?? "",
+    url: model.url ?? "",
+    files: model.files ?? [],
+    time: model.time ?? "",
+    reps: model.reps ?? 0,
+    weight: model.weight ?? 0,
+    judgeTime: model.judgeTime,
+    judgeReps: model.judgeReps,
+    judgeQualification: model.judgeQualification,
+    observation: model.observation,
+    judgeUser: model.judgeUser,
+    status: model.status,
+  };
+  return competitionUserTestType;
+};
+
 type CompetenceProps = {
   model: Partial<Competence> | null;
 };
 const formatCompetenceData = ({
-  model
+  model,
 }: CompetenceProps): Partial<Competence> => {
   if (model === null) return {};
 
@@ -255,7 +294,6 @@ const formatCompetenceUserData = ({
   return competenceUserType;
 };
 
-
 export {
   formatUserData,
   formatConstantData,
@@ -264,7 +302,8 @@ export {
   formatCompetitionData,
   formatCompetitionUserData,
   formatRegionData,
-//ELIMINAR
+  formatCompetitionUserTestData,
+  //ELIMINAR
   formatCompetenceUserData,
-  formatCompetenceData
+  formatCompetenceData,
 };
