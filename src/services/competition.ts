@@ -28,7 +28,7 @@ const competitionsService = async (idU:string): Promise<Partial<Competition>[]> 
       },
     },
   ]);
-
+  await CompetitionModel.populate(list, "region");
   for(var item in list){
     list[item].registered = await RegisteredCompetition(idU,list[item]._id);
     list[item].registeredAs = list[item].registered ? "atleta" : "";
@@ -58,6 +58,7 @@ const competitionByIdService = async (
       },
     },
   ]);
+  await CompetitionModel.populate(item, "region");
   console.log(item)
   if(item.length> 0){
     item[0].registered = await RegisteredCompetition(idU,item[0]._id);
@@ -76,6 +77,7 @@ const competitionByUserIdService = async (
 
   let listC: Competition[] =[]
   list.forEach(f => { listC.push(f.competition as Competition)})
+  await CompetitionModel.populate(listC, "region");
   console.log(list)
   return listC.map((item) => {
     return formatCompetitionData(item);
