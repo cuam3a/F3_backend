@@ -7,7 +7,6 @@ const UserSchema = new Schema<User>(
       type: String,
     },
     name: {
-      required: true,
       type: String,
     },
     lastName: {
