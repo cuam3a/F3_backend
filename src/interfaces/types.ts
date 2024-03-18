@@ -181,7 +181,7 @@ export type Competition = {
   twitterUsername?: string;
   image?: string;
   bgImage?: string;
-  userId: Types.ObjectId;
+  user: Types.ObjectId;
   status: Status;
   competitionSteps: CompetitionSteps[]
 };

@@ -1,15 +1,12 @@
 import { Schema, model } from "mongoose";
-import { Competition } from "../interfaces/types";
+import { Competence, Competition } from "../interfaces/types";
 
-const Competence = new Schema<Competition>(
+const Competence = new Schema<Competence>(
   {
     name: {
       type: String,
     },
     description: {
-      type: String,
-    },
-    location: {
       type: String,
     },
     startDate: {
@@ -18,29 +15,8 @@ const Competence = new Schema<Competition>(
     endDate: {
       type: Date,
     },
-    by: {
-      type: String,
-    },
-    facebookUrl: {
-      type: String,
-    },
-    instagramUsername: {
-      type: String,
-    },
-    twitterUsername: {
-      type: String,
-    },
-    cost: {
-      type: Number,
-    },
-    image: {
-      type: String,
-    },
-    bgImage: {
-      type: String,
-    },
     userId: {
-      type: Schema.Types.ObjectId,
+      type: String,
     },
     status: {
       type: String,

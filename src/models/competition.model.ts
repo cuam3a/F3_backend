@@ -39,8 +39,9 @@ const Competition = new Schema<Competition>(
     bgImage: {
       type: String,
     },
-    userId: {
+    user: {
       type: Schema.Types.ObjectId,
+      ref:"user"
     },
     status: {
       type: String,

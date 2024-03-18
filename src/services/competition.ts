@@ -13,6 +13,7 @@ import PaymentModel from "../models/payment.model";
 import UserModel from "../models/user.model";
 
 import { formatCompetitionData, formatCompetitionUserData, formatUserData } from "../utils/modelToType";
+import { Types } from "mongoose";
 
 const competitionsService = async (): Promise<Partial<Competition>[]> => {
   const list = await CompetitionModel.aggregate([
@@ -21,7 +22,7 @@ const competitionsService = async (): Promise<Partial<Competition>[]> => {
       $lookup: {
         as: "competitionSteps",
         from: "competitionsteps",
-        foreignField: "competitionId",
+        foreignField: "competition",
         localField: "_id",
       },
     },
@@ -34,37 +35,31 @@ const competitionsService = async (): Promise<Partial<Competition>[]> => {
 const competitionByIdService = async (
   id: string
 ): Promise<Partial<Competition>> => {
+  
   const item = await CompetitionModel.aggregate([
-    { $match: { _id: id } },
+    { $match: { _id: new Types.ObjectId(id) } },
     {
       $lookup: {
         as: "competitionSteps",
         from: "competitionsteps",
-        foreignField: "competitionId",
+        foreignField: "competition",
         localField: "_id",
       },
     },
   ]);
-
-  return formatCompetitionData(item);
+  console.log(item)
+  return formatCompetitionData(item.length > 0 ? item[0] : null);
 };
 
 const competitionByUserIdService = async (
   userId: string
 ): Promise<Partial<Competition>[]> => {
-  const list = await CompetitionModel.aggregate([
-    { $match: { userId: userId } },
-    {
-      $lookup: {
-        as: "competitionSteps",
-        from: "competitionsteps",
-        foreignField: "competitionId",
-        localField: "_id",
-      },
-    },
-  ]);
+  const list = await CompetitionUserModel.find({ user: new Types.ObjectId(userId)}).populate("competition")
 
-  return list.map((item) => {
+  let listC: Competition[] =[]
+  list.forEach(f => { listC.push(f.competition as Competition)})
+  console.log(list)
+  return listC.map((item) => {
     return formatCompetitionData(item);
   });
 };
@@ -98,7 +93,7 @@ const competitionAddService = async (
       name: item.name,
       start: item.start,
       end: item.end,
-      competitionId: add._id,
+      competition: add._id,
     });
   })
 

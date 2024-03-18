@@ -5,7 +5,7 @@ const CompetitionSteps = new Schema<CompetitionSteps>(
     {
         competition: {
             type: Schema.Types.ObjectId,
-            required: true
+            ref:"competition",
         },
         name: {
             type: String,
