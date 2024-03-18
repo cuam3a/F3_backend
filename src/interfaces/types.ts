@@ -184,6 +184,8 @@ export type Competition = {
   bgImage?: string;
   user: Types.ObjectId;
   status: Status;
+  registered?: boolean;
+  registeredAs?: 'atleta' | 'entrenador' | 'juez';
   competitionSteps: CompetitionSteps[]
 };
 

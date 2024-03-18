@@ -1,4 +1,5 @@
-import { User } from "../interfaces/types";
+import { Types } from "mongoose";
+import CompetitionUserModel from "../models/competitionUser.model";
 import PaymentModel from "../models/payment.model";
 import UserModel from "../models/user.model";
 import { encrypt } from "./bcypt.handle";
@@ -85,13 +86,13 @@ export const getYears = async (dateOfBirth: Date) => {
   }
 };
 
-export const getFullName = async (id: string) => {
+export const RegisteredCompetition = async (userId: string, competenceId:string) => {
   try {
-    var exist = await UserModel.findOne({ _id: id });
+    var exist = await CompetitionUserModel.findOne({ user: new Types.ObjectId(userId), competition: new Types.ObjectId(competenceId) });
     if (!exist) throw Error("NO EXISTE USUARIO");
-
-    return exist.name + " " + exist.lastName;
+    console.log(true)
+    return true;
   } catch (e) {
-    return "Sin Información";
+    return false;
   }
 };

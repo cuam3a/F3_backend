@@ -16,7 +16,7 @@ import { handleError } from "../utils/error.handle";
 const competitions = async ({ idUser }: RequestExt, res: Response) => {
   try {
     const idU = idUser?.idUser;
-    const array = await competitionsService();
+    const array = await competitionsService(idU);
     const response: GetListResponse = {
       status: 200,
       data: array,
@@ -31,7 +31,7 @@ const competitionById = async ({ params, idUser }: RequestExt, res: Response) =>
   try {
     const idU = idUser?.idUser;
     const { id } = params;
-    const item = await competitionByIdService(id);
+    const item = await competitionByIdService(id, idU);
     const response: GetListResponse = {
       status: 200,
       data: item,

@@ -10,7 +10,6 @@ import {
   Competence,
   Region,
 } from "../interfaces/types";
-import { getFullName } from "./init";
 const fs = require("fs");
 
 const imgPhotoDefault =
@@ -161,6 +160,8 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     image: model.image,
     bgImage: model.bgImage,
     user: model.user,
+    registered: model.registered,
+    registeredAs: model.registeredAs,
     status: model.status,
     region: formatRegionData(model.region ?? null),
     competitionSteps: model.competitionSteps?.map((itemStep:any) => {return formatCompetitionStepsData(itemStep)}) ?? [],

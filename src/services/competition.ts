@@ -14,8 +14,9 @@ import UserModel from "../models/user.model";
 
 import { formatCompetitionData, formatCompetitionUserData, formatUserData } from "../utils/modelToType";
 import { Types } from "mongoose";
+import { RegisteredCompetition } from "../utils/init";
 
-const competitionsService = async (): Promise<Partial<Competition>[]> => {
+const competitionsService = async (idU:string): Promise<Partial<Competition>[]> => {
   const list = await CompetitionModel.aggregate([
     { $match: { status: Status.ACTIVO } },
     {
@@ -27,13 +28,23 @@ const competitionsService = async (): Promise<Partial<Competition>[]> => {
       },
     },
   ]);
+
+  for(var item in list){
+    list[item].registered = await RegisteredCompetition(idU,list[item]._id);
+    list[item].registeredAs = list[item].registered ? "atleta" : "";
+  }
+  list.forEach(async f => {
+    f.registered = await RegisteredCompetition(idU,f._id);
+    f.registeredAs = f.registered ? "atleta" : "";
+  })
   return list.map((item) => {
     return formatCompetitionData(item);
   });
 };
 
 const competitionByIdService = async (
-  id: string
+  id: string,
+  idU:string
 ): Promise<Partial<Competition>> => {
   
   const item = await CompetitionModel.aggregate([
@@ -48,7 +59,14 @@ const competitionByIdService = async (
     },
   ]);
   console.log(item)
-  return formatCompetitionData(item.length > 0 ? item[0] : null);
+  if(item.length> 0){
+    item[0].registered = await RegisteredCompetition(idU,item[0]._id);
+    item[0].registeredAs = item[0].registered ? "atleta" : "";
+    return formatCompetitionData(item[0]);
+  }
+  else{
+    return formatCompetitionData(null);
+  }
 };
 
 const competitionByUserIdService = async (
