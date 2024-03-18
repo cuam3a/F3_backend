@@ -40,8 +40,12 @@ const competitionsService = async (
   ]);
   await CompetitionModel.populate(list, "region");
   for (var item in list) {
-    list[item].registered = await RegisteredCompetition(idU, list[item]._id);
+    var exist = await CompetitionUserModel.findOne({ user: new Types.ObjectId(idU), competition: new Types.ObjectId(list[item]._id) });
+    list[item].registered = exist ? true : false;
     list[item].registeredAs = list[item].registered ? "atleta" : "";
+    list[item].registeredCategory = exist ? (exist.category??"") : "";
+    list[item].registeredScore = exist ? (exist.points??0) : 0;
+    list[item].registeredPlace = exist ? (exist.place??0) : 0;
   }
   list.forEach(async (f) => {
     f.registered = await RegisteredCompetition(idU, f._id);
@@ -70,8 +74,14 @@ const competitionByIdService = async (
   await CompetitionModel.populate(item, "region");
   
   if (item.length > 0) {
-    item[0].registered = await RegisteredCompetition(idU, item[0]._id);
+
+    var exist = await CompetitionUserModel.findOne({ user: new Types.ObjectId(idU), competition: new Types.ObjectId(item[0]._id) });
+    item[0].registered = exist ? true : false;
     item[0].registeredAs = item[0].registered ? "atleta" : "";
+    item[0].registeredCategory = exist ? (exist.category??"") : "";
+    item[0].registeredScore = exist ? (exist.points??0) : 0;
+    item[0].registeredPlace = exist ? (exist.place??0) : 0;
+
     return formatCompetitionData(item[0]);
   } else {
     return formatCompetitionData(null);

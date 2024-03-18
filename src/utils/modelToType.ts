@@ -171,6 +171,9 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     limitInscriptionDate: model.limitInscriptionDate,
     registered: model.registered,
     registeredAs: model.registeredAs,
+    registeredCategory: model.registeredCategory,
+    registeredPlace: model.registeredPlace,
+    registeredScore: model.registeredScore,
     status: model.status,
     region: formatRegionData(model.region ?? null),
     competitionSteps:

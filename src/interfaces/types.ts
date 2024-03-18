@@ -194,6 +194,9 @@ export type Competition = {
   status: Status;
   registered?: boolean;
   registeredAs?: "atleta" | "entrenador" | "juez";
+  registeredCategory?: string;
+  registeredPlace?: number;
+  registeredScore?: number;
   competitionSteps: CompetitionSteps[];
 };
 
