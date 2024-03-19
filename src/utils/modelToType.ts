@@ -162,12 +162,12 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     ? fs.readFileSync(`${process.cwd()}/upload/competitions/${model.image}`, {
         encoding: "base64",
       })
-    : "",
+    : `${process.cwd()}/upload/competitions/${model.image}`,
     bgImage: fs.existsSync(`${process.cwd()}/upload/competitions/${model.bgImage}`)
     ? fs.readFileSync(`${process.cwd()}/upload/competitions/${model.bgImage}`, {
         encoding: "base64",
       })
-    : "",
+    : `${process.cwd()}/upload/competitions/${model.bgImage}`,
     user: model.user,
     typeCompetence: model.typeCompetence,
     categoriesSupported: model.categoriesSupported,
@@ -203,6 +203,7 @@ const formatCompetitionStepsData = (model: any): Partial<CompetitionSteps> => {
     id: model._id,
     name: model.name,
     start: model.start,
+    end: model.end,
   };
   return competitionStepType;
 };
