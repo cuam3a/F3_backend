@@ -99,10 +99,16 @@ const competitionByUserIdService = async (
   const list = await CompetitionUserModel.find({
     user: new Types.ObjectId(userId),
   }).populate("competition");
-
+  console.log(list)
   let listC: Competition[] = [];
   list.forEach((f) => {
-    listC.push(f.competition as Competition);
+    let competition = f.competition as Competition;
+    competition.registered = true;
+    competition.registeredAs = "atleta";
+    competition.registeredCategory =  f.category ?? "";
+    competition.registeredScore = f.points ?? 0;
+    competition.registeredPlace = f.place ?? 0;
+    listC.push(competition);
   });
   await CompetitionModel.populate(listC, "region");
   console.log(list);

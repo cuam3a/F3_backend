@@ -196,11 +196,12 @@ export type Competition = {
   additionalDoc2: string;
   user: Types.ObjectId;
   status: Status;
-  registered?: boolean;
-  registeredAs?: "atleta" | "entrenador" | "juez";
-  registeredCategory?: string;
-  registeredPlace?: number;
-  registeredScore?: number;
+  registered: boolean;
+  registeredAs: "atleta" | "entrenador" | "juez";
+  registeredCategory: string;
+  registeredPlace: number;
+  registeredScore: number;
+  registeredTypeAthlete: string;
   competitionSteps: CompetitionSteps[];
 };
 

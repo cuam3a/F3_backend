@@ -158,8 +158,16 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     facebookUrl: model.facebookUrl,
     instagramUsername: model.instagramUsername,
     twitterUsername: model.twitterUsername,
-    image: model.image,
-    bgImage: model.bgImage,
+    image: fs.existsSync(`${process.cwd()}/upload/competitions/${model.image}`)
+    ? fs.readFileSync(`${process.cwd()}/upload/competitions/${model.image}`, {
+        encoding: "base64",
+      })
+    : "",
+    bgImage: fs.existsSync(`${process.cwd()}/upload/competitions/${model.bgImage}`)
+    ? fs.readFileSync(`${process.cwd()}/upload/competitions/${model.bgImage}`, {
+        encoding: "base64",
+      })
+    : "",
     user: model.user,
     typeCompetence: model.typeCompetence,
     categoriesSupported: model.categoriesSupported,
@@ -173,11 +181,12 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     scordcardDoc: model.scordcardDoc ?? "",
     additionalDoc1: model.additionalDoc1 ?? "",
     additionalDoc2: model.additionalDoc2 ?? "",
-    registered: model.registered,
-    registeredAs: model.registeredAs,
-    registeredCategory: model.registeredCategory,
-    registeredPlace: model.registeredPlace,
-    registeredScore: model.registeredScore,
+    registered: model.registered ?? false,
+    registeredAs: model.registeredAs ?? "",
+    registeredCategory: model.registeredCategory ?? "",
+    registeredTypeAthlete: model.registeredTypeAthlete ?? "",
+    registeredPlace: model.registeredPlace ?? 0,
+    registeredScore: model.registeredScore ?? 0,
     status: model.status,
     region: formatRegionData(model.region ?? null),
     competitionSteps:
