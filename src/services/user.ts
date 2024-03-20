@@ -289,6 +289,7 @@ const paymentUser = async (item: Partial<User>): Promise<Partial<User>> => {
 const paymentCompetenceService = async (
   item: Partial<User>
 ): Promise<Partial<User>> => {
+  console.log(item)
   const user = await UserModel.findOne({ _id: item.id });
   if (!user) throw Error("NO EXISTE REGISTRO USUARIO");
 

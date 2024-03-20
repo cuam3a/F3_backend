@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { RequestExt } from "../interfaces/interfaces";
 import { ActionResponse, GetListResponse } from "../interfaces/types";
-import { getListConstant, getSingleConstant, addConstant, updateConstant, removeConstant } from "../services/constantValue";
+import { getListConstant, getSingleConstant, updateConstant, removeConstant } from "../services/document";
 import { handleError } from "../utils/error.handle";
 import { generateToken } from "../utils/jwt.handle";
 import path from "path";
@@ -55,7 +55,7 @@ const add = async ({ body, files, idUser }: RequestExt, res: Response) => {
       });
     }
     const idU = idUser?.idUser
-    const newConstant = await addConstant(body);
+    const newConstant = {};//await addConstant(body);
     const token = generateToken(`${idU}`);
 
     const response: Partial<ActionResponse> = {

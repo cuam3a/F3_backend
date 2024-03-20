@@ -1,7 +1,8 @@
 import { ConstantValue, User } from "../interfaces/types";
 import CompetitionUserTestModel from "../models/competitionUserTest.model";
 import ConstantValueModel from "../models/constantValue.model";
-import { formatConstantData } from "../utils/modelToType";
+import DocumentModel from "../models/document.model";
+import { formatConstantData, formatDocumentData } from "../utils/modelToType";
 
 const getSingleConstant = async (id: string) : Promise<Partial<ConstantValue>> => {
   const constant = await ConstantValueModel.findOne({ _id: id });
@@ -10,8 +11,8 @@ const getSingleConstant = async (id: string) : Promise<Partial<ConstantValue>> =
 }
 
 const getListConstant = async () : Promise<Partial<ConstantValue>[]> => {
-  const constants = await ConstantValueModel.find<ConstantValue>(); 
-  return constants.map(constant => { return formatConstantData(constant) })
+  const constants = await DocumentModel.find<ConstantValue>(); 
+  return constants.map(constant => { return formatDocumentData(constant) })
 }
 
 const addDocument = async (item: Partial<ConstantValue>) : Promise<Partial<ConstantValue>> => {

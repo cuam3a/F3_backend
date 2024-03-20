@@ -32,6 +32,8 @@ export const paymentError = (msg: string): string => {
       return "ESTAMOS PROCESANDO TU PAGO.";
     case "pending_review_manual":
       return "ESTAMOS PROCESANDO TU PAGO.";
+    case "Invalid card_number_validation":
+      return "NUMERO DE TARJETA INVALIDA.";
   }
   return "";
 };
