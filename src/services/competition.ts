@@ -296,7 +296,7 @@ const competitionUsersService = async (
   competitionId: string
 ): Promise<Partial<CompetitionUser>[]> => {
   const list = await CompetitionUserModel.find({
-    status: Status.ACTIVO,
+    status: Status.ACTIVO, competition: competitionId
   }).populate("user");
 
   return list.map((item) => {
