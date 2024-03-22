@@ -79,9 +79,9 @@ const formatUserData = ({
     twitter: model.twitter ?? "",
     folio: model.folio ?? "",
     coachAccepted: model.coachAccepted ?? false,
-    payment: payment ?? {},
+    //payment: payment ?? {},
     //competition: competenceUser ?? [],
-    competence: competenceUser ?? [],
+    //competence: competenceUser ?? [],
   };
   return userType;
 };

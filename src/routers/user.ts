@@ -18,6 +18,7 @@ var storage = multer.diskStorage({
     storage: storage,
     limits: {
       fileSize: 1024 * 1024 * 5,
+      fieldSize: 1024 * 1024 * 5,
     },
     fileFilter: (
       req: Request,

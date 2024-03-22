@@ -111,9 +111,9 @@ const updateProfileUser = async (
 };
 
 const getSingleUsersService = async (id: string): Promise<Partial<User>> => {
-  console.log("single");
   const user = await UserModel.findOne({ _id: id, rol: "USUARIO" });
   if (!user) throw Error("NO FOUND USER");
+  console.log(user)
   return formatUserData({ model: user });
 };
 
