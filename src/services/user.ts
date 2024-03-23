@@ -2,6 +2,7 @@ import { CompetitionUser, Status, User } from "../interfaces/types";
 import { welcomeHtml2 } from "../mail/welcome2";
 import CompetenceModel from "../models/competence.model";
 import CompetenceUserModel from "../models/competenceUser.model";
+import CompetitionModel from "../models/competition.model";
 import CompetitioModel from "../models/competition.model";
 import CompetitionUserModel from "../models/competitionUser.model";
 import PaymentModel from "../models/payment.model";
@@ -321,9 +322,7 @@ const paymentCompetenceService = async (
         paymentError(resp.status_detail as string)
     );
 
-  var competence = await CompetenceModel.findOne({ _id: item.competenceId });
-  if (competence) {
-    const year = await getYears(user.dateOfBirth ?? new Date());
+  const year = await getYears(user.dateOfBirth ?? new Date());
     let category = "";
     if (year >= 13 && year <= 14) category = "13-14 años";
     if (year >= 15 && year <= 16) category = "15-16 años";
@@ -339,6 +338,8 @@ const paymentCompetenceService = async (
     if (year >= 60 && year <= 64) category = "60-64 años";
     if (year >= 65) category = "65+ años";
 
+  var competence = await CompetenceModel.findOne({ _id: item.competenceId });
+  if (competence) {
     const competenceUser = await CompetenceUserModel.create({
       competenceId: competence.id,
       userId: user.id,
@@ -348,9 +349,12 @@ const paymentCompetenceService = async (
       typeAthlete: item.typeAthlete,
     });
     console.log(competenceUser);
+  }
 
+  var competition = await CompetitionModel.findOne({ _id: item.competenceId });
+  if (competition) {
     const competitionUser = await CompetitionUserModel.create({
-      competition: competence.id,
+      competition: competition.id,
       user: user.id,
       years: year,
       amount: item.transaction_amount,
