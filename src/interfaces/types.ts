@@ -56,6 +56,7 @@ export type User = {
   descripcion: string;
   installments: number;
   token: string;
+  discountCode: string;
   competenceId: string;
   typeAthlete: string;
   coachAccepted: boolean;

@@ -565,6 +565,20 @@ const competitionUpdateResultJudgeStartService = async (
   return formatCompetitionUserTestData(update, "judge");
 };
 
+const competitionVerifyDiscountService = async (
+  id: string,
+  code: string,
+): Promise<boolean> => {
+  const exist = await CompetitionModel.findOne({
+    _id: id,
+  });
+  if (!exist) throw Error("NO EXISTE COMPETENCIA");
+
+  if(exist.discountCode.toLowerCase() !== code.toLowerCase()) return false;
+
+  return true;
+};
+
 export {
   competitionsService,
   competitionByIdService,
@@ -581,4 +595,5 @@ export {
   competitionUserUpdateService,
   competitionUserResultJudgeService,
   competitionUpdateResultJudgeStartService,
+  competitionVerifyDiscountService,
 };

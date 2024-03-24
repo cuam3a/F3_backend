@@ -1,3 +1,4 @@
+import { Console } from "console";
 import { CompetitionUser, Status, User } from "../interfaces/types";
 import { welcomeHtml2 } from "../mail/welcome2";
 import CompetenceModel from "../models/competence.model";
@@ -294,20 +295,25 @@ const paymentCompetenceService = async (
   const user = await UserModel.findOne({ _id: item.id });
   if (!user) throw Error("NO EXISTE REGISTRO USUARIO");
 
+  const competitionM = await CompetitioModel.findOne({ _id: item.competenceId });
+  if (!competitionM) throw Error("NO EXISTE COMPETENCIA");
+
+  let amout = competitionM.cost ?? 0;
+  if(competitionM.discountCode.toLowerCase().trim() == item.discountCode?.toLowerCase().trim()) amout = amout - (competitionM.discount ?? 0); 
+  console.log(amout)
   //let newUser : Partial<User> = {};
   const client = new MercadoPagoConfig({
     accessToken:
       "APP_USR-913357541633645-060718-4787491c0ca96bdc245134bacb38901a-1135472336",
     options: { timeout: 5000 },
   });
-  console.log(item);
   const payment = new Payment(client);
 
   const resp = await payment.create({
     body: {
       token: item.token,
       installments: item.installments,
-      transaction_amount: item.transaction_amount,
+      transaction_amount: amout,
       description: item.descripcion,
       payment_method_id: item.payment_method_id,
       payer: {

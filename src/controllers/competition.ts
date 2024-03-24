@@ -17,6 +17,7 @@ import {
   competitionUserUpdateService,
   competitionUserResultJudgeService,
   competitionUpdateResultJudgeStartService,
+  competitionVerifyDiscountService,
 } from "../services/competition";
 import { handleError } from "../utils/error.handle";
 import path from "path";
@@ -362,6 +363,24 @@ const competitionUpdateResultJudgeStart = async (
   }
 };
 
+const competitionVerifyDiscountCode = async (
+  { body, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const { id, code} = body;
+    const item = await competitionVerifyDiscountService(id, code);
+    const response: GetListResponse = {
+      status: 200,
+      data: item,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR AGREGAR COMPETENCIA", e);
+  }
+};
+
 export {
   competitions,
   competitionById,
@@ -377,5 +396,6 @@ export {
   competitionJudgeStart,
   competitionUserUpdate,
   competitionUserResultJudge,
-  competitionUpdateResultJudgeStart
+  competitionUpdateResultJudgeStart,
+  competitionVerifyDiscountCode
 };

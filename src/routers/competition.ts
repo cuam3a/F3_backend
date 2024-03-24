@@ -16,6 +16,7 @@ import {
   competitionUserUpdate,
   competitionUserResultJudge,
   competitionUpdateResultJudgeStart,
+  competitionVerifyDiscountCode,
 } from "../controllers/competition";
 import multer, { FileFilterCallback } from "multer";
 
@@ -63,6 +64,7 @@ router.get("/users/:competitionId", checkJwt, competitionUsers);
 router.get("/getResult/:id/:userId", checkJwt, competitionGetResult);
 router.post("/", checkJwt, competitionAdd);
 router.post("/registration", checkJwt, competitionRegistration);
+router.post("/verifyDiscountCode", checkJwt, competitionVerifyDiscountCode);
 router.post("/sendResult/:id", checkJwt, upload.any(), competitionSendResult);
 router.put("/", checkJwt, competitionUpdate);
 router.put("/updateResult/:id", checkJwt, upload.any(), competitionUpdateResult);
