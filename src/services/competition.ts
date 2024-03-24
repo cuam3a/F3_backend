@@ -22,7 +22,7 @@ import {
 import { Types } from "mongoose";
 import { RegisteredCompetition } from "../utils/init";
 import CompetitionUserTestModel from "../models/competitionUserTest.model";
-import CompetenceUserModel from "../models/competenceUser.model";
+var nodemailer = require("nodemailer");
 
 const competitionsService = async (
   idU: string
@@ -269,7 +269,7 @@ const competitionUpdateResultService = async (
   if (!update) throw Error("ERROR ACTUALIZAR RESULTADOS PRUEBAS");
 
   if(exist.isPending == true){
-    await CompetitionUserModel.findOneAndUpdate(
+    var competitionUser = await CompetitionUserModel.findOneAndUpdate(
       { _id: exist.competitionUser, judgeUser: { $ne: null } },
       {
         judgeStatus: "en espera juez"
@@ -278,6 +278,34 @@ const competitionUpdateResultService = async (
         new: true,
       }
     );
+
+    const user = await UserModel.findOne({
+      _id: competitionUser?.judgeUser,
+    });
+    if(user){
+      const transporter = nodemailer.createTransport({
+        host: "smtp.zoho.com",
+        port: 587,
+        secure: false,
+        auth: {
+          user: "hola@mexicof3.com",
+          pass: "2EBHKpbcqh9.",
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
+    
+      const email = {
+        from: "hola@mexicof3.com",
+        to: user.user,
+        subject: "Modificacion Evidencia de Alteta F3",
+        html: "Atleta modifico su eviencia en pruebas F3, favor de finalizar con su evaluación",
+      };
+      await transporter.sendMail(email).catch((error: any) => {
+        console.log(error);
+      });
+    }
   }
 
   return formatCompetitionUserTestData(update);
@@ -458,6 +486,8 @@ const competitionUpdateResultJudgeStartService = async (
 
   if (!update) throw Error("ERROR ACTUALIZAR RESULTADOS PRUEBAS");
 
+  
+
   const userCompetence = await CompetitionUserModel.findOne({
     _id: exist.competitionUser,
   });
@@ -490,6 +520,35 @@ const competitionUpdateResultJudgeStartService = async (
       new: true,
     }
   );
+
+
+  const user = await UserModel.findOne({
+    _id: userCompetence?.id,
+  });
+  if(data.isPending == true && user){
+    const transporter = nodemailer.createTransport({
+      host: "smtp.zoho.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "hola@mexicof3.com",
+        pass: "2EBHKpbcqh9.",
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+  
+    const email = {
+      from: "hola@mexicof3.com",
+      to: user.user,
+      subject: "Error en información Pruebas F3",
+      html: "Error en informacion de alguna prueba enviada en la competencia F3, favor de revisar competencia",
+    };
+    await transporter.sendMail(email).catch((error: any) => {
+      console.log(error);
+    });
+  }
 
   return formatCompetitionUserTestData(update, "judge");
 };
