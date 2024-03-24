@@ -20,18 +20,6 @@ export const initConfig = async () => {
   return;
 };
 
-export const getOrder = async () => {
-  try {
-    var last = await PaymentModel.find().sort({ order: -1 });
-    if (last) {
-      return last[0].order + 1;
-    } else {
-      return 1;
-    }
-  } catch (e) {
-    return 1;
-  }
-};
 
 export const getPassword = (lng: number) => {
   // Nota: no uses esta función para cosas criptográficamente seguras.

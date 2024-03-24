@@ -12,7 +12,7 @@ import PaymentModel from "../models/payment.model";
 import UserModel from "../models/user.model";
 import UserLostModel from "../models/userLost.model";
 import { encrypt, verified } from "../utils/bcypt.handle";
-import { getOrder, getPassword } from "../utils/init";
+import { getPassword } from "../utils/init";
 import { generateToken } from "../utils/jwt.handle";
 import { smtpTransport } from "../utils/mail";
 import { formatUserData, formatUserLostData } from "../utils/modelToType";
