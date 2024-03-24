@@ -58,7 +58,7 @@ const register = async ({ body }: Request, res: Response) => {
     // }
 
     const user = await registerService(body as Partial<User>);
-    const token = generateToken(user.id ?? "");
+    const token = generateToken(user.id?.toString() ?? "");
     const response: ActionResponse = {
       status: 200,
       token: token,

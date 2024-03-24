@@ -99,13 +99,13 @@ const competitionByUserIdService = async (
   const list = await CompetitionUserModel.find({
     user: new Types.ObjectId(userId),
   }).populate("competition");
-  console.log(list)
+  console.log(list);
   let listC: Competition[] = [];
   list.forEach((f) => {
     let competition = f.competition as Competition;
     competition.registered = true;
     competition.registeredAs = "atleta";
-    competition.registeredCategory =  f.category ?? "";
+    competition.registeredCategory = f.category ?? "";
     competition.registeredScore = f.points ?? 0;
     competition.registeredPlace = f.place ?? 0;
     listC.push(competition);
@@ -234,7 +234,6 @@ const competitionGetResultService = async (
     },
   ]);
   await CompetitionUserModel.populate(list, "user");
-  console.log(list);
   if (list.length > 0) {
     return formatCompetitionUserData(list[0]);
   } else {
@@ -248,7 +247,7 @@ const competitionUpdateResultService = async (
   userId: string
 ): Promise<Partial<CompetitionUserTest>> => {
   const exist = await CompetitionUserTestModel.findOne({
-    _id: data.id
+    _id: data.id,
   });
   if (!exist) throw Error("NO EXISTE REGISTRO PRUEBAS USUARIO");
 
@@ -265,12 +264,11 @@ const competitionUpdateResultService = async (
       new: true,
     }
   );
-    console.log(update)
+  console.log(update);
   if (!update) throw Error("ERROR ACTUALIZAR RESULTADOS PRUEBAS");
 
   return formatCompetitionUserTestData(update);
 };
-
 
 const competitionUpdateService = async (): Promise<Partial<User>[]> => {
   const users = await UserModel.find<User>({
@@ -296,12 +294,191 @@ const competitionUsersService = async (
   competitionId: string
 ): Promise<Partial<CompetitionUser>[]> => {
   const list = await CompetitionUserModel.find({
-    status: Status.ACTIVO, competition: competitionId
+    status: Status.ACTIVO,
+    competition: competitionId,
   }).populate("user");
 
   return list.map((item) => {
     return formatCompetitionUserData(item);
   });
+};
+
+const competitionUsersJudgeService = async (
+  id: string
+): Promise<Partial<CompetitionUser>[]> => {
+  const list = await CompetitionUserModel.find({
+    status: Status.ACTIVO,
+    competition: id,
+  }).populate("user");
+  
+  return list.map((item) => {
+    console.log(item)
+    return formatCompetitionUserData(item, "judge");
+  });
+};
+
+const competitionJudgeStartService = async (
+  id: string,
+  userId: string
+): Promise<Partial<CompetitionUser>> => {
+  const exist = await CompetitionUserModel.findOne({
+    _id: id,
+  });
+  if (!exist) throw Error("NO EXISTE REGISTRO USUARIO COMPETENCIA");
+  if (
+    (exist.judgeStatus == "bloqueado" ||
+      exist.judgeStatus == "en espera altleta" ||
+      exist.judgeStatus == "en espera juez") &&
+    exist.judgeUser != userId
+  )
+    throw Error("USUARIO CALIFICADO POR OTRO JUEZ");
+  if (exist.judgeStatus == "calificado") throw Error("USUARIO CALIFICADO");
+
+  const update = await CompetitionUserModel.findOneAndUpdate(
+    { _id: exist._id },
+    {
+      judgeStatus: "bloqueado",
+      judgeUser: userId,
+    },
+    {
+      new: true,
+    }
+  );
+  console.log(update);
+  if (!update) throw Error("ERROR ACTUALIZAR RESULTADOS PRUEBAS");
+
+  return formatCompetitionUserData(update, "judge");
+};
+
+const competitionUserUpdateService = async (
+  competitionId: string,
+  userId: string,
+  typeAthlete: string
+): Promise<Partial<CompetitionUser>> => {
+  const exist = await CompetitionUserModel.findOne({
+    competition: competitionId,
+    user: userId,
+  });
+  if (!exist) throw Error("NO EXISTE REGISTRO USUARIO COMPETENCIA");
+
+  const update = await CompetitionUserModel.findOneAndUpdate(
+    { _id: exist._id },
+    {
+      typeAthlete: typeAthlete,
+    },
+    {
+      new: true,
+    }
+  );
+  console.log(update);
+  if (!update) throw Error("ERROR ACTUALIZAR USUARIO COMPETENCIA");
+
+  return formatCompetitionUserData(update);
+};
+
+const competitionUserResultJudgeService = async (
+  id: string,
+  userId: string,
+  idU: string
+): Promise<Partial<CompetitionUser>> => {
+  const exist = await CompetitionUserModel.findOne({
+    _id: id,
+  });
+  if (!exist) throw Error("NO EXISTE REGISTRO USUARIO COMPETENCIA");
+  if (
+    (exist.judgeStatus == "bloqueado" ||
+      exist.judgeStatus == "en espera altleta" ||
+      exist.judgeStatus == "en espera juez") &&
+    exist.judgeUser != idU
+  )
+    throw Error("USUARIO CALIFICADO POR OTRO JUEZ");
+  if (exist.judgeStatus == "calificado") throw Error("USUARIO CALIFICADO");
+
+  const list = await CompetitionUserModel.aggregate([
+    {
+      $match: {
+        competition: exist.competition,
+        user: new Types.ObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        as: "competitionUserTest",
+        from: "competitionusertests",
+        foreignField: "competitionUser",
+        localField: "_id",
+      },
+    },
+  ]);
+  await CompetitionUserModel.populate(list, "user");
+  if (list.length > 0) {
+    return formatCompetitionUserData(list[0], "judge");
+  } else {
+    return formatCompetitionUserData(null);
+  }
+};
+
+const competitionUpdateResultJudgeStartService = async (
+  data: CompetitionUserTest
+): Promise<Partial<CompetitionUserTest>> => {
+  const exist = await CompetitionUserTestModel.findOne({
+    _id: data.id,
+  });
+  if (!exist) throw Error("NO EXISTE REGISTRO PRUEBAS USUARIO");
+
+  const update = await CompetitionUserTestModel.findOneAndUpdate(
+    { _id: data.id },
+    {
+      judgeTime: data.judgeTime,
+      judgeReps: data.judgeReps,
+      judgeWeight: data.judgeWeight,
+      judgeQualification: data.judgeQualification,
+      judgeObservation: data.judgeObservation,
+      isValid: data.isValid,
+      isPending: data.isPending,
+      qualificationDate: new Date(),
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!update) throw Error("ERROR ACTUALIZAR RESULTADOS PRUEBAS");
+
+  const userCompetence = await CompetitionUserModel.findOne({
+    _id: exist.competitionUser,
+  });
+
+  const allTest = await CompetitionUserTestModel.find({
+    competitionUser: exist.competitionUser,
+  });
+
+  let judgeStatus = userCompetence?.judgeStatus;
+  allTest.forEach(element => {
+    if(element.isPending == false){
+      judgeStatus = "calificado"
+    }
+    if(element.isPending == true){
+      judgeStatus = "en espera altleta"
+      return true;
+    }
+    if(element.isValid == null){
+      judgeStatus = userCompetence?.judgeStatus;
+      return true;
+    }
+  });
+
+  await CompetitionUserModel.findOneAndUpdate(
+    { _id: userCompetence?.id },
+    {
+      judgeStatus: judgeStatus,
+    },
+    {
+      new: true,
+    }
+  );
+
+  return formatCompetitionUserTestData(update, "judge");
 };
 
 export {
@@ -315,4 +492,9 @@ export {
   competitionUsersService,
   competitionGetResultService,
   competitionUpdateResultService,
+  competitionUsersJudgeService,
+  competitionJudgeStartService,
+  competitionUserUpdateService,
+  competitionUserResultJudgeService,
+  competitionUpdateResultJudgeStartService,
 };

@@ -32,6 +32,13 @@ const CompetitionUser = new Schema<CompetitionUser>(
         registeredAs: {
             type: String,
         },
+        judgeUser: {
+            type: Schema.Types.ObjectId,
+            ref:"user"
+        },
+        judgeStatus:{
+            type: String,
+        },
         status: {
             type: String,
             enum: ["ACTIVO", "INACTIVO", "ELIMINADO"],

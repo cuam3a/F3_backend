@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import {
   ConstantValue,
   User,
@@ -33,7 +34,7 @@ const formatUserData = ({
   if (model === null) return {};
 
   var userType: Partial<User> = {
-    id: model.id,
+    id: new Types.ObjectId(model.id),
     name: model.name,
     lastName: model.lastName,
     photo: fs.existsSync(`${process.cwd()}/upload/${model.photo}`)
@@ -208,24 +209,30 @@ const formatCompetitionStepsData = (model: any): Partial<CompetitionSteps> => {
   return competitionStepType;
 };
 
-const formatCompetitionUserData = (model: any): Partial<CompetitionUser> => {
+const formatCompetitionUserData = (model: any, type: string = ""): Partial<CompetitionUser> => {
   if (model === null) return {};
-  var competitionType: Partial<CompetitionUser> = {
-    id: model._id,
-    fullName: (model.user?.name ?? "") + " " + (model.user?.lastName ?? ""),
-    years: model.years,
-    amount: model.amount,
-    category: model.category,
-    typeAthlete: model.typeAthlete,
-    place: model.place,
-    points: model.points,
-    createdAt: model.createdAt,
-    user: formatUserData({model:model.user}),
-    competition: formatCompetitionData(model.competition),
-    competitionUserTest: model.competitionUserTest?.map((itemTest: any) => {
-      return formatCompetitionUserTestData(itemTest);
-    }) ?? [],
-  };
+  var competitionType: Partial<CompetitionUser> = {}
+  competitionType.id= model._id
+  competitionType.fullName= (model.user?.name ?? "") + " " + (model.user?.lastName ?? "")
+  competitionType.years= model.years
+  competitionType.amount= model.amount
+  competitionType.category= model.category
+  competitionType.typeAthlete= model.typeAthlete
+  competitionType.place= model.place
+  competitionType.points= model.points
+  competitionType.createdAt= model.createdAt
+  competitionType.user= formatUserData({model:model.user})
+  competitionType.competition= formatCompetitionData(model.competition)
+  competitionType.competitionUserTest= model.competitionUserTest?.map((itemTest: any) => {
+      return formatCompetitionUserTestData(itemTest, type);
+    }) ?? []
+    
+  if(type && type == "judge"){
+    competitionType.judgeStatus= model.judgeStatus ?? "pendiente"
+    competitionType.judgeUser= model.judgeUser ? formatUserData({model:model.judgeUser}) : {}
+    //competitionType.competitionUserTest=[]
+  }
+
   return competitionType;
 };
 
@@ -240,25 +247,29 @@ const formatRegionData = (model: any): Partial<Region> => {
 };
 
 const formatCompetitionUserTestData = (
-  model: any
+  model: any, type: string = ""
 ): Partial<CompetitionUserTest> => {
   if (model === null) return {};
-  var competitionUserTestType: Partial<CompetitionUserTest> = {
-    id: model._id,
-    competitionUser: model.competitionUser,
-    testType: model.testType ?? "",
-    url: model.url ?? "",
-    files: model.files ?? [],
-    time: model.time ?? "",
-    reps: model.reps ?? 0,
-    weight: model.weight ?? 0,
-    judgeTime: model.judgeTime,
-    judgeReps: model.judgeReps,
-    judgeQualification: model.judgeQualification,
-    observation: model.observation,
-    judgeUser: model.judgeUser,
-    status: model.status,
-  };
+  var competitionUserTestType: Partial<CompetitionUserTest> = {};
+  competitionUserTestType.id= model._id
+  competitionUserTestType.competitionUser= model.competitionUser
+  competitionUserTestType.testType= model.testType ?? ""
+  competitionUserTestType.url= model.url ?? ""
+  competitionUserTestType.files= model.files ?? []
+  competitionUserTestType.time= model.time ?? ""
+  competitionUserTestType.reps= model.reps ?? 0
+  competitionUserTestType.weight= model.weight ?? 0
+  competitionUserTestType.status= model.status
+  competitionUserTestType.isValid = model.isValid ?? true
+  competitionUserTestType.isPending = model.isPending ?? false
+  if(type=="judge"){
+    competitionUserTestType.judgeTime= model.judgeTime ?? ""
+    competitionUserTestType.judgeReps= model.judgeReps ?? 0
+    competitionUserTestType.judgeWeight= model.judgeWeight ?? 0
+    competitionUserTestType.judgeObservation= model.observation ?? ""
+    competitionUserTestType.qualificationDate = model.qualificationDate
+  }
+  
   return competitionUserTestType;
 };
 

@@ -67,10 +67,21 @@ const Competition = new Schema<Competition>(
     limitInscriptionDate: {
       type: Date,
     },
-    playbookDoc: { type: String },
-    scordcardDoc: { type: String },
-    additionalDoc1: { type: String },
-    additionalDoc2: { type: String },
+    limitQualificationDate: {
+      type: Date,
+    },
+    playbookDoc: { 
+      type: String 
+    },
+    scordcardDoc: { 
+      type: String 
+    },
+    additionalDoc1: { 
+      type: String 
+    },
+    additionalDoc2: { 
+      type: String 
+    },
     region: {
       type: Schema.Types.ObjectId,
       ref: "region",

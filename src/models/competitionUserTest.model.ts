@@ -7,10 +7,6 @@ const CompetitionUserTest = new Schema<CompetitionUserTest>(
       type: Schema.Types.ObjectId,
       ref:"competitionuser"
     },
-    judgeUser: {
-      type: Schema.Types.ObjectId,
-      ref:"user"
-    },
     testType: {
       type: String,
       enum: ["AMRAP_10", "ROUNDS_FOR_TIME_CAP_12", "FOR_TIME_CAP_10"],
@@ -37,11 +33,23 @@ const CompetitionUserTest = new Schema<CompetitionUserTest>(
     judgeReps: {
       type: Number,
     },
+    judgeWeight: {
+      type:Number,
+    },
     judgeQualification: {
       type: Number,
     },
-    observation: {
+    judgeObservation: {
       type: String,
+    },
+    qualificationDate:{
+      type: Date,
+    },
+    isValid: {
+      type: Boolean,
+    },
+    isPending: {
+      type: Boolean,
     },
     status: {
       type: String,

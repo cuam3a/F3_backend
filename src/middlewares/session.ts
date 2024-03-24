@@ -2,6 +2,7 @@ import { NextFunction, Response } from "express";
 import { RequestExt } from "../interfaces/interfaces";
 import { handleError } from "../utils/error.handle";
 import { verifyToken } from "../utils/jwt.handle";
+import UserModel from "../models/user.model";
 
 const checkJwt = (req: RequestExt, res: Response, next: NextFunction) => {
   try {
@@ -21,4 +22,22 @@ const checkJwt = (req: RequestExt, res: Response, next: NextFunction) => {
   }
 };
 
-export { checkJwt };
+const isJudge = async ({ idUser }: RequestExt, res: Response, next: NextFunction) => {
+  try {
+    const exist = await UserModel.findOne({
+      isJudge: true,
+      _id: idUser?.idUser,
+    });
+    if (!exist) {
+      res.status(403);
+      res.send("NO CUENTA CON PERMISOS NECESARIOS");
+      res.end()
+    } else {
+      next();
+    }
+  } catch (e : any) {
+    handleError(res, "NO CUENTA CON PERMISOS NECESARIOS", e.message);
+  }
+};
+
+export { checkJwt, isJudge };

@@ -1,5 +1,5 @@
 import { Router, Request } from "express";
-import { checkJwt } from "../middlewares/session";
+import { checkJwt, isJudge } from "../middlewares/session";
 import {
   competitions,
   competitionById,
@@ -11,6 +11,11 @@ import {
   competitionUsers,
   competitionGetResult,
   competitionUpdateResult,
+  competitionUsersJudge,
+  competitionJudgeStart,
+  competitionUserUpdate,
+  competitionUserResultJudge,
+  competitionUpdateResultJudgeStart,
 } from "../controllers/competition";
 import multer, { FileFilterCallback } from "multer";
 
@@ -61,4 +66,10 @@ router.post("/registration", checkJwt, competitionRegistration);
 router.post("/sendResult/:id", checkJwt, upload.any(), competitionSendResult);
 router.put("/", checkJwt, competitionUpdate);
 router.put("/updateResult/:id", checkJwt, upload.any(), competitionUpdateResult);
+router.put("/userUpdate/", checkJwt, competitionUserUpdate);//n
+//juez
+router.get("/judge/:id", checkJwt, isJudge, competitionUsersJudge);//n
+router.get("/judge/:id/:userId", checkJwt, isJudge, competitionUserResultJudge);//n
+router.post("/judge/start", checkJwt, isJudge, competitionJudgeStart);//n
+router.post("/judge/updateResult", checkJwt, isJudge, competitionUpdateResultJudgeStart);//n
 export { router };

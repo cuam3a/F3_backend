@@ -12,9 +12,15 @@ import {
   competitionUsersService,
   competitionGetResultService,
   competitionUpdateResultService,
+  competitionUsersJudgeService,
+  competitionJudgeStartService,
+  competitionUserUpdateService,
+  competitionUserResultJudgeService,
+  competitionUpdateResultJudgeStartService,
 } from "../services/competition";
 import { handleError } from "../utils/error.handle";
 import path from "path";
+import { Console } from "console";
 const fs = require("fs");
 
 const competitions = async ({ idUser }: RequestExt, res: Response) => {
@@ -265,6 +271,96 @@ const competitionGetResult = async (
     handleError(res, "ERROR AGREGAR COMPETENCIA", e);
   }
 };
+
+const competitionUsersJudge = async (
+  { params, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const {id} = params
+    const item = await competitionUsersJudgeService(id);
+    const response: GetListResponse = {
+      status: 200,
+      data: item,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR OBTENER USUARIOS JUEZ", e);
+  }
+};
+
+const competitionJudgeStart = async (
+  { body, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const { id, userId } = body
+    const item = await competitionJudgeStartService(id, userId);
+    const response: GetListResponse = {
+      status: 200,
+      data: item,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR AGREGAR COMPETENCIA", e);
+  }
+};
+
+const competitionUserUpdate = async (
+  { body, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const { typeAthlete, competitionId } = body
+    const item = await competitionUserUpdateService(competitionId, idU, typeAthlete);
+    const response: GetListResponse = {
+      status: 200,
+      data: item,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR AGREGAR COMPETENCIA", e);
+  }
+};
+
+const competitionUserResultJudge = async (
+  { params, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const { id, userId } = params
+    const item = await competitionUserResultJudgeService(id, userId, idU);
+    const response: GetListResponse = {
+      status: 200,
+      data: item,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR AGREGAR COMPETENCIA", e);
+  }
+};
+
+const competitionUpdateResultJudgeStart = async (
+  { body, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const item = await competitionUpdateResultJudgeStartService(body);
+    const response: GetListResponse = {
+      status: 200,
+      data: item,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR AGREGAR COMPETENCIA", e);
+  }
+};
+
 export {
   competitions,
   competitionById,
@@ -276,4 +372,9 @@ export {
   competitionUsers,
   competitionGetResult,
   competitionUpdateResult,
+  competitionUsersJudge,
+  competitionJudgeStart,
+  competitionUserUpdate,
+  competitionUserResultJudge,
+  competitionUpdateResultJudgeStart
 };

@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export type User = {
-  id: string;
+  id: Types.ObjectId | string;
   customerOpenPayId: string;
   user: string;
   password: string;
@@ -190,6 +190,7 @@ export type Competition = {
   discount: number;
   discountCode: string;
   limitInscriptionDate: Date;
+  limitQualificationDate: Date;
   playbookDoc: string;
   scordcardDoc: string;
   additionalDoc1: string;
@@ -214,7 +215,7 @@ export type CompetitionSteps = {
 };
 
 export type CompetitionUser = {
-  id: string;
+  id: Types.ObjectId;
   years: number;
   amount: number;
   category: string;
@@ -227,6 +228,8 @@ export type CompetitionUser = {
   fullName: string;
   competition: Types.ObjectId | Partial<Competition>;
   user: Types.ObjectId | Partial<User>;
+  judgeUser: Types.ObjectId | Partial<User>;
+  judgeStatus: 'pendiente' | 'calificado' | 'bloqueado' | 'en espera altleta' | 'en espera juez'
   competitionUserTest: Partial<CompetitionUserTest>[];
 };
 
@@ -241,9 +244,12 @@ export type CompetitionUserTest = {
   weight: number;
   judgeTime: string;
   judgeReps: number;
+  judgeWeight: number;
   judgeQualification: number;
-  observation: string;
-  judgeUser: Types.ObjectId | Partial<User>;
+  judgeObservation: string;
+  isValid: Boolean;
+  isPending: Boolean;
+  qualificationDate: Date;
   status: Status;
 };
 
