@@ -438,8 +438,7 @@ const competitionUserResultJudgeService = async (
   const list = await CompetitionUserModel.aggregate([
     {
       $match: {
-        competition: exist.competition,
-        user: new Types.ObjectId(userId),
+        _id: exist._id,
       },
     },
     {

@@ -333,6 +333,7 @@ const competitionUserResultJudge = async (
   try {
     const idU = idUser?.idUser;
     const { id, userId } = params
+    console.log("ENTRO BIEN")
     const item = await competitionUserResultJudgeService(id, userId, idU);
     const response: GetListResponse = {
       status: 200,

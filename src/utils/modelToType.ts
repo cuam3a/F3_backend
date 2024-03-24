@@ -178,6 +178,7 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     discount: model.discount,
     discountCode: model.discountCode,
     limitInscriptionDate: model.limitInscriptionDate,
+    limitQualificationDate: model.limitQualificationDate,
     playbookDoc: model.playbookDoc ?? "",
     scordcardDoc: model.scordcardDoc ?? "",
     additionalDoc1: model.additionalDoc1 ?? "",
