@@ -347,13 +347,26 @@ const competitionUsersService = async (
 const competitionUsersJudgeService = async (
   id: string
 ): Promise<Partial<CompetitionUser>[]> => {
-  const list = await CompetitionUserModel.find({
-    status: Status.ACTIVO,
-    competition: id,
-  }).populate("user");
+  const list = await CompetitionUserModel.aggregate([
+    {
+      $match: {
+        competition: new Types.ObjectId(id),
+        status: Status.ACTIVO,
+      },
+    },
+    {
+      $lookup: {
+        as: "competitionUserTest",
+        from: "competitionusertests",
+        foreignField: "competitionUser",
+        localField: "_id",
+      },
+    },
+  ]);
+  await CompetitionUserModel.populate(list, "user");
+
   
   return list.map((item) => {
-    console.log(item)
     return formatCompetitionUserData(item, "judge");
   });
 };
