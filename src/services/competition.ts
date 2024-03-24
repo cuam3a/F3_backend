@@ -259,6 +259,7 @@ const competitionUpdateResultService = async (
       time: data.time,
       reps: data.reps,
       weight: data.weight,
+      isPending: exist.isPending == true ? false : exist.isPending
     },
     {
       new: true,
@@ -266,6 +267,18 @@ const competitionUpdateResultService = async (
   );
   console.log(update);
   if (!update) throw Error("ERROR ACTUALIZAR RESULTADOS PRUEBAS");
+
+  if(exist.isPending == true){
+    await CompetitionUserModel.findOneAndUpdate(
+      { _id: exist.competitionUser, judgeUser: { $ne: null } },
+      {
+        judgeStatus: "en espera juez"
+      },
+      {
+        new: true,
+      }
+    );
+  }
 
   return formatCompetitionUserTestData(update);
 };
