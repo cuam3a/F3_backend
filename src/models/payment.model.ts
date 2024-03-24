@@ -3,9 +3,10 @@ import { Payment } from "../interfaces/types";
 
 const PaymentSchema = new Schema<Payment>(
     {
-        userId: {
+        user: {
             required: true,
-            type: String,
+            type: Schema.Types.ObjectId,
+            ref: "user"
         },
         cardName: {
             type: String,
@@ -17,9 +18,6 @@ const PaymentSchema = new Schema<Payment>(
             type: String,
         },
         month: {
-            type: String,
-        },
-        ccv: {
             type: String,
         },
         amount: {
@@ -34,16 +32,13 @@ const PaymentSchema = new Schema<Payment>(
         reference: {
             type: String,
         },
-        order: {
-            type: Number,
-        },
-        transactionOpenPayId: {
+        description: {
             type: String,
         },
-        success: {
-            type: Boolean,
+        mp_id: {
+            type: String,
         },
-        error: {
+        status: {
             type: String,
         },
     },

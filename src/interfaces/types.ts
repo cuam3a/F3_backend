@@ -75,21 +75,18 @@ export enum Status {
 
 export type Payment = {
   id: string;
-  userId: string;
+  user: Types.ObjectId;
   cardName: string;
   cardNumber: string;
   year: string;
   month: string;
-  ccv: string;
   amount: number;
   date: Date;
   authorization: string;
   reference: string;
-  order: number;
-  transactionOpenPayId: string;
-  success: boolean;
-  error: string;
-  deviceSessionId: string;
+  description: string;
+  mp_id: string;
+  status: string;
 };
 
 export type OpenpayCharge = {
@@ -231,6 +228,7 @@ export type CompetitionUser = {
   user: Types.ObjectId | Partial<User>;
   judgeUser: Types.ObjectId | Partial<User>;
   judgeStatus: 'pendiente' | 'calificado' | 'bloqueado' | 'en espera altleta' | 'en espera juez'
+  payment: Types.ObjectId | Partial<Payment>;
   competitionUserTest: Partial<CompetitionUserTest>[];
   hasTest: boolean;
 };

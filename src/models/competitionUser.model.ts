@@ -39,6 +39,10 @@ const CompetitionUser = new Schema<CompetitionUser>(
         judgeStatus:{
             type: String,
         },
+        payment: {
+            type: Schema.Types.ObjectId,
+            ref:"payment"
+        },
         status: {
             type: String,
             enum: ["ACTIVO", "INACTIVO", "ELIMINADO"],

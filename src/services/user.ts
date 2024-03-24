@@ -249,19 +249,27 @@ const paymentUser = async (item: Partial<User>): Promise<Partial<User>> => {
     },
   });
   console.log(resp);
-  if (resp.status !== "approved")
+  if (resp.status !== "approved" && resp.status !== "in_process"){
     throw Error(
       "PAGO INCORRECTO, MERCADOPAGO: " +
         paymentError(resp.status_detail as string)
     );
+    }
 
-  const newPayment = await PaymentModel.create({
-    userId: item.id,
-    amount: item.transaction_amount,
-    reference: item.user,
-    password: item.descripcion,
-    date: new Date(),
-  });
+    var paymentUser = await PaymentModel.create({
+      user: user.id,
+      cardName: user.id,
+      cardNumber: `${resp?.card?.first_six_digits ?? ""}** **** ${resp?.card?.last_four_digits ?? ""}`,
+      year: resp?.card?.expiration_year ?? "",
+      month: resp?.card?.expiration_month ?? "",
+      amount: resp?.transaction_amount ?? 0,
+      date: new Date(),
+      authorization: resp?.authorization_code ?? "",
+      reference: resp?.transaction_details?.payment_method_reference_id ?? "",
+      description: resp?.description ?? "",
+      mp_id:  resp?.id ?? "",
+      status: resp?.status ?? "",
+    });
 
   var isAthlete = user.isAthlete ?? false;
   var isCoach = user.isCoach ?? false;
@@ -322,11 +330,28 @@ const paymentCompetenceService = async (
     },
   });
   console.log(resp);
-  if (resp.status !== "approved")
+
+  if (resp.status !== "approved" && resp.status !== "in_process"){
     throw Error(
       "PAGO INCORRECTO, MERCADOPAGO: " +
         paymentError(resp.status_detail as string)
     );
+  }
+
+  var paymentUser = await PaymentModel.create({
+    user: user.id,
+    cardName: user.id,
+    cardNumber: `${resp?.card?.first_six_digits ?? ""}** **** ${resp?.card?.last_four_digits ?? ""}`,
+    year: resp?.card?.expiration_year ?? "",
+    month: resp?.card?.expiration_month ?? "",
+    amount: resp?.transaction_amount ?? 0,
+    date: new Date(),
+    authorization: resp?.authorization_code ?? "",
+    reference: resp?.transaction_details?.payment_method_reference_id ?? "",
+    description: resp?.description ?? "",
+    mp_id:  resp?.id ?? "",
+    status: resp?.status ?? "",
+  });
 
   const year = await getYears(user.dateOfBirth ?? new Date());
     let category = "";
@@ -369,6 +394,7 @@ const paymentCompetenceService = async (
       place:0,
       points:0,
       registeredAs:'atleta',
+      payment: paymentUser.id,
       status: Status.ACTIVO,
     });
     console.log(competitionUser);
