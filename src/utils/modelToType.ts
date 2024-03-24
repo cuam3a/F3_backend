@@ -222,7 +222,7 @@ const formatCompetitionUserData = (model: any, type: string = ""): Partial<Compe
   competitionType.place= model.place
   competitionType.points= model.points
   competitionType.createdAt= model.createdAt
-  competitionType.hasTest =model.competitionUserTest?.length > 0 ? true : false
+  competitionType.hasTest =model.competitionUserTest?.length >= 3 ? true : false
   competitionType.user= formatUserData({model:model.user})
   competitionType.competition= formatCompetitionData(model.competition)
   competitionType.competitionUserTest= model.competitionUserTest?.map((itemTest: any) => {
