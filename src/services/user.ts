@@ -258,7 +258,7 @@ const paymentUser = async (item: Partial<User>): Promise<Partial<User>> => {
 
     var paymentUser = await PaymentModel.create({
       user: user.id,
-      cardName: user.id,
+      cardName: resp?.card?.cardholder?.name ?? "",
       cardNumber: `${resp?.card?.first_six_digits ?? ""}** **** ${resp?.card?.last_four_digits ?? ""}`,
       year: resp?.card?.expiration_year ?? "",
       month: resp?.card?.expiration_month ?? "",
@@ -340,7 +340,7 @@ const paymentCompetenceService = async (
 
   var paymentUser = await PaymentModel.create({
     user: user.id,
-    cardName: user.id,
+    cardName: resp?.card?.cardholder?.name ?? "",
     cardNumber: `${resp?.card?.first_six_digits ?? ""}** **** ${resp?.card?.last_four_digits ?? ""}`,
     year: resp?.card?.expiration_year ?? "",
     month: resp?.card?.expiration_month ?? "",
