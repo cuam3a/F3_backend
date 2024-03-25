@@ -314,31 +314,8 @@ const userInformationService = async (id: String) => {
 
   if (!existUser) throw Error("USER NO FOUND");
 
-  const competences = await CompetenceUserModel.find({ userId: existUser._id });
-
-  const listcompetences = await Promise.all(
-    competences.map(async (data: CompetenceUser) => {
-      var competence =
-        data.competenceId !== ""
-          ? await CompetenceModel.findOne<Competence>({
-              _id: data.competenceId,
-            })
-          : null;
-      var user =
-        data.userId !== ""
-          ? await UserModel.findOne<User>({ _id: data.userId })
-          : null;
-      return formatCompetenceUserData({
-        model: data,
-        competence: formatCompetenceData({ model: competence }),
-        user: formatUserData({ model: user }),
-      });
-    })
-  );
-
   return formatUserData({
     model: existUser,
-    competenceUser: listcompetences,
   });
 };
 
