@@ -31,7 +31,7 @@ const formatUserData = ({
     id: new Types.ObjectId(model.id),
     name: model.name,
     lastName: model.lastName,
-    photo: noPhoto == true ? (fs.existsSync(`${process.cwd()}/upload/${model.photo}`)
+    photo: noPhoto == false ? (fs.existsSync(`${process.cwd()}/upload/${model.photo}`)
       ? fs.readFileSync(`${process.cwd()}/upload/${model.photo}`, {
           encoding: "base64",
         })
