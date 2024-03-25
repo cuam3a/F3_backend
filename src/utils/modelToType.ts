@@ -225,14 +225,16 @@ const formatCompetitionUserData = (model: any, type: string = ""): Partial<Compe
   competitionType.hasTest =model.competitionUserTest?.length >= 3 ? true : false
   competitionType.user= formatUserData({model:model.user})
   competitionType.competition= formatCompetitionData(model.competition)
-  competitionType.competitionUserTest= model.competitionUserTest?.map((itemTest: any) => {
-      return formatCompetitionUserTestData(itemTest, type);
-    }) ?? []
+  competitionType.competitionUserTest= [model.competitionUserTest?.map((itemTest: any) => {
+      return formatCompetitionUserTestData(itemTest);
+    }) ?? []]
   
   if(type && type == "judge"){
     competitionType.judgeStatus= model.judgeStatus ?? "pendiente"
     competitionType.judgeUser= model.judgeUser ? formatUserData({model:model.judgeUser}) : {}
-    competitionType.competitionUserTest=[]
+    competitionType.competitionUserTest= model.competitionUserTest?.map((itemTest: any) => {
+      return formatCompetitionUserTestData(itemTest, type);
+    }) ?? []
   }
 
   return competitionType;
