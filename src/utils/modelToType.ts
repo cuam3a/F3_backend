@@ -19,17 +19,11 @@ const imgPhotoDefault =
 
 type UserProps = {
   model: Partial<User> | null;
-  payment?: Partial<Payment>;
-  //userPermission?: Partial<UserPermission>[];
-  notification?: Partial<Notification>[];
-  competenceUser?: Partial<CompetenceUser>[];
+  noPhoto?: boolean;
 };
 const formatUserData = ({
   model,
-  payment,
-  //userPermission,
-  notification,
-  competenceUser,
+  noPhoto = false,
 }: UserProps): Partial<User> => {
   if (model === null) return {};
 
@@ -37,11 +31,11 @@ const formatUserData = ({
     id: new Types.ObjectId(model.id),
     name: model.name,
     lastName: model.lastName,
-    photo: fs.existsSync(`${process.cwd()}/upload/${model.photo}`)
+    photo: noPhoto == true ? (fs.existsSync(`${process.cwd()}/upload/${model.photo}`)
       ? fs.readFileSync(`${process.cwd()}/upload/${model.photo}`, {
           encoding: "base64",
         })
-      : imgPhotoDefault,
+      : imgPhotoDefault) : "",
     user: model.user,
     dateOfBirth: model.dateOfBirth,
     celphone: model.celphone,
@@ -80,9 +74,6 @@ const formatUserData = ({
     twitter: model.twitter ?? "",
     folio: model.folio ?? "",
     coachAccepted: model.coachAccepted ?? false,
-    //payment: payment ?? {},
-    //competition: competenceUser ?? [],
-    //competence: competenceUser ?? [],
   };
   return userType;
 };
@@ -231,7 +222,7 @@ const formatCompetitionUserData = (model: any, type: string = ""): Partial<Compe
   
   if(type && type == "judge"){
     competitionType.judgeStatus= model.judgeStatus ?? "pendiente"
-    competitionType.judgeUser= model.judgeUser ? formatUserData({model:model.judgeUser}) : {}
+    competitionType.judgeUser= model.judgeUser ? formatUserData({model:model.judgeUser, noPhoto: false}) : {}
     competitionType.competitionUserTest= model.competitionUserTest?.map((itemTest: any) => {
       return formatCompetitionUserTestData(itemTest, type);
     }) ?? []

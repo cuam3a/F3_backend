@@ -173,11 +173,8 @@ const competitionRegistrationService = async (): Promise<Partial<User>[]> => {
 
   const list = await Promise.all(
     users.map(async (user) => {
-      var payment = await PaymentModel.findOne<Payment>({ userId: user.id });
-
       return formatUserData({
         model: user,
-        payment: payment ?? undefined,
       });
     })
   );
@@ -319,11 +316,8 @@ const competitionUpdateService = async (): Promise<Partial<User>[]> => {
 
   const list = await Promise.all(
     users.map(async (user) => {
-      var payment = await PaymentModel.findOne<Payment>({ userId: user.id });
-
       return formatUserData({
         model: user,
-        payment: payment ?? undefined,
       });
     })
   );
