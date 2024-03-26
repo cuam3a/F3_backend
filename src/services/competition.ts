@@ -333,14 +333,16 @@ const competitionUsersService = async (
     competition: competitionId,
   }).populate("user");
 
-  return list.map((item) => {
-    return formatCompetitionUserData(item);
-  });
+  let arr:Partial<CompetitionUser>[] = [];
+  for (const item of list) {
+    arr.push(await formatCompetitionUserData(item));
+  };
+  return arr;
 };
 
 const competitionUsersJudgeService = async (
   id: string
-): Promise<Partial<CompetitionUser>[]> => {
+): Promise<Promise<Partial<CompetitionUser>>[]> => {
   const list = await CompetitionUserModel.aggregate([
     {
       $match: {
@@ -360,8 +362,8 @@ const competitionUsersJudgeService = async (
   await CompetitionUserModel.populate(list, "user");
 
   
-  return list.map((item) => {
-    return formatCompetitionUserData(item, "judge");
+  return list.map(async(item) => {
+    return await formatCompetitionUserData(item, "judge");
   });
 };
 

@@ -60,6 +60,7 @@ export type User = {
   competenceId: string;
   typeAthlete: string;
   coachAccepted: boolean;
+  registeredAs?:string;
 };
 
 export enum Rol {

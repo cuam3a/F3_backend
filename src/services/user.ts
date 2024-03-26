@@ -21,13 +21,13 @@ const getSingleUser = async (id: string): Promise<Partial<User>> => {
   return user;
 };
 
-const getListUser = async (): Promise<Partial<User>[]> => {
+const getListUser = async (): Promise<Promise<Partial<User>>[]> => {
   const users = await UserModel.find<User>({
     status: ["ACTIVO", "INACTIVO"],
     rol: ["ADMIN"],
   });
-  return users.map((user) => {
-    return formatUserData({ model: user });
+  return users.map(async(user) => {
+    return await formatUserData({ model: user });
   });
 };
 
@@ -119,14 +119,14 @@ const getSingleUsersService = async (id: string): Promise<Partial<User>> => {
   return formatUserData({ model: user });
 };
 
-const getListUsersService = async (): Promise<Partial<User>[]> => {
+const getListUsersService = async (): Promise<Promise<Partial<User>>[]> => {
   console.log("Lista");
   const users = await UserModel.find<User>({
     status: ["ACTIVO", "INACTIVO"],
     rol: ["USUARIO"],
   });
-  return users.map((user) => {
-    return formatUserData({ model: user });
+  return users.map(async (user) => {
+    return await formatUserData({ model: user });
   });
 };
 
@@ -393,7 +393,7 @@ const paymentCompetenceService = async (
       typeAthlete: item.typeAthlete,
       place:0,
       points:0,
-      registeredAs:'atleta',
+      registeredAs: item.registeredAs ?? 'atleta',
       payment: paymentUser.id,
       status: Status.ACTIVO,
     });
