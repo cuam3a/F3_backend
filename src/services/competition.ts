@@ -232,7 +232,7 @@ const competitionGetResultService = async (
   ]);
   await CompetitionUserModel.populate(list, "user");
   if (list.length > 0) {
-    return formatCompetitionUserData(list[0]);
+    return formatCompetitionUserData(list[0], "judge");
   } else {
     return formatCompetitionUserData(null);
   }
@@ -256,7 +256,7 @@ const competitionUpdateResultService = async (
       time: data.time,
       reps: data.reps,
       weight: data.weight,
-      isPending: exist.isPending == true ? false : exist.isPending
+      isPending: exist.isPending == true ? false : exist.isPending,
     },
     {
       new: true,
@@ -433,14 +433,14 @@ const competitionUserResultJudgeService = async (
     _id: id,
   });
   if (!exist) throw Error("NO EXISTE REGISTRO USUARIO COMPETENCIA");
-  if (
-    (exist.judgeStatus == "bloqueado" ||
-      exist.judgeStatus == "en espera altleta" ||
-      exist.judgeStatus == "en espera juez") &&
-    exist.judgeUser != idU
-  )
-    throw Error("USUARIO CALIFICADO POR OTRO JUEZ");
-  if (exist.judgeStatus == "calificado") throw Error("USUARIO CALIFICADO");
+  // if (
+  //   (exist.judgeStatus == "bloqueado" ||
+  //     exist.judgeStatus == "en espera altleta" ||
+  //     exist.judgeStatus == "en espera juez") &&
+  //   exist.judgeUser != idU
+  // )
+  //   throw Error("USUARIO CALIFICADO POR OTRO JUEZ");
+  // if (exist.judgeStatus == "calificado") throw Error("USUARIO CALIFICADO");
 
   const list = await CompetitionUserModel.aggregate([
     {
@@ -466,10 +466,10 @@ const competitionUserResultJudgeService = async (
 };
 
 const competitionUpdateResultJudgeStartService = async (
-  data: CompetitionUserTest
+  data: Partial<CompetitionUserTest>
 ): Promise<Partial<CompetitionUserTest>> => {
   const exist = await CompetitionUserTestModel.findOne({
-    _id: data.id,
+    _id: new Types.ObjectId(data.id),
   });
   if (!exist) throw Error("NO EXISTE REGISTRO PRUEBAS USUARIO");
 

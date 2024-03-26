@@ -261,7 +261,7 @@ const formatCompetitionUserTestData = (
     competitionUserTestType.judgeTime= model.judgeTime ?? ""
     competitionUserTestType.judgeReps= model.judgeReps ?? 0
     competitionUserTestType.judgeWeight= model.judgeWeight ?? 0
-    competitionUserTestType.judgeObservation= model.observation ?? ""
+    competitionUserTestType.judgeObservation= model.judgeObservation ?? ""
     competitionUserTestType.qualificationDate = model.qualificationDate
   }
   
