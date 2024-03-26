@@ -35,8 +35,7 @@ const formatUserData = async ({
       .resize({
         width: 200,
         height: 200
-      }).to
-      .toBuffer();
+      }).toBuffer();
       img = img.toString('base64')
     }
     else{
