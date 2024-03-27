@@ -363,7 +363,7 @@ const competitionUsersJudgeService = async (
 
   let arr:Partial<CompetitionUser>[] = [];
   for (const item of list) {
-    arr.push(await formatCompetitionUserData(item));
+    arr.push(await formatCompetitionUserData(item, "judge"));
   };
   return arr;
 };
