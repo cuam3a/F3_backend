@@ -272,19 +272,19 @@ const paymentUser = async (item: Partial<User>): Promise<Partial<User>> => {
     });
 
   var isAthlete = user.isAthlete ?? false;
-  var isCoach = user.isCoach ?? false;
-  var isJudge = user.isJudge ?? false;
+  var coachTest = user.coachTest ?? false;
+  var judgeTest = user.judgeTest ?? false;
 
   if (item.descripcion == "AFILIACION DE ATLETA") isAthlete = true;
-  if (item.descripcion == "AFILIACION DE ENTRENADOR") isCoach = true;
-  if (item.descripcion == "AFILIACION DE JUEZ") isJudge = true;
+  if (item.descripcion == "AFILIACION DE ENTRENADOR") coachTest = true;
+  if (item.descripcion == "AFILIACION DE JUEZ") judgeTest = true;
 
   const updateUser = await UserModel.findOneAndUpdate(
     { _id: item.id, rol: "USUARIO" },
     {
       isAthlete,
-      isCoach,
-      isJudge,
+      coachTest: coachTest,
+      judgeTest: judgeTest,
     },
     {
       new: true,

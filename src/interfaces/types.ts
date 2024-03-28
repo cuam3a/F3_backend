@@ -60,6 +60,8 @@ export type User = {
   competenceId: string;
   typeAthlete: string;
   coachAccepted: boolean;
+  judgeTest:boolean;
+  coachTest:boolean;
   registeredAs?:string;
 };
 
@@ -164,6 +166,8 @@ export type Document = {
   photoFile: string;
   file: string;
   fileFile: string;
+  type: string;
+  status: Status;
 };
 
 export type Competition = {
@@ -290,4 +294,49 @@ export type CompetenceUser = {
   createdAt: Date;
   competence: Partial<Competence>;
   user: Partial<User>;
+};
+
+export type Test = {
+  id: string;
+  name: string;
+  type: 'juez' | 'entrenador';
+  numQuestions: number;
+  minApproval: number;
+  status: Status;
+  questionTest : Partial<QuestionTest>[]
+};
+
+export type QuestionTest = {
+  id: string;
+  test: Types.ObjectId;
+  question: string;
+  type: 'option' | 'check';
+  option1: string;
+  option2: string;
+  option3: string;
+  option4: string;
+  option5: string;
+  rightAnswer :string[];
+  toolTip: string;
+  status: Status;
+};
+
+export type TestUser = {
+  id: string;
+  test: Types.ObjectId;
+  user: Types.ObjectId;
+  statusTest: 'aprobado' | 'no aprobado';
+  statusPhysicalTest: 'aprobado' | 'no aprobado';
+  score: number;
+  presentedDate: Date;
+  validationDate: Date;
+  status: Status;
+};
+
+export type TestUserAnswers = {
+  id: string;
+  testUser: Types.ObjectId;
+  questionTest: Types.ObjectId;
+  answer: string[];
+  status: Status;
 };

@@ -137,6 +137,14 @@ const UserSchema = new Schema<User>(
       type: Boolean,
       default:false
     },
+    judgeTest: {
+      type: Boolean,
+      default:false
+    },
+    coachTest: {
+      type: Boolean,
+      default:false
+    },
     rol: {
       type: String,
       enum: ["ADMIN", "USUARIO"],

@@ -1,22 +1,19 @@
 import { Schema, model } from "mongoose";
-import { Document } from "../interfaces/types";
+import { Test } from "../interfaces/types";
 
-const Document = new Schema<Document>(
+const Test = new Schema<Test>(
     {
-        title: {
-            type: String,
-        },
-        description: {
-            type: String,
-        },
-        photo: {
-            type: String,
-        },
-        file: {
+        name: {
             type: String,
         },
         type: {
             type: String,
+        },
+        numQuestions: {
+            type: Number,
+        },
+        minApproval: {
+            type: Number,
         },
         status: {
             type:String,
@@ -34,5 +31,5 @@ const Document = new Schema<Document>(
     }
 );
 
-const DocumentModel = model("document", Document);
-export default DocumentModel;
+const TestModel = model("test", Test);
+export default TestModel;

@@ -11,6 +11,9 @@ import {
   Competence,
   Region,
   CompetitionUserTest,
+  Test,
+  QuestionTest,
+  TestUser,
 } from "../interfaces/types";
 const fs = require("fs");
 const sharp = require("sharp");
@@ -29,28 +32,31 @@ const formatUserData = async ({
   if (model === null) return {};
 
   let img;
-  if(noPhoto == false){
-    if(fs.existsSync(`${process.cwd()}/upload/${model.photo}`)){
+  if (noPhoto == false) {
+    if (fs.existsSync(`${process.cwd()}/upload/${model.photo}`)) {
       img = await sharp(`${process.cwd()}/upload/${model.photo}`)
-      .resize({
-        width: 200,
-        height: 200
-      }).toBuffer();
-      img = img.toString('base64')
-    }
-    else{
-      img = imgPhotoDefault
+        .resize({
+          width: 200,
+          height: 200,
+        })
+        .toBuffer();
+      img = img.toString("base64");
+    } else {
+      img = imgPhotoDefault;
     }
   }
   var userType: Partial<User> = {
     id: new Types.ObjectId(model.id),
     name: model.name,
     lastName: model.lastName,
-    photo: noPhoto == false ? (fs.existsSync(`${process.cwd()}/upload/${model.photo}`)
-      ? fs.readFileSync(`${process.cwd()}/upload/${model.photo}`, {
-          encoding: "base64",
-        })
-      : imgPhotoDefault) : "",
+    photo:
+      noPhoto == false
+        ? fs.existsSync(`${process.cwd()}/upload/${model.photo}`)
+          ? fs.readFileSync(`${process.cwd()}/upload/${model.photo}`, {
+              encoding: "base64",
+            })
+          : imgPhotoDefault
+        : "",
     user: model.user,
     dateOfBirth: model.dateOfBirth,
     celphone: model.celphone,
@@ -89,6 +95,8 @@ const formatUserData = async ({
     twitter: model.twitter ?? "",
     folio: model.folio ?? "",
     coachAccepted: model.coachAccepted ?? false,
+    judgeTest: model.judgeTest ?? false,
+    coachTest: model.coachTest ?? false
   };
   return await userType;
 };
@@ -166,15 +174,20 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     instagramUsername: model.instagramUsername,
     twitterUsername: model.twitterUsername,
     image: fs.existsSync(`${process.cwd()}/upload/competitions/${model.image}`)
-    ? fs.readFileSync(`${process.cwd()}/upload/competitions/${model.image}`, {
-        encoding: "base64",
-      })
-    : `${process.cwd()}/upload/competitions/${model.image}`,
-    bgImage: fs.existsSync(`${process.cwd()}/upload/competitions/${model.bgImage}`)
-    ? fs.readFileSync(`${process.cwd()}/upload/competitions/${model.bgImage}`, {
-        encoding: "base64",
-      })
-    : `${process.cwd()}/upload/competitions/${model.bgImage}`,
+      ? fs.readFileSync(`${process.cwd()}/upload/competitions/${model.image}`, {
+          encoding: "base64",
+        })
+      : `${process.cwd()}/upload/competitions/${model.image}`,
+    bgImage: fs.existsSync(
+      `${process.cwd()}/upload/competitions/${model.bgImage}`
+    )
+      ? fs.readFileSync(
+          `${process.cwd()}/upload/competitions/${model.bgImage}`,
+          {
+            encoding: "base64",
+          }
+        )
+      : `${process.cwd()}/upload/competitions/${model.bgImage}`,
     user: model.user,
     typeCompetence: model.typeCompetence,
     categoriesSupported: model.categoriesSupported,
@@ -216,32 +229,41 @@ const formatCompetitionStepsData = (model: any): Partial<CompetitionSteps> => {
   return competitionStepType;
 };
 
-const formatCompetitionUserData = async (model: any, type: string = ""): Promise<Partial<CompetitionUser>> => {
+const formatCompetitionUserData = async (
+  model: any,
+  type: string = ""
+): Promise<Partial<CompetitionUser>> => {
   if (model === null) return {};
-  var competitionType: Partial<CompetitionUser> = {}
-  competitionType.id= model._id
-  competitionType.fullName= (model.user?.name ?? "") + " " + (model.user?.lastName ?? "")
-  competitionType.years= model.years
-  competitionType.amount= model.amount
-  competitionType.category= model.category
-  competitionType.typeAthlete= model.typeAthlete
-  competitionType.registeredAs = model.registeredAs
-  competitionType.place= model.place
-  competitionType.points= model.points
-  competitionType.createdAt= model.createdAt
-  competitionType.hasTest =model.competitionUserTest?.length >= 3 ? true : false
-  competitionType.user= await formatUserData({model:model.user})
-  competitionType.competition= formatCompetitionData(model.competition)
-  competitionType.competitionUserTest= model.competitionUserTest?.map((itemTest: any) => {
+  var competitionType: Partial<CompetitionUser> = {};
+  competitionType.id = model._id;
+  competitionType.fullName =
+    (model.user?.name ?? "") + " " + (model.user?.lastName ?? "");
+  competitionType.years = model.years;
+  competitionType.amount = model.amount;
+  competitionType.category = model.category ?? "";
+  competitionType.typeAthlete = model.typeAthlete ?? "AVANZADO";
+  competitionType.registeredAs = model.registeredAs ?? "atleta";
+  competitionType.place = model.place ?? 0;
+  competitionType.points = model.points ?? 0;
+  competitionType.createdAt = model.createdAt;
+  competitionType.hasTest =
+    model.competitionUserTest?.length >= 3 ? true : false;
+  competitionType.user = await formatUserData({ model: model.user });
+  competitionType.competition = formatCompetitionData(model.competition);
+  competitionType.competitionUserTest =
+    model.competitionUserTest?.map((itemTest: any) => {
       return formatCompetitionUserTestData(itemTest);
-    }) ?? []
-  
-  if(type && type == "judge"){
-    competitionType.judgeStatus= model.judgeStatus ?? "pendiente"
-    competitionType.judgeUser= model.judgeUser ? await formatUserData({model:model.judgeUser, noPhoto: false}) : {}
-    competitionType.competitionUserTest= model.competitionUserTest?.map((itemTest: any) => {
-      return formatCompetitionUserTestData(itemTest, type);
-    }) ?? []
+    }) ?? [];
+
+  if (type && type == "judge") {
+    competitionType.judgeStatus = model.judgeStatus ?? "pendiente";
+    competitionType.judgeUser = model.judgeUser
+      ? await formatUserData({ model: model.judgeUser, noPhoto: false })
+      : {};
+    competitionType.competitionUserTest =
+      model.competitionUserTest?.map((itemTest: any) => {
+        return formatCompetitionUserTestData(itemTest, type);
+      }) ?? [];
   }
 
   return competitionType;
@@ -258,32 +280,74 @@ const formatRegionData = (model: any): Partial<Region> => {
 };
 
 const formatCompetitionUserTestData = (
-  model: any, type: string = ""
+  model: any,
+  type: string = ""
 ): Partial<CompetitionUserTest> => {
   if (model === null) return {};
   var competitionUserTestType: Partial<CompetitionUserTest> = {};
-  competitionUserTestType.id= model._id
-  competitionUserTestType.competitionUser= model.competitionUser
-  competitionUserTestType.testType= model.testType ?? ""
-  competitionUserTestType.url= model.url ?? ""
-  competitionUserTestType.files= model.files ?? []
-  competitionUserTestType.time= model.time ?? ""
-  competitionUserTestType.reps= model.reps ?? 0
-  competitionUserTestType.weight= model.weight ?? 0
-  competitionUserTestType.status= model.status
-  competitionUserTestType.isValid = model.isValid ?? true
-  competitionUserTestType.isPending = model.isPending ?? false
-  if(type=="judge"){
-    competitionUserTestType.judgeTime= model.judgeTime ?? ""
-    competitionUserTestType.judgeReps= model.judgeReps ?? 0
-    competitionUserTestType.judgeWeight= model.judgeWeight ?? 0
-    competitionUserTestType.judgeObservation= model.judgeObservation ?? ""
-    competitionUserTestType.qualificationDate = model.qualificationDate
+  competitionUserTestType.id = model._id;
+  competitionUserTestType.competitionUser = model.competitionUser;
+  competitionUserTestType.testType = model.testType ?? "";
+  competitionUserTestType.url = model.url ?? "";
+  competitionUserTestType.files = model.files ?? [];
+  competitionUserTestType.time = model.time ?? "";
+  competitionUserTestType.reps = model.reps ?? 0;
+  competitionUserTestType.weight = model.weight ?? 0;
+  competitionUserTestType.status = model.status;
+  competitionUserTestType.isValid = model.isValid ?? true;
+  competitionUserTestType.isPending = model.isPending ?? false;
+  if (type == "judge") {
+    competitionUserTestType.judgeTime = model.judgeTime ?? "";
+    competitionUserTestType.judgeReps = model.judgeReps ?? 0;
+    competitionUserTestType.judgeWeight = model.judgeWeight ?? 0;
+    competitionUserTestType.judgeObservation = model.judgeObservation ?? "";
+    competitionUserTestType.qualificationDate = model.qualificationDate;
   }
-  
+
   return competitionUserTestType;
 };
 
+const formatTestData = (model: any): Partial<Test> => {
+  if (model === null) return {};
+  var testType: Partial<Test> = {};
+  testType.id = model._id;
+  testType.name = model.name;
+  testType.minApproval = model.minApproval ?? 0;
+  testType.numQuestions = model.numQuestions ?? 0;
+  testType.questionTest = model.questionTest?.map((question: any) => {
+    return formatQuestionTestData(question);
+  }) ?? [];
+  return testType;
+};
+
+const formatQuestionTestData = (model: any): Partial<QuestionTest> => {
+  if (model === null) return {};
+  var questionTestType: Partial<QuestionTest> = {};
+  questionTestType.id = model._id;
+  questionTestType.question = model.question ?? "";
+  questionTestType.option1 = model.option1 ?? "";
+  questionTestType.option2 = model.option2 ?? "";
+  questionTestType.option3 = model.option3 ?? "";
+  questionTestType.option4 = model.option4 ?? "";
+  questionTestType.option5 = model.option5 ?? "";
+  questionTestType.toolTip = model.toolTip ?? "";
+  return questionTestType;
+};
+
+const formatUserTestData = (model: any): Partial<TestUser> => {
+  if (model === null) return {};
+  var testUserType: Partial<TestUser> = {};
+  testUserType.id = model._id;
+  testUserType.test = model.test;
+  testUserType.statusTest = model.statusTest;
+  testUserType.statusPhysicalTest = model.statusPhysicalTest;
+  testUserType.score = model.score;
+  testUserType.presentedDate = model.presentedDate;
+  testUserType.validationDate = model.validationDate;
+  return testUserType;
+};
+
+//ELIMNAR-------
 type CompetenceProps = {
   model: Partial<Competence> | null;
 };
@@ -343,6 +407,9 @@ export {
   formatCompetitionUserData,
   formatRegionData,
   formatCompetitionUserTestData,
+  formatTestData,
+  formatQuestionTestData,
+  formatUserTestData,
   //ELIMINAR
   formatCompetenceUserData,
   formatCompetenceData,

@@ -519,7 +519,7 @@ const competitionUpdateResultJudgeStartService = async (
       return true;
     }
   });
-
+console.log(judgeStatus)
   await CompetitionUserModel.findOneAndUpdate(
     { _id: userCompetence?.id },
     {
