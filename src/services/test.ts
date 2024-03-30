@@ -155,6 +155,7 @@ const saveTestService = async (
       {
         statusTest: testUser.statusTest,
         score: score,
+        status: Status.INACTIVO,
       },
       {
         new: true,
