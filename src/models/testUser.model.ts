@@ -26,6 +26,9 @@ const TestUser = new Schema<TestUser>(
         validationDate: {
             type: Date,
         },
+        limitDate: {
+            type: Date,
+        },
         status: {
             type:String,
             enum: ["ACTIVO", "INACTIVO", "ELIMINADO"],

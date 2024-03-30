@@ -334,15 +334,16 @@ const formatQuestionTestData = (model: any): Partial<QuestionTest> => {
   return questionTestType;
 };
 
-const formatUserTestData = (model: any): Partial<TestUser> => {
+const formatUserTestData = (model: any, test?: Partial<Test>): Partial<TestUser> => {
   if (model === null) return {};
   var testUserType: Partial<TestUser> = {};
   testUserType.id = model._id;
-  testUserType.test = model.test;
+  testUserType.test = test ? formatTestData(test) : model.test;
   testUserType.statusTest = model.statusTest;
   testUserType.statusPhysicalTest = model.statusPhysicalTest;
   testUserType.score = model.score;
   testUserType.presentedDate = model.presentedDate;
+  testUserType.limitDate = model.limitDate;
   testUserType.validationDate = model.validationDate;
   return testUserType;
 };

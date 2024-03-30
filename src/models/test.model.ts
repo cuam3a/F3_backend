@@ -15,6 +15,9 @@ const Test = new Schema<Test>(
         minApproval: {
             type: Number,
         },
+        limitTime: {
+            type: Number,
+        },
         status: {
             type:String,
             enum: ["ACTIVO", "INACTIVO", "ELIMINADO"],

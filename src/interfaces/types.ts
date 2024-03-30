@@ -303,6 +303,7 @@ export type Test = {
   numQuestions: number;
   minApproval: number;
   status: Status;
+  limitTime: number;
   questionTest : Partial<QuestionTest>[]
 };
 
@@ -323,12 +324,13 @@ export type QuestionTest = {
 
 export type TestUser = {
   id: string;
-  test: Types.ObjectId;
+  test: Types.ObjectId | Partial<Test>;
   user: Types.ObjectId;
   statusTest: 'aprobado' | 'no aprobado';
   statusPhysicalTest: 'aprobado' | 'no aprobado';
   score: number;
   presentedDate: Date;
+  limitDate: Date;
   validationDate: Date;
   status: Status;
 };
