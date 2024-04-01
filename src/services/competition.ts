@@ -50,7 +50,7 @@ const competitionsService = async (
     list[item].registeredScore = exist ? exist.points ?? 0 : 0;
     list[item].registeredPlace = exist ? exist.place ?? 0 : 0;
   }
-  list.forEach(async (f) => {
+  list.forEach(async (f:any) => {
     f.registered = await RegisteredCompetition(idU, f._id);
     f.registeredAs = f.registered ? "atleta" : "";
   });

@@ -240,7 +240,7 @@ const formatCompetitionUserData = async (
     (model.user?.name ?? "") + " " + (model.user?.lastName ?? "");
   competitionType.years = model.years;
   competitionType.amount = model.amount;
-  competitionType.category = model.category ?? "";
+  competitionType.category = `${model.category ?? ""} ${model.typeAthlete ?? "AVANZADO"} ${model.user?.gender ?? "---"}`;
   competitionType.typeAthlete = model.typeAthlete ?? "AVANZADO";
   competitionType.registeredAs = model.registeredAs ?? "atleta";
   competitionType.place = model.place ?? 0;
