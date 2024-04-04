@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { RequestExt } from "../interfaces/interfaces";
 import { ActionResponse, GetListResponse } from "../interfaces/types";
-import { getListUser, getSingleUser, addUser, updateUser, removeUser, resetpasswordUser, updateProfileUser, getListUsersService, getSingleUsersService, addUsersService, updateUsersService, removeUsersService, paymentUser, paymentCompetenceService, sendCoachUsers } from "../services/user";
+import { getListUser, getSingleUser, addUser, updateUser, removeUser, resetpasswordUser, updateProfileUser, getListUsersService, getSingleUsersService, addUsersService, updateUsersService, removeUsersService, paymentUser, paymentCompetenceService, sendCoachUsers, getPaymentService } from "../services/user";
 import { handleError } from "../utils/error.handle";
 import { generateToken } from "../utils/jwt.handle";
 import path from "path";
@@ -289,6 +289,41 @@ const sendCoach = async ({ body, idUser }: RequestExt, res: Response) => {
   }
 };
 
+const token = async ({ body, idUser }: RequestExt, res: Response) => {
+  try {
+    console.log(body)
+    const idU = idUser?.idUser
+    const token = generateToken(`${idU}`);
+    const response: Partial<ActionResponse> = {
+      status: 200,
+      token: token,
+      message: 'OK',
+    }
+    res.send(response);
+  }
+  catch (e) {
+    handleError(res, "ERROR GENERAR TOKEN", e)
+  }
+};
+
+const getPayment = async ({ params, idUser }: RequestExt, res: Response) => {
+  try {
+    console.log(params)
+    const { userId } = params
+    const idU = idUser?.idUser
+    const list = await getPaymentService(userId);
+    const response: Partial<ActionResponse> = {
+      status: 200,
+      data: list,
+      message: 'OK',
+    }
+    res.send(response);
+  }
+  catch (e) {
+    handleError(res, "ERROR GENERAR TOKEN", e)
+  }
+};
+
 export {
   single,
   list,
@@ -305,4 +340,6 @@ export {
   paymentUsers,
   paymentCompetence,
   sendCoach,
+  token,
+  getPayment,
 }

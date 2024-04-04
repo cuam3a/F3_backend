@@ -202,6 +202,8 @@ export type Competition = {
   status: Status;
   registered: boolean;
   registeredAs: "atleta" | "entrenador" | "juez";
+  registeredAsJudge: boolean;
+  registeredAsAthlete: boolean;
   registeredCategory: string;
   registeredPlace: number;
   registeredScore: number;
@@ -340,5 +342,13 @@ export type TestUserAnswers = {
   testUser: Types.ObjectId;
   questionTest: Types.ObjectId;
   answer: string[];
+  status: Status;
+};
+
+export type CoachUser = {
+  id: string;
+  user: Types.ObjectId | Partial<User>;
+  comment: string;
+  aceppted: boolean;
   status: Status;
 };

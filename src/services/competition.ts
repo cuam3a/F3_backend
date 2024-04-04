@@ -97,7 +97,7 @@ const competitionByUserIdService = async (
   userId: string
 ): Promise<Partial<Competition>[]> => {
   const list = await CompetitionUserModel.find({
-    user: new Types.ObjectId(userId),
+   $or:[{ user: new Types.ObjectId(userId)},{ judgeUser: new Types.ObjectId(userId) }]
   }).populate("competition");
   console.log(list);
   let listC: Competition[] = [];
@@ -105,6 +105,8 @@ const competitionByUserIdService = async (
     let competition = f.competition as Competition;
     competition.registered = true;
     competition.registeredAs = "atleta";
+    competition.registeredAsAthlete = f.user == userId ? true : false;
+    competition.registeredAsJudge = f.judgeUser == userId ? true : false;
     competition.registeredCategory = f.category ?? "";
     competition.registeredScore = f.points ?? 0;
     competition.registeredPlace = f.place ?? 0;

@@ -1,5 +1,5 @@
 import { Console } from "console";
-import { CompetitionUser, Status, User } from "../interfaces/types";
+import { Payment as PaymentUser, Status, User } from "../interfaces/types";
 import { welcomeHtml2 } from "../mail/welcome2";
 import CompetenceModel from "../models/competence.model";
 import CompetenceUserModel from "../models/competenceUser.model";
@@ -11,7 +11,7 @@ import UserModel from "../models/user.model";
 import { encrypt, verified } from "../utils/bcypt.handle";
 import { paymentError } from "../utils/dictionary";
 import { getFolio, getYears } from "../utils/init";
-import { formatUserData } from "../utils/modelToType";
+import { formatPaymentData, formatUserData } from "../utils/modelToType";
 import MercadoPagoConfig, { Payment } from "mercadopago";
 var nodemailer = require("nodemailer");
 
@@ -437,6 +437,17 @@ const sendCoachUsers = async (body: any) => {
   return true;
 };
 
+const getPaymentService = async (
+  userId: string
+): Promise<Partial<PaymentUser>[]> => {
+  const payments = await PaymentModel.find({
+    user:userId
+  });
+  return payments.map( (payment) => {
+    return formatPaymentData(payment);
+  });
+};
+
 export {
   getSingleUser,
   getListUser,
@@ -453,4 +464,5 @@ export {
   paymentUser,
   paymentCompetenceService,
   sendCoachUsers,
+  getPaymentService,
 };

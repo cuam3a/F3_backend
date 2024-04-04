@@ -14,6 +14,7 @@ import {
   Test,
   QuestionTest,
   TestUser,
+  CoachUser,
 } from "../interfaces/types";
 const fs = require("fs");
 const sharp = require("sharp");
@@ -203,6 +204,8 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     additionalDoc1: model.additionalDoc1 ?? "",
     additionalDoc2: model.additionalDoc2 ?? "",
     registered: model.registered ?? false,
+    registeredAsJudge: model.registeredAsJudge ?? false,
+    registeredAsAthlete: model.registeredAsAthlete ?? false,
     registeredAs: model.registeredAs ?? "",
     registeredCategory: model.registeredCategory ?? "",
     registeredTypeAthlete: model.registeredTypeAthlete ?? "",
@@ -325,6 +328,7 @@ const formatQuestionTestData = (model: any): Partial<QuestionTest> => {
   var questionTestType: Partial<QuestionTest> = {};
   questionTestType.id = model._id;
   questionTestType.question = model.question ?? "";
+  questionTestType.type = model.type ?? "";
   questionTestType.option1 = model.option1 ?? "";
   questionTestType.option2 = model.option2 ?? "";
   questionTestType.option3 = model.option3 ?? "";
@@ -345,6 +349,32 @@ const formatUserTestData = (model: any, test?: Partial<Test>): Partial<TestUser>
   testUserType.presentedDate = model.presentedDate;
   testUserType.limitDate = model.limitDate;
   testUserType.validationDate = model.validationDate;
+  return testUserType;
+};
+
+const formatCoachUserData = (model: any): Partial<CoachUser> => {
+  if (model === null) return {};
+  var testUserType: Partial<CoachUser> = {};
+  testUserType.id = model._id;
+  testUserType.user = model.user;
+  testUserType.comment = model.comment;
+  testUserType.aceppted = model.aceppted;
+  testUserType.status = model.status;
+  return testUserType;
+};
+
+const formatPaymentData = (model: any): Partial<Payment> => {
+  if (model === null) return {};
+  var testUserType: Partial<Payment> = {};
+  testUserType.id = model._id;
+  testUserType.user = model.user;
+  testUserType.cardName = model.cardName ?? "";
+  testUserType.cardNumber = model.cardNumber ?? "";
+  testUserType.amount = model.amount ?? 0;
+  testUserType.authorization = model.authorization ?? "";
+  testUserType.reference = model.reference ?? "";
+  testUserType.description = model.description ?? "";
+  testUserType.date = model.date ?? new Date(1970,1,1);
   return testUserType;
 };
 
@@ -411,6 +441,8 @@ export {
   formatTestData,
   formatQuestionTestData,
   formatUserTestData,
+  formatCoachUserData,
+  formatPaymentData,
   //ELIMINAR
   formatCompetenceUserData,
   formatCompetenceData,
