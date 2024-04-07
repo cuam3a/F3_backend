@@ -8,7 +8,7 @@ import UserModel from "./models/user.model";
 import { welcomeHtml } from "./mail/welcome";
 import { resetPasswordHtml } from "./mail/resetPassword";
 import { welcomeHtml2 } from "./mail/welcome2";
-import { getFolio } from "./utils/init";
+import { getFolio, getYears } from "./utils/init";
 import { User } from "./interfaces/types";
 require("dotenv").config();
 var nodemailer = require("nodemailer");
@@ -29,25 +29,8 @@ app.use(express.urlencoded({ extended: true, limit:'50mb' }));
 app.use(router);
 
 app.get("/", async (req, res) => {
-  var users = await UserModel.find<User>({ _id: "65bac18d05b8164ef60b5ef4" });
-  console.log(users)
-  users.forEach(async f => {
-    if(f.photo && f.photo.endsWith(".png")){
-      var name = f.folio + ".png";
-      fs.rename(
-        path.resolve(`${process.cwd()}/upload/`, f.photo),
-        path.resolve(`${process.cwd()}/upload/`, name),
-        (error:any) => { 
-          if (error) {
-            console.log(error); 
-          }
-        }
-      );
-      const updateUser = await UserModel.findOneAndUpdate({ _id: f.id }, { photo: name }, {
-        new: true,
-      });
-    }
-  })
+  let ye = await getYears(new Date(1987,2,30))
+  console.log(ye)
 
   // const newUser = await UserModel.findOne({ _id: "65a70d4deb1d06a3b1b24277" });
   // if (newUser) {

@@ -68,6 +68,10 @@ export const getYears = async (dateOfBirth: Date) => {
       edad--;
     }
 
+   if (cumpleanos.getMonth() > new Date().getMonth() && cumpleanos.getDay() > new Date().getDay()){
+    edad++;
+   }
+
     return edad;
   } catch (e) {
     return 1;

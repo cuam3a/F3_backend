@@ -353,21 +353,26 @@ const paymentCompetenceService = async (
     status: resp?.status ?? "",
   });
 
-  const year = await getYears(user.dateOfBirth ?? new Date());
-    let category = "";
-    if (year >= 13 && year <= 14) category = "13-14 años";
-    if (year >= 15 && year <= 16) category = "15-16 años";
-    if (year >= 17 && year <= 18) category = "17-18 años";
-    if (year >= 19 && year <= 20) category = "19-20 años";
-    if (year >= 21 && year <= 29) category = "21-29 años";
-    if (year >= 30 && year <= 34) category = "30-34 años";
-    if (year >= 35 && year <= 39) category = "35-39 años";
-    if (year >= 40 && year <= 44) category = "40-44 años";
-    if (year >= 45 && year <= 49) category = "45-49 años";
-    if (year >= 50 && year <= 54) category = "50-54 años";
-    if (year >= 55 && year <= 59) category = "55-59 años";
-    if (year >= 60 && year <= 64) category = "60-64 años";
-    if (year >= 65) category = "65+ años";
+  
+    let year = await getYears(user.dateOfBirth ?? new Date());
+
+
+      let category = "";
+      if (year >= 13 && year <= 14) category = "13-14 años";
+      if (year >= 15 && year <= 16) category = "15-16 años";
+      if (year >= 17 && year <= 18) category = "17-18 años";
+      if (year >= 19 && year <= 20) category = "19-20 años";
+      if (year >= 21 && year <= 29) category = "21-29 años";
+      if (year >= 30 && year <= 34) category = "30-34 años";
+      if (year >= 35 && year <= 39) category = "35-39 años";
+      if (year >= 40 && year <= 44) category = "40-44 años";
+      if (year >= 45 && year <= 49) category = "45-49 años";
+      if (year >= 50 && year <= 54) category = "50-54 años";
+      if (year >= 55 && year <= 59) category = "55-59 años";
+      if (year >= 60 && year <= 64) category = "60-64 años";
+      if (year >= 65) category = "65+ años";
+  
+  
 
   var competence = await CompetenceModel.findOne({ _id: item.competenceId });
   if (competence) {
