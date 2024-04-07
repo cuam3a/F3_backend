@@ -34,15 +34,20 @@ const formatUserData = async ({
 
   let img;
   if (noPhoto == false) {
-    if (fs.existsSync(`${process.cwd()}/upload/${model.photo}`)) {
-      img = await sharp(`${process.cwd()}/upload/${model.photo}`)
-        .resize({
-          width: 200,
-          height: 200,
-        })
-        .toBuffer();
-      img = img.toString("base64");
-    } else {
+    try{
+      if (fs.existsSync(`${process.cwd()}/upload/${model.photo}`)) {
+        img = await sharp(`${process.cwd()}/upload/${model.photo}`)
+          .resize({
+            width: 200,
+            height: 200,
+          })
+          .toBuffer();
+        img = img.toString("base64");
+      } else {
+        img = imgPhotoDefault;
+      }
+    }
+    catch(e:any){
       img = imgPhotoDefault;
     }
   }
