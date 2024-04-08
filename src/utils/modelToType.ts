@@ -67,6 +67,7 @@ const formatUserData = async ({
     dateOfBirth: model.dateOfBirth,
     celphone: model.celphone,
     city: model.country ?? "",
+    state: model.state ?? "",
     country: model.city ?? "",
     place: model.place ?? "",
     type: model.type ?? "",

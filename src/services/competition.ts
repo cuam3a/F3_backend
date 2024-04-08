@@ -47,6 +47,7 @@ const competitionsService = async (
     list[item].registered = exist ? true : false;
     list[item].registeredAs = list[item].registered ? "atleta" : "";
     list[item].registeredCategory = exist ? exist.category ?? "" : "";
+    list[item].registeredTypeAthlete = exist ? exist.typeAthlete ?? "" : "";
     list[item].registeredScore = exist ? exist.points ?? 0 : 0;
     list[item].registeredPlace = exist ? exist.place ?? 0 : 0;
   }
@@ -84,6 +85,7 @@ const competitionByIdService = async (
     item[0].registered = exist ? true : false;
     item[0].registeredAs = item[0].registered ? "atleta" : "";
     item[0].registeredCategory = exist ? exist.category ?? "" : "";
+    item[0].registeredTypeAthlete = exist ? exist.typeAthlete ?? "" : "";
     item[0].registeredScore = exist ? exist.points ?? 0 : 0;
     item[0].registeredPlace = exist ? exist.place ?? 0 : 0;
 
@@ -108,6 +110,7 @@ const competitionByUserIdService = async (
     competition.registeredAsAthlete = f.user == userId ? true : false;
     competition.registeredAsJudge = f.judgeUser == userId ? true : false;
     competition.registeredCategory = f.category ?? "";
+    competition.registeredTypeAthlete = f.typeAthlete ?? "";
     competition.registeredScore = f.points ?? 0;
     competition.registeredPlace = f.place ?? 0;
     listC.push(competition);
@@ -477,7 +480,7 @@ const competitionUpdateResultJudgeStartService = async (
     _id: new Types.ObjectId(data.id),
   });
   if (!exist) throw Error("NO EXISTE REGISTRO PRUEBAS USUARIO");
-
+console.log(data)
   const update = await CompetitionUserTestModel.findOneAndUpdate(
     { _id: data.id },
     {
@@ -508,17 +511,22 @@ const competitionUpdateResultJudgeStartService = async (
   });
 
   let judgeStatus = userCompetence?.judgeStatus;
-  allTest.forEach(element => {
+  let link = "";
+  let observation = "";
+  allTest.every(element => {
     if(element.isPending == false){
       judgeStatus = "calificado"
+      return true;
     }
     if(element.isPending == true){
       judgeStatus = "en espera altleta"
-      return true;
+      link = element.url;
+      observation = element.judgeObservation;
+      return false;
     }
     if(element.isValid == null){
       judgeStatus = userCompetence?.judgeStatus;
-      return true;
+      return false;
     }
   });
 console.log(judgeStatus)
@@ -534,7 +542,7 @@ console.log(judgeStatus)
 
 
   const user = await UserModel.findOne({
-    _id: userCompetence?.id,
+    _id: userCompetence?.user,
   });
   if(data.isPending == true && user){
     const transporter = nodemailer.createTransport({
@@ -554,7 +562,8 @@ console.log(judgeStatus)
       from: "hola@mexicof3.com",
       to: user.user,
       subject: "Error en información Pruebas F3",
-      html: "Error en informacion de alguna prueba enviada en la competencia F3, favor de revisar competencia",
+      html: `Hola Atleta identificamos que alguna evidencia de las que subiste tiene problemas (${link}), por favor verifica que es lo que esta mal para que corrijas antes de la fecha limite para evaluar evidencias.  
+      observacion de juez: ${observation}`,
     };
     await transporter.sendMail(email).catch((error: any) => {
       console.log(error);

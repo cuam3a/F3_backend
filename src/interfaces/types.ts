@@ -10,6 +10,7 @@ export type User = {
   dateOfBirth: Date;
   celphone: number;
   city: string;
+  state: string;
   country: string;
   place: string;
   type: string;

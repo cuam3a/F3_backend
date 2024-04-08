@@ -34,6 +34,9 @@ const UserSchema = new Schema<User>(
     country: {
       type: String,
     },
+    state: {
+      type: String,
+    },
     place: {
       type: String,
     },
