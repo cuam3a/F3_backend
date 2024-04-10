@@ -256,7 +256,7 @@ const formatCompetitionUserData = async (
   competitionType.points = model.points ?? 0;
   competitionType.createdAt = model.createdAt;
   competitionType.hasTest =
-    model.competitionUserTest?.length >= 3 ? true : false;
+    model.competitionUserTest?.length == 0 ? null : (model.competitionUserTest?.length >= 3 ? true : false);
   competitionType.user = await formatUserData({ model: model.user });
   competitionType.competition = formatCompetitionData(model.competition);
   competitionType.competitionUserTest =

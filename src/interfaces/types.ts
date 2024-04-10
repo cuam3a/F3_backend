@@ -235,10 +235,10 @@ export type CompetitionUser = {
   competition: Types.ObjectId | Partial<Competition>;
   user: Types.ObjectId | Partial<User>;
   judgeUser: Types.ObjectId | Partial<User>;
-  judgeStatus: 'pendiente' | 'calificado' | 'bloqueado' | 'en espera altleta' | 'en espera juez'
+  judgeStatus: 'pendiente' | 'calificado' | 'bloqueado' | 'en espera atleta' | 'en espera juez'
   payment: Types.ObjectId | Partial<Payment>;
   competitionUserTest: Partial<CompetitionUserTest>[];
-  hasTest: boolean;
+  hasTest: boolean | null;
 };
 
 export type CompetitionUserTest = {

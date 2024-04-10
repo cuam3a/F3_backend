@@ -377,13 +377,14 @@ const competitionJudgeStartService = async (
   id: string,
   userId: string
 ): Promise<Partial<CompetitionUser>> => {
+  console.log(id)
   const exist = await CompetitionUserModel.findOne({
     _id: id,
   });
   if (!exist) throw Error("NO EXISTE REGISTRO USUARIO COMPETENCIA");
   if (
     (exist.judgeStatus == "bloqueado" ||
-      exist.judgeStatus == "en espera altleta" ||
+      exist.judgeStatus == "en espera atleta" ||
       exist.judgeStatus == "en espera juez") &&
     exist.judgeUser != userId
   )
@@ -519,7 +520,7 @@ console.log(data)
       return true;
     }
     if(element.isPending == true){
-      judgeStatus = "en espera altleta"
+      judgeStatus = "en espera atleta"
       link = element.url;
       observation = element.judgeObservation;
       return false;
