@@ -508,7 +508,7 @@ console.log(data)
   });
 
   const allTest = await CompetitionUserTestModel.find({
-    competitionUser: exist.competitionUser,
+    competitionUser: exist.competitionUser, status: Status.ACTIVO
   });
 
   let judgeStatus = userCompetence?.judgeStatus;

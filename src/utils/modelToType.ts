@@ -15,6 +15,7 @@ import {
   QuestionTest,
   TestUser,
   CoachUser,
+  Status,
 } from "../interfaces/types";
 const fs = require("fs");
 const sharp = require("sharp");
@@ -260,7 +261,7 @@ const formatCompetitionUserData = async (
   competitionType.user = await formatUserData({ model: model.user });
   competitionType.competition = formatCompetitionData(model.competition);
   competitionType.competitionUserTest =
-    model.competitionUserTest?.map((itemTest: any) => {
+    model.competitionUserTest?.filter((f:any) => f.status == Status.ACTIVO ).map((itemTest: any) => {
       return formatCompetitionUserTestData(itemTest);
     }) ?? [];
 
@@ -270,7 +271,7 @@ const formatCompetitionUserData = async (
       ? await formatUserData({ model: model.judgeUser, noPhoto: false })
       : {};
     competitionType.competitionUserTest =
-      model.competitionUserTest?.map((itemTest: any) => {
+      model.competitionUserTest?.filter((f:any) => f.status == Status.ACTIVO ).map((itemTest: any) => {
         return formatCompetitionUserTestData(itemTest, type);
       }) ?? [];
   }
