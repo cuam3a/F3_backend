@@ -376,8 +376,8 @@ const paymentCompetenceService = async (
       userId: user.id,
       years: year,
       amount: item.transaction_amount,
-      category: category,
-      typeAthlete: item.typeAthlete,
+      category: category.toUpperCase(),
+      typeAthlete: item.typeAthlete?.toUpperCase() ?? "",
     });
     console.log(competenceUser);
   }
@@ -390,7 +390,7 @@ const paymentCompetenceService = async (
       years: year,
       amount: item.transaction_amount,
       category: category,
-      typeAthlete: item.typeAthlete,
+      typeAthlete: item.typeAthlete?.toUpperCase() ?? "",
       place:0,
       points:0,
       registeredAs: item.registeredAs ?? 'atleta',

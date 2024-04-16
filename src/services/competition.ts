@@ -51,10 +51,10 @@ const competitionsService = async (
     list[item].registeredScore = exist ? exist.points ?? 0 : 0;
     list[item].registeredPlace = exist ? exist.place ?? 0 : 0;
   }
-  list.forEach(async (f:any) => {
-    f.registered = await RegisteredCompetition(idU, f._id);
-    f.registeredAs = f.registered ? "atleta" : "";
-  });
+  // list.forEach(async (f:any) => {
+  //   f.registered = await RegisteredCompetition(idU, f._id);
+  //   f.registeredAs = f.registered ? "atleta" : "";
+  // });
   return list.map((item) => {
     return formatCompetitionData(item);
   });
@@ -99,11 +99,11 @@ const competitionByUserIdService = async (
   userId: string
 ): Promise<Partial<Competition>[]> => {
   const list = await CompetitionUserModel.find({
-   $or:[{ user: new Types.ObjectId(userId)},{ judgeUser: new Types.ObjectId(userId) }]
+   $or:[{ user: userId},{ judgeUser: userId }]
   }).populate("competition");
-  console.log(list);
   let listC: Competition[] = [];
   list.forEach((f) => {
+    console.log(f.user == userId)
     let competition = f.competition as Competition;
     competition.registered = true;
     competition.registeredAs = "atleta";
@@ -116,7 +116,6 @@ const competitionByUserIdService = async (
     listC.push(competition);
   });
   await CompetitionModel.populate(listC, "region");
-  console.log(list);
   return listC.map((item) => {
     return formatCompetitionData(item);
   });
