@@ -13,6 +13,7 @@ import { paymentError } from "../utils/dictionary";
 import { getFolio, getYears } from "../utils/init";
 import { formatPaymentData, formatUserData } from "../utils/modelToType";
 import MercadoPagoConfig, { Payment } from "mercadopago";
+import { getBonus, setUseBonus } from "../utils/competition";
 var nodemailer = require("nodemailer");
 
 const getSingleUser = async (id: string): Promise<Partial<User>> => {
@@ -307,7 +308,11 @@ const paymentCompetenceService = async (
   if (!competitionM) throw Error("NO EXISTE COMPETENCIA");
 
   let amout = competitionM.cost ?? 0;
-  if(competitionM.discountCode.toLowerCase().trim() == item.discountCode?.toLowerCase().trim()) amout = amout - (competitionM.discount ?? 0); 
+  if(competitionM.discountCode?.toLowerCase().trim() == item.discountCode?.toLowerCase().trim()) amout = amout - (competitionM.discount ?? 0);
+
+  const bonus = await getBonus(user.id);
+  if((amout - bonus) != item.transaction_amount) throw Error("MONTO DIFERENTE");
+  amout = amout - bonus;
   console.log(amout)
   //let newUser : Partial<User> = {};
   const client = new MercadoPagoConfig({
@@ -380,6 +385,10 @@ const paymentCompetenceService = async (
       typeAthlete: item.typeAthlete?.toUpperCase() ?? "",
     });
     console.log(competenceUser);
+  }
+
+  if(bonus > 0){
+    await setUseBonus(user.id);
   }
 
   var competition = await CompetitionModel.findOne({ _id: item.competenceId });

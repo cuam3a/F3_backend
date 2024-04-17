@@ -22,6 +22,7 @@ import {
 import { Types } from "mongoose";
 import { RegisteredCompetition } from "../utils/init";
 import CompetitionUserTestModel from "../models/competitionUserTest.model";
+import { getBonus } from "../utils/competition";
 var nodemailer = require("nodemailer");
 
 const competitionsService = async (
@@ -43,13 +44,14 @@ const competitionsService = async (
     var exist = await CompetitionUserModel.findOne({
       user: new Types.ObjectId(idU),
       competition: new Types.ObjectId(list[item]._id),
-    });
+    }).populate('user');
     list[item].registered = exist ? true : false;
     list[item].registeredAs = list[item].registered ? "atleta" : "";
     list[item].registeredCategory = exist ? exist.category ?? "" : "";
     list[item].registeredTypeAthlete = exist ? exist.typeAthlete ?? "" : "";
     list[item].registeredScore = exist ? exist.points ?? 0 : 0;
     list[item].registeredPlace = exist ? exist.place ?? 0 : 0;
+    list[item].userRegion = exist && exist.user ? (exist.user as Partial<User>).region : "";
   }
   // list.forEach(async (f:any) => {
   //   f.registered = await RegisteredCompetition(idU, f._id);
@@ -81,14 +83,16 @@ const competitionByIdService = async (
     var exist = await CompetitionUserModel.findOne({
       user: new Types.ObjectId(idU),
       competition: new Types.ObjectId(item[0]._id),
-    });
+    }).populate('user');
     item[0].registered = exist ? true : false;
     item[0].registeredAs = item[0].registered ? "atleta" : "";
     item[0].registeredCategory = exist ? exist.category ?? "" : "";
     item[0].registeredTypeAthlete = exist ? exist.typeAthlete ?? "" : "";
     item[0].registeredScore = exist ? exist.points ?? 0 : 0;
     item[0].registeredPlace = exist ? exist.place ?? 0 : 0;
-
+    item[0].userRegion = exist && exist.user ? (exist.user as Partial<User>).region : "";
+    item[0].bonus = await getBonus(idU);
+    
     return formatCompetitionData(item[0]);
   } else {
     return formatCompetitionData(null);

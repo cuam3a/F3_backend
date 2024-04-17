@@ -17,6 +17,7 @@ import {
   CoachUser,
   Status,
 } from "../interfaces/types";
+import { getBonus } from "./competition";
 const fs = require("fs");
 const sharp = require("sharp");
 
@@ -219,6 +220,7 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     registeredPlace: model.registeredPlace ?? 0,
     registeredScore: model.registeredScore ?? 0,
     status: model.status,
+    bonus: model.bonus,
     region: formatRegionData(model.region ?? null),
     competitionSteps:
       model.competitionSteps?.map((itemStep: any) => {

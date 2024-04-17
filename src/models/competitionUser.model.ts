@@ -39,6 +39,10 @@ const CompetitionUser = new Schema<CompetitionUser>(
         judgeStatus:{
             type: String,
         },
+        useBonus:{
+            type: Boolean,
+            default: false
+        },
         payment: {
             type: Schema.Types.ObjectId,
             ref:"payment"

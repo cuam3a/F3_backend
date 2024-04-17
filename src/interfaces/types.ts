@@ -209,6 +209,8 @@ export type Competition = {
   registeredPlace: number;
   registeredScore: number;
   registeredTypeAthlete: string;
+  userRegion: string;
+  bonus:number;
   competitionSteps: CompetitionSteps[];
 };
 
@@ -235,7 +237,8 @@ export type CompetitionUser = {
   competition: Types.ObjectId | Partial<Competition>;
   user: Types.ObjectId | Partial<User>;
   judgeUser: Types.ObjectId | Partial<User>;
-  judgeStatus: 'pendiente' | 'calificado' | 'bloqueado' | 'en espera atleta' | 'en espera juez'
+  judgeStatus: 'pendiente' | 'calificado' | 'bloqueado' | 'en espera atleta' | 'en espera juez';
+  useBonus: boolean;
   payment: Types.ObjectId | Partial<Payment>;
   competitionUserTest: Partial<CompetitionUserTest>[];
   hasTest: boolean | null;
