@@ -580,15 +580,23 @@ console.log(judgeStatus)
 const competitionVerifyDiscountService = async (
   id: string,
   code: string,
-): Promise<boolean> => {
+): Promise<number> => {
   const exist = await CompetitionModel.findOne({
     _id: id,
   });
   if (!exist) throw Error("NO EXISTE COMPETENCIA");
 
-  if(exist.discountCode.toLowerCase() !== code.toLowerCase()) return false;
+  if(!exist.discountCode || exist.discountCode.length == 0) return 0;
 
-  return true;
+  for await(let item of exist.discountCode){
+    let obj = JSON.parse(item)
+    if(obj && Object.keys(obj).length !== 0 && obj.constructor === Object){
+      if(obj.code.toLowerCase() == code.toLowerCase())
+        return obj.value;
+    }
+  }
+
+  return 0;
 };
 
 export {

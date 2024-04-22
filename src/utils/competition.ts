@@ -1,4 +1,5 @@
-import { CompetitionUser, Status, User } from "../interfaces/types";
+import { Types } from "mongoose";
+import { Competition, CompetitionUser, Status, User } from "../interfaces/types";
 import CompetitionModel from "../models/competition.model";
 import CompetitionUserModel from "../models/competitionUser.model";
 import CompetitionUserTestModel from "../models/competitionUserTest.model";
@@ -273,13 +274,17 @@ export const getBonus = async (userId: string) => {
     user: userId,
     status: Status.ACTIVO,
     place: { $lte: 10 },
-  });
+  }).populate("competition");
 
   if (!competitions || competitions.length == 0) {
     return 0;
   }
 
   const competition = competitions.sort((a, b) => b.amount - a.amount);
+  
+  if(competition[0].amount == 0 && (competition[0].competition as Competition)?.region.toString() == "65f7d1441dbb758962e93534")
+    return 550;
+
   return competition[0].amount;
 };
 

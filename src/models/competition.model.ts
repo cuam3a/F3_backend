@@ -62,7 +62,7 @@ const Competition = new Schema<Competition>(
       type: Number,
     },
     discountCode: {
-      type: String,
+      type: [String],
     },
     limitInscriptionDate: {
       type: Date,

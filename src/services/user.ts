@@ -14,6 +14,7 @@ import { getFolio, getYears } from "../utils/init";
 import { formatPaymentData, formatUserData } from "../utils/modelToType";
 import MercadoPagoConfig, { Payment } from "mercadopago";
 import { getBonus, setUseBonus } from "../utils/competition";
+import { competitionVerifyDiscountService } from "./competition";
 var nodemailer = require("nodemailer");
 
 const getSingleUser = async (id: string): Promise<Partial<User>> => {
@@ -27,7 +28,7 @@ const getListUser = async (): Promise<Promise<Partial<User>>[]> => {
     status: ["ACTIVO", "INACTIVO"],
     rol: ["ADMIN"],
   });
-  return users.map(async(user) => {
+  return users.map(async (user) => {
     return await formatUserData({ model: user });
   });
 };
@@ -76,16 +77,14 @@ const removeUser = async (id: string): Promise<Partial<User>> => {
 
 const resetpasswordUser = async (
   id: string,
-  oldPassword:string,
+  oldPassword: string,
   newPassword: string
 ): Promise<Partial<User>> => {
- 
   var exist = await UserModel.findOne<User>({ _id: id });
-  if(!exist) throw Error("NO EXISTE USUARIO");
+  if (!exist) throw Error("NO EXISTE USUARIO");
 
   const isCorrect = await verified(oldPassword, exist?.password ?? "");
   if (!isCorrect) throw Error("CONTRASEÑA ANTERIOR INCORRECTO");
-  
 
   const passHash = await encrypt(newPassword);
   const updateUser = await UserModel.findOneAndUpdate(
@@ -116,7 +115,7 @@ const updateProfileUser = async (
 const getSingleUsersService = async (id: string): Promise<Partial<User>> => {
   const user = await UserModel.findOne({ _id: id, rol: "USUARIO" });
   if (!user) throw Error("NO FOUND USER");
-  console.log(user)
+  console.log(user);
   return formatUserData({ model: user });
 };
 
@@ -250,27 +249,29 @@ const paymentUser = async (item: Partial<User>): Promise<Partial<User>> => {
     },
   });
   console.log(resp);
-  if (resp.status !== "approved" && resp.status !== "in_process"){
+  if (resp.status !== "approved" && resp.status !== "in_process") {
     throw Error(
       "PAGO INCORRECTO, MERCADOPAGO: " +
         paymentError(resp.status_detail as string)
     );
-    }
+  }
 
-    var paymentUser = await PaymentModel.create({
-      user: user.id,
-      cardName: resp?.card?.cardholder?.name ?? "",
-      cardNumber: `${resp?.card?.first_six_digits ?? ""}** **** ${resp?.card?.last_four_digits ?? ""}`,
-      year: resp?.card?.expiration_year ?? "",
-      month: resp?.card?.expiration_month ?? "",
-      amount: resp?.transaction_amount ?? 0,
-      date: new Date(),
-      authorization: resp?.authorization_code ?? "",
-      reference: resp?.transaction_details?.payment_method_reference_id ?? "",
-      description: resp?.description ?? "",
-      mp_id:  resp?.id ?? "",
-      status: resp?.status ?? "",
-    });
+  var paymentUser = await PaymentModel.create({
+    user: user.id,
+    cardName: resp?.card?.cardholder?.name ?? "",
+    cardNumber: `${resp?.card?.first_six_digits ?? ""}** **** ${
+      resp?.card?.last_four_digits ?? ""
+    }`,
+    year: resp?.card?.expiration_year ?? "",
+    month: resp?.card?.expiration_month ?? "",
+    amount: resp?.transaction_amount ?? 0,
+    date: new Date(),
+    authorization: resp?.authorization_code ?? "",
+    reference: resp?.transaction_details?.payment_method_reference_id ?? "",
+    description: resp?.description ?? "",
+    mp_id: resp?.id ?? "",
+    status: resp?.status ?? "",
+  });
 
   var isAthlete = user.isAthlete ?? false;
   var coachTest = user.coachTest ?? false;
@@ -300,20 +301,26 @@ const paymentUser = async (item: Partial<User>): Promise<Partial<User>> => {
 const paymentCompetenceService = async (
   item: Partial<User>
 ): Promise<Partial<User>> => {
-  console.log(item)
+  console.log(item);
   const user = await UserModel.findOne({ _id: item.id });
   if (!user) throw Error("NO EXISTE REGISTRO USUARIO");
 
-  const competitionM = await CompetitioModel.findOne({ _id: item.competenceId });
+  const competitionM = await CompetitioModel.findOne({
+    _id: item.competenceId,
+  });
   if (!competitionM) throw Error("NO EXISTE COMPETENCIA");
 
   let amout = competitionM.cost ?? 0;
-  if(competitionM.discountCode?.toLowerCase().trim() == item.discountCode?.toLowerCase().trim()) amout = amout - (competitionM.discount ?? 0);
-
-  const bonus = await getBonus(user.id);
-  if((amout - bonus) != item.transaction_amount) throw Error("MONTO DIFERENTE");
-  amout = amout - bonus;
-  console.log(amout)
+  let bonus = 0;
+  if (item.discountCode && item.discountCode?.toLowerCase().trim() != "") {
+    amout = amout - await competitionVerifyDiscountService(competitionM.id, item.discountCode??"");
+  } else {
+    bonus = await getBonus(user.id);
+    if (amout - bonus != item.transaction_amount)
+      throw Error("MONTO DIFERENTE");
+    amout = amout - bonus;
+  }
+  console.log(amout);
   //let newUser : Partial<User> = {};
   const client = new MercadoPagoConfig({
     accessToken:
@@ -336,7 +343,7 @@ const paymentCompetenceService = async (
   });
   console.log(resp);
 
-  if (resp.status !== "approved" && resp.status !== "in_process"){
+  if (resp.status !== "approved" && resp.status !== "in_process") {
     throw Error(
       "PAGO INCORRECTO, MERCADOPAGO: " +
         paymentError(resp.status_detail as string)
@@ -346,7 +353,9 @@ const paymentCompetenceService = async (
   var paymentUser = await PaymentModel.create({
     user: user.id,
     cardName: resp?.card?.cardholder?.name ?? "",
-    cardNumber: `${resp?.card?.first_six_digits ?? ""}** **** ${resp?.card?.last_four_digits ?? ""}`,
+    cardNumber: `${resp?.card?.first_six_digits ?? ""}** **** ${
+      resp?.card?.last_four_digits ?? ""
+    }`,
     year: resp?.card?.expiration_year ?? "",
     month: resp?.card?.expiration_month ?? "",
     amount: resp?.transaction_amount ?? 0,
@@ -354,25 +363,25 @@ const paymentCompetenceService = async (
     authorization: resp?.authorization_code ?? "",
     reference: resp?.transaction_details?.payment_method_reference_id ?? "",
     description: resp?.description ?? "",
-    mp_id:  resp?.id ?? "",
+    mp_id: resp?.id ?? "",
     status: resp?.status ?? "",
   });
 
   const year = await getYears(user.dateOfBirth ?? new Date());
-    let category = "";
-    if (year >= 13 && year <= 14) category = "13-14 años";
-    if (year >= 15 && year <= 16) category = "15-16 años";
-    if (year >= 17 && year <= 18) category = "17-18 años";
-    if (year >= 19 && year <= 20) category = "19-20 años";
-    if (year >= 21 && year <= 29) category = "21-29 años";
-    if (year >= 30 && year <= 34) category = "30-34 años";
-    if (year >= 35 && year <= 39) category = "35-39 años";
-    if (year >= 40 && year <= 44) category = "40-44 años";
-    if (year >= 45 && year <= 49) category = "45-49 años";
-    if (year >= 50 && year <= 54) category = "50-54 años";
-    if (year >= 55 && year <= 59) category = "55-59 años";
-    if (year >= 60 && year <= 64) category = "60-64 años";
-    if (year >= 65) category = "65+ años";
+  let category = "";
+  if (year >= 13 && year <= 14) category = "13-14 años";
+  if (year >= 15 && year <= 16) category = "15-16 años";
+  if (year >= 17 && year <= 18) category = "17-18 años";
+  if (year >= 19 && year <= 20) category = "19-20 años";
+  if (year >= 21 && year <= 29) category = "21-29 años";
+  if (year >= 30 && year <= 34) category = "30-34 años";
+  if (year >= 35 && year <= 39) category = "35-39 años";
+  if (year >= 40 && year <= 44) category = "40-44 años";
+  if (year >= 45 && year <= 49) category = "45-49 años";
+  if (year >= 50 && year <= 54) category = "50-54 años";
+  if (year >= 55 && year <= 59) category = "55-59 años";
+  if (year >= 60 && year <= 64) category = "60-64 años";
+  if (year >= 65) category = "65+ años";
 
   var competence = await CompetenceModel.findOne({ _id: item.competenceId });
   if (competence) {
@@ -387,7 +396,7 @@ const paymentCompetenceService = async (
     console.log(competenceUser);
   }
 
-  if(bonus > 0){
+  if (bonus > 0) {
     await setUseBonus(user.id);
   }
 
@@ -400,9 +409,9 @@ const paymentCompetenceService = async (
       amount: item.transaction_amount,
       category: category,
       typeAthlete: item.typeAthlete?.toUpperCase() ?? "",
-      place:0,
-      points:0,
-      registeredAs: item.registeredAs ?? 'atleta',
+      place: 0,
+      points: 0,
+      registeredAs: item.registeredAs ?? "atleta",
       payment: paymentUser.id,
       status: Status.ACTIVO,
     });
@@ -450,9 +459,9 @@ const getPaymentService = async (
   userId: string
 ): Promise<Partial<PaymentUser>[]> => {
   const payments = await PaymentModel.find({
-    user:userId
+    user: userId,
   });
-  return payments.map( (payment) => {
+  return payments.map((payment) => {
     return formatPaymentData(payment);
   });
 };

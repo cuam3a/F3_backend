@@ -192,7 +192,7 @@ export type Competition = {
   publicationDate: Date;
   withDiscount: boolean;
   discount: number;
-  discountCode: string;
+  discountCode: string[];
   limitInscriptionDate: Date;
   limitQualificationDate: Date;
   playbookDoc: string;
