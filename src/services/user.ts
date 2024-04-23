@@ -313,13 +313,17 @@ const paymentCompetenceService = async (
   let amout = competitionM.cost ?? 0;
   let bonus = 0;
   if (item.discountCode && item.discountCode?.toLowerCase().trim() != "") {
-    amout = amout - await competitionVerifyDiscountService(competitionM.id, item.discountCode??"");
-  } else {
-    bonus = await getBonus(user.id);
-    if (amout - bonus != item.transaction_amount)
-      throw Error("MONTO DIFERENTE");
-    amout = amout - bonus;
+    amout =
+      amout -
+      (await competitionVerifyDiscountService(
+        competitionM.id,
+        item.discountCode ?? ""
+      ));
   }
+  bonus = await getBonus(user.id);
+  if (amout - bonus != item.transaction_amount) throw Error("MONTO DIFERENTE");
+  amout = amout - bonus;
+
   console.log(amout);
   //let newUser : Partial<User> = {};
   const client = new MercadoPagoConfig({
