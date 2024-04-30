@@ -62,15 +62,32 @@ export const getYears = async (dateOfBirth: Date) => {
     var hoy = new Date();
     var cumpleanos = dateOfBirth;
     var edad = hoy.getFullYear() - cumpleanos.getFullYear();
+    //   var m = hoy.getMonth() - cumpleanos.getMonth();
+
+    //   if (m < 0 || (m === 0 && hoy.getDate() < cumpleanos.getDate())) {
+    //     edad--;
+    //   }
+
+    //  if (cumpleanos.getMonth() > new Date().getMonth() || (cumpleanos.getMonth() == new Date().getMonth() && cumpleanos.getDay() > new Date().getDay())){
+    //   edad++;
+    //  }
+
+    return edad;
+  } catch (e) {
+    return 1;
+  }
+};
+
+export const getRealYears = async (dateOfBirth: Date) => {
+  try {
+    var hoy = new Date();
+    var cumpleanos = dateOfBirth;
+    var edad = hoy.getFullYear() - cumpleanos.getFullYear();
     var m = hoy.getMonth() - cumpleanos.getMonth();
 
     if (m < 0 || (m === 0 && hoy.getDate() < cumpleanos.getDate())) {
       edad--;
     }
-
-   if (cumpleanos.getMonth() > new Date().getMonth() && cumpleanos.getDay() > new Date().getDay()){
-    edad++;
-   }
 
     return edad;
   } catch (e) {
