@@ -15,6 +15,7 @@ import { formatPaymentData, formatUserData } from "../utils/modelToType";
 import MercadoPagoConfig, { Payment } from "mercadopago";
 import { getBonus, setUseBonus } from "../utils/competition";
 import { competitionVerifyDiscountService } from "./competition";
+import { payment } from "../mail/payment";
 var nodemailer = require("nodemailer");
 
 const getSingleUser = async (id: string): Promise<Partial<User>> => {
@@ -325,33 +326,40 @@ const paymentCompetenceService = async (
   amout = amout - bonus;
 
   console.log(amout);
-  //let newUser : Partial<User> = {};
-  const client = new MercadoPagoConfig({
-    accessToken:
-      "APP_USR-913357541633645-060718-4787491c0ca96bdc245134bacb38901a-1135472336",
-    options: { timeout: 5000 },
-  });
-  const payment = new Payment(client);
+  let resp: any = {};
+  if (item.paymentMethod == "tarjeta") {
+    //let newUser : Partial<User> = {};
+    const client = new MercadoPagoConfig({
+      accessToken:
+        "APP_USR-913357541633645-060718-4787491c0ca96bdc245134bacb38901a-1135472336",
+      options: { timeout: 5000 },
+    });
+    const payment = new Payment(client);
 
-  const resp = await payment.create({
-    body: {
-      token: item.token,
-      installments: item.installments,
-      transaction_amount: amout,
-      description: item.descripcion,
-      payment_method_id: item.payment_method_id,
-      payer: {
-        email: item.email,
+    resp = await payment.create({
+      body: {
+        token: item.token,
+        installments: parseInt(item.installments as any),
+        transaction_amount: amout,
+        description: item.descripcion,
+        payment_method_id: item.payment_method_id,
+        payer: {
+          email: item.email,
+        },
       },
-    },
-  });
-  console.log(resp);
-
-  if (resp.status !== "approved" && resp.status !== "in_process") {
-    throw Error(
-      "PAGO INCORRECTO, MERCADOPAGO: " +
-        paymentError(resp.status_detail as string)
-    );
+    });
+    console.log(resp);
+    if (resp.status !== "approved" && resp.status !== "in_process") {
+      throw Error(
+        "PAGO INCORRECTO, MERCADOPAGO: " +
+          paymentError(resp.status_detail as string)
+      );
+    }
+  } else {
+    if (!item.transferFile) throw Error("NO EXISTE ARCHIVO TRANSFERENCIA");
+    resp.status = "TRANSFER PENDING";
+    resp.description = item.descripcion;
+    resp.transaction_amount = amout;
   }
 
   var paymentUser = await PaymentModel.create({
@@ -369,6 +377,8 @@ const paymentCompetenceService = async (
     description: resp?.description ?? "",
     mp_id: resp?.id ?? "",
     status: resp?.status ?? "",
+    transferFile: item.transferFile ?? "",
+    paymentMethod: item.paymentMethod ?? "",
   });
 
   const year = await getYears(user.dateOfBirth ?? new Date());
@@ -422,6 +432,30 @@ const paymentCompetenceService = async (
     console.log(competitionUser);
   }
 
+  if (item.paymentMethod == "transferencia") {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.zoho.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "hola@mexicof3.com",
+        pass: "2EBHKpbcqh9.",
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+
+    const email = {
+      from: "hola@mexicof3.com",
+      to: user.user,
+      subject: "Registro de inscripcion en proceso",
+      html: await payment(user),
+    };
+    await transporter.sendMail(email).catch((error: any) => {
+      console.log(error);
+    });
+  }
   return formatUserData({ model: user });
 };
 

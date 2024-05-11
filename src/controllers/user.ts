@@ -252,8 +252,21 @@ const paymentUsers = async ({ body, idUser }: RequestExt, res: Response) => {
   }
 };
 
-const paymentCompetence = async ({ body, idUser }: RequestExt, res: Response) => {
+const paymentCompetence = async ({ body, files, idUser }: RequestExt, res: Response) => {
   try {
+    console.log(files)
+    if (files && Array.isArray(files)) {
+      files.forEach((ele) => {
+        if (ele.fieldname == "transferFile") {
+          body.transferFile = ele.filename;
+          fs.rename(
+            ele.path,
+            path.resolve(`${process.cwd()}/upload/payment/`, ele.filename),
+            (error:any) => { console.log(error); }
+          );
+        }
+      });
+    }
     console.log(body)
     const idU = idUser?.idUser
     const deletedUser = await paymentCompetenceService(body);

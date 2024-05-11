@@ -3,7 +3,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "token.01010101";
 
 const generateToken = (idUser: string) => {
   const jwt = sign({ idUser }, JWT_SECRET, {
-    expiresIn: "2h",
+    expiresIn: "4h",
   });
   return jwt;
 };

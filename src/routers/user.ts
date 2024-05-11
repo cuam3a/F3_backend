@@ -28,7 +28,8 @@ var storage = multer.diskStorage({
       if (
         file.mimetype == "image/png" ||
         file.mimetype == "image/jpg" ||
-        file.mimetype == "image/jpeg" 
+        file.mimetype == "image/jpeg" ||
+        file.mimetype == "application/pdf" 
       ) {
         cb(null, true);
       } else {
@@ -60,7 +61,7 @@ router.post("/sendcoach/", checkJwt, sendCoach);
 
 
 
-router.post("/paymentCompetence/", checkJwt, paymentCompetence);
+router.post("/paymentCompetence/", checkJwt,  upload.any(), paymentCompetence);
 router.post("/payment/", checkJwt, paymentUsers);
 
 export { router };

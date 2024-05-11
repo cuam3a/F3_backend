@@ -41,6 +41,12 @@ const PaymentSchema = new Schema<Payment>(
         status: {
             type: String,
         },
+        transferFile: {
+            type:String,
+        },
+        paymentMethod: {
+            type:String,
+        }
     },
     {
         versionKey: false,

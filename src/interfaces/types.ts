@@ -64,6 +64,8 @@ export type User = {
   judgeTest:boolean;
   coachTest:boolean;
   registeredAs?:string;
+  transferFile?:string;
+  paymentMethod?:string;
 };
 
 export enum Rol {
@@ -91,6 +93,8 @@ export type Payment = {
   description: string;
   mp_id: string;
   status: string;
+  transferFile?:string;
+  paymentMethod?:string;
 };
 
 export type OpenpayCharge = {
