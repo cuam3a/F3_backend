@@ -271,6 +271,7 @@ const setForTime10Weight = async (arr: any[], category: string) => {
 export const getBonus = async (userId: string) => {
   const competitions = await CompetitionUserModel.find<CompetitionUser>({
     useBonus: { $ne: true },
+    typeEvent: 'online',
     user: userId,
     status: Status.ACTIVO,
     place: { $lte: 10 },
