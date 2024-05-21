@@ -246,6 +246,7 @@ export type CompetitionUser = {
   payment: Types.ObjectId | Partial<Payment>;
   competitionUserTest: Partial<CompetitionUserTest>[];
   hasTest: boolean | null;
+  userTest: Partial<UserTest>;
 };
 
 export type CompetitionUserTest = {
@@ -360,3 +361,33 @@ export type CoachUser = {
   aceppted: boolean;
   status: Status;
 };
+
+export type CompetitionTest = {
+  id: string;
+  competition: Types.ObjectId | Partial<Competition>
+  name: string;
+  description: string;
+  ordenTest: number;
+  testType: string;
+  Cap: number;
+  altoRendimiento: string[];
+  iniciacionDeportiva: string[];
+}
+
+export type UserTest = {
+  name: string;
+  edgeSupported: string[];
+  description: string;
+  level: string;
+  ordenTest: number;
+  testType: string;
+  Cap: number;
+  ejercices: EjerciceTest[];
+  Observations: string;
+}
+
+export type EjerciceTest = {
+  order: number;
+  name: string;
+  value: number;
+}

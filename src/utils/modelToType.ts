@@ -277,6 +277,7 @@ const formatCompetitionUserData = async (
         return formatCompetitionUserTestData(itemTest, type);
       }) ?? [];
   }
+  competitionType.userTest = model.userTest;
 
   return competitionType;
 };

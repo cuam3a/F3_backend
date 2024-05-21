@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { Competition, CompetitionUser, Status, User } from "../interfaces/types";
+import { Competition, CompetitionTest, CompetitionUser, Status, User, UserTest } from "../interfaces/types";
 import CompetitionModel from "../models/competition.model";
 import CompetitionUserModel from "../models/competitionUser.model";
 import CompetitionUserTestModel from "../models/competitionUserTest.model";
@@ -309,3 +309,35 @@ export const setUseBonus = async (userId: string) => {
   );
   return true;
 };
+
+export const getUserTest = (category:string, typeAthlete:string, competitionTest:CompetitionTest) : Partial<UserTest> => {
+  if(typeAthlete.toUpperCase() == "ALTO_RENDIMIENTO" || typeAthlete.toLowerCase() == "avanzado" ){
+    const test : UserTest[] = competitionTest.altoRendimiento.map(ele => {return JSON.parse(ele)})
+    for(let i=0; i< test.length; i++){
+      let userTest = test[i];
+      if(userTest.edgeSupported.includes(category)){
+        userTest.Cap = competitionTest.Cap;
+        userTest.name = competitionTest.name;
+        userTest.ordenTest = competitionTest.ordenTest;
+        userTest.testType = competitionTest.testType;
+        userTest.description = competitionTest.description;
+        return userTest;
+      }
+    }
+  }
+  if(typeAthlete.toUpperCase() == "INICIACION_DEPORTIVA" || typeAthlete.toLowerCase() == "principiante" ){
+    const test : UserTest[] = competitionTest.iniciacionDeportiva.map(ele => {return JSON.parse(ele)})
+    for(let i=0; i< test.length; i++){
+      let userTest = test[i];
+      if(userTest.edgeSupported.includes(category)){
+        userTest.Cap = competitionTest.Cap;
+        userTest.name = competitionTest.name;
+        userTest.ordenTest = competitionTest.ordenTest;
+        userTest.testType = competitionTest.testType;
+        userTest.description = competitionTest.description;
+        return userTest;
+      }
+    }
+  }
+  return {};
+}
