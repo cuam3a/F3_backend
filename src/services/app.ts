@@ -19,19 +19,20 @@ import { generateToken } from "../utils/jwt.handle";
 
 const loginAppService = async ({ user, password }: Partial<User>) => {
   if (user == "" || password == "" || user == null || password == null)
-    throw Error("USER OR PASSWORD INCORRECT");
+    throw Error("USUARIO O PASSWORD INCORRECTO");
 
   let checkIs = await UserModel.findOne({
     user: user.trim().toUpperCase(),
     status: "ACTIVO",
+    isJudge: true,
   });
 
-  if (!checkIs || checkIs == null) throw Error("USER OR PASSWORD INCORRECT");
+  if (!checkIs || checkIs == null) throw Error("USUARIO INCORRECTO");
 
   const passwordHash = checkIs.password;
   const isCorrect = await verified(password ?? "", passwordHash);
 
-  if (!isCorrect) throw Error("USER OR PASSWORD INCORRECT");
+  if (!isCorrect) throw Error("PASSWORD INCORRECTO");
 
   const token = generateToken(`${checkIs._id}`);
   return token;
@@ -61,8 +62,11 @@ const competitionUsersAppService = async (
 
   let arr:Partial<CompetitionUser>[] = [];
   for (let item of list) {
-    var userTest = await CompetitionTestModel.findOne({competition: item.competition })
-    if(userTest) item.userTest = getUserTest(item.category, item.typeAthlete, userTest)
+    var userTest = await CompetitionTestModel.find({competition: item.competition })
+    item.userTest = [];
+    for(let test of userTest){
+      if(test) item.userTest.push(getUserTest(item.category, item.typeAthlete, test))
+    }
     arr.push(await formatCompetitionUserData(item));
   };
   return arr;

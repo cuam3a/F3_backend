@@ -246,7 +246,7 @@ export type CompetitionUser = {
   payment: Types.ObjectId | Partial<Payment>;
   competitionUserTest: Partial<CompetitionUserTest>[];
   hasTest: boolean | null;
-  userTest: Partial<UserTest>;
+  userTest: Partial<UserTest>[];
 };
 
 export type CompetitionUserTest = {
