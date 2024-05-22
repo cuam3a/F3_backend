@@ -28,6 +28,9 @@ const CompetitionTest = new Schema<CompetitionTest>(
         iniciacionDeportiva: {
             type: [String],
         },
+        testSubType:{
+            type: String,
+        },
     },
     {
         versionKey: false,
