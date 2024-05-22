@@ -372,6 +372,7 @@ export type CompetitionTest = {
   Cap: number;
   altoRendimiento: string[];
   iniciacionDeportiva: string[];
+  testSubType: string;
 }
 
 export type UserTest = {
@@ -384,6 +385,8 @@ export type UserTest = {
   Cap: number;
   ejercices: EjerciceTest[];
   Observations: string;
+  value: number;
+  testSubType: string;
 }
 
 export type EjerciceTest = {
