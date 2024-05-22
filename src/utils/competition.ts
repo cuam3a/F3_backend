@@ -321,6 +321,7 @@ export const getUserTest = (category:string, typeAthlete:string, competitionTest
         userTest.ordenTest = competitionTest.ordenTest;
         userTest.testType = competitionTest.testType;
         userTest.description = competitionTest.description;
+        userTest.testSubType = competitionTest.testSubType;
         return userTest;
       }
     }
