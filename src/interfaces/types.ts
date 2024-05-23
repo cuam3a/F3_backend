@@ -267,6 +267,7 @@ export type CompetitionUserTest = {
   isPending: Boolean;
   qualificationDate: Date;
   status: Status;
+  competitionTest: Types.ObjectId | Partial<CompetitionTest>;
 };
 
 export enum TestType {

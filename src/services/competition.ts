@@ -385,14 +385,14 @@ const competitionJudgeStartService = async (
     _id: id,
   });
   if (!exist) throw Error("NO EXISTE REGISTRO USUARIO COMPETENCIA");
-  if (
-    (exist.judgeStatus == "bloqueado" ||
-      exist.judgeStatus == "en espera atleta" ||
-      exist.judgeStatus == "en espera juez") &&
-    exist.judgeUser != userId
-  )
-    throw Error("USUARIO CALIFICADO POR OTRO JUEZ");
-  if (exist.judgeStatus == "calificado") throw Error("USUARIO CALIFICADO");
+  // if (
+  //   (exist.judgeStatus == "bloqueado" ||
+  //     exist.judgeStatus == "en espera atleta" ||
+  //     exist.judgeStatus == "en espera juez") &&
+  //   exist.judgeUser != userId
+  // )
+  //   throw Error("USUARIO CALIFICADO POR OTRO JUEZ");
+  // if (exist.judgeStatus == "calificado") throw Error("USUARIO CALIFICADO");
 
   const update = await CompetitionUserModel.findOneAndUpdate(
     { _id: exist._id },

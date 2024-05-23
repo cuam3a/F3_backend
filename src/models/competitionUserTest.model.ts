@@ -56,6 +56,10 @@ const CompetitionUserTest = new Schema<CompetitionUserTest>(
       enum: ["ACTIVO", "INACTIVO", "ELIMINADO"],
       required: true,
     },
+    competitionTest: {
+      type: Schema.Types.ObjectId,
+      ref:"competitiontest"
+    }
   },
   {
     versionKey: false,

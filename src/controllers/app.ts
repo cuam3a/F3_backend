@@ -5,6 +5,8 @@ import {
   loginAppService,
   competitionsAppService,
   competitionUsersAppService,
+  competitionSaveTestService,
+  competitionUpdateTestService,
 } from "../services/app";
 import { handleError } from "../utils/error.handle";
 const fs = require("fs");
@@ -57,8 +59,44 @@ const competitionUsers = async (
   }
 };
 
+const competitionSaveTest = async (
+  { body, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const item = await competitionSaveTestService(idU, body);
+    const response: GetListResponse = {
+      status: 200,
+      data: item,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR AGREGAR COMPETENCIA", e);
+  }
+};
+
+const competitionUpdateTest = async (
+  { body, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const item = await competitionUpdateTestService(body);
+    const response: GetListResponse = {
+      status: 200,
+      data: item,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR AGREGAR COMPETENCIA", e);
+  }
+};
+
 export {
   login,
   competitions,
   competitionUsers,
+  competitionSaveTest,
+  competitionUpdateTest,
 };

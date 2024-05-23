@@ -3,7 +3,9 @@ import { checkJwt, isJudge } from "../middlewares/session";
 import {
   competitions,
   competitionUsers,
-  login
+  login,
+  competitionSaveTest,
+  competitionUpdateTest,
 } from "../controllers/app";
 import multer, { FileFilterCallback } from "multer";
 
@@ -45,4 +47,6 @@ const router = Router();
 router.get("/", checkJwt, isJudge, competitions);
 router.get("/users/:competitionId", checkJwt, isJudge, competitionUsers);
 router.post("/login", login);
+router.post("/judge/saveResult", checkJwt, isJudge, competitionSaveTest);
+router.post("/judge/updateResult", checkJwt, isJudge, competitionUpdateTest);
 export { router };
