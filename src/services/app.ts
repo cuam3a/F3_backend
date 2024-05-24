@@ -296,6 +296,9 @@ const competitionSaveTestService = async (
     competitionTest: data.competitionTest,
     isPending: data.isPending,
     isValid: data.isValid,
+    judgeReps: data.reps,
+    judgeTime: data.time,
+    judgeWeight: data.weight,
     qualificationDate: new Date(),
     status: Status.ACTIVO,
   });
@@ -329,9 +332,12 @@ const competitionUpdateTestService = async (
   const update = await CompetitionUserTestModel.findOneAndUpdate(
     { _id: data.id },
     {
-      judgeTime: data.judgeTime,
-      judgeReps: data.judgeReps,
-      judgeWeight: data.judgeWeight,
+      time: data.time,
+      reps: data.reps,
+      weight: data.weight,
+      judgeTime: data.time,
+      judgeReps: data.reps,
+      judgeWeight: data.weight,
       judgeQualification: data.judgeQualification,
       judgeObservation: data.judgeObservation,
       isValid: data.isValid,
