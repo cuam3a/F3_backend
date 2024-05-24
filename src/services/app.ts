@@ -20,6 +20,7 @@ import { verified } from "../utils/bcypt.handle";
 import { generateToken } from "../utils/jwt.handle";
 import CompetitionUserTestModel from "../models/competitionUserTest.model";
 import { Types } from "mongoose";
+import { category } from "../controllers/app";
 
 const loginAppService = async ({ user, password }: Partial<User>) => {
   if (user == "" || password == "" || user == null || password == null)
@@ -47,13 +48,201 @@ const competitionsAppService = async (
 ): Promise<Partial<Competition>[]> => {
   const list = await CompetitionModel.find({
     status: Status.ACTIVO,
-    endDate: { $gte : new Date()}
+    endDate: { $gte: new Date() },
   });
   await CompetitionModel.populate(list, "region");
-  
+
   return list.map((item) => {
     return formatCompetitionData(item);
   });
+};
+
+const competitionCategoryUsersAppService = async (
+  competitionId: string
+): Promise<string[]> => {
+  const list = await CompetitionUserModel.find({
+    status: Status.ACTIVO,
+    competition: competitionId,
+  }).populate('user');
+
+  let categoryData: string[] = [];
+  if (list.length) {
+    const cat = list
+      .map((m: any) => {
+        return `${m.category ?? ""} ${m.typeAthlete ?? "AVANZADO"} ${m.user?.gender ?? "---"}`;
+      })
+      .filter(
+        (value: any, index: any, array: any) => array.indexOf(value) === index
+      );
+
+    cat
+      .filter(
+        (f: string) =>
+          f.toUpperCase().includes("FEMENIL") &&
+          f.toUpperCase().includes("PRINCIPIANTE")
+      )
+      .sort(
+        (a: any, b: any) =>
+          parseInt(a.substring(0, 2)) - parseInt(b.substring(0, 2))
+      )
+      .forEach((category: string) => {
+        categoryData.push(category.toUpperCase());
+      });
+    cat
+      .filter(
+        (f: string) =>
+          f.toUpperCase().includes("FEMENIL") &&
+          f.toUpperCase().includes("AVANZADO")
+      )
+      .sort(
+        (a: any, b: any) =>
+          parseInt(a.substring(0, 2)) - parseInt(b.substring(0, 2))
+      )
+      .forEach((category: string) => {
+        categoryData.push(category.toUpperCase());
+      });
+    cat
+      .filter(
+        (f: string) =>
+          f.toUpperCase().includes("VARONIL") &&
+          f.toUpperCase().includes("PRINCIPIANTE")
+      )
+      .sort(
+        (a: any, b: any) =>
+          parseInt(a.substring(0, 2)) - parseInt(b.substring(0, 2))
+      )
+      .forEach((category: string) => {
+        categoryData.push(category.toUpperCase());
+      });
+    cat
+      .filter(
+        (f: string) =>
+          f.toUpperCase().includes("VARONIL") &&
+          f.toUpperCase().includes("AVANZADO")
+      )
+      .sort(
+        (a: any, b: any) =>
+          parseInt(a.substring(0, 2)) - parseInt(b.substring(0, 2))
+      )
+      .forEach((category: string) => {
+        categoryData.push(category.toUpperCase());
+      });
+
+      cat
+      .filter(
+        (f: string) =>
+          f.toUpperCase().includes("FEMENIL") &&
+          f.toUpperCase().includes("INICIACION_DEPORTIVA")
+      )
+      .sort(
+        (a: any, b: any) =>
+          parseInt(a.substring(0, 2)) - parseInt(b.substring(0, 2))
+      )
+      .forEach((category: string) => {
+        categoryData.push(category.toUpperCase());
+      });
+    cat
+      .filter(
+        (f: string) =>
+          f.toUpperCase().includes("FEMENIL") &&
+          f.toUpperCase().includes("ALTO_RENDIMIENTO")
+      )
+      .sort(
+        (a: any, b: any) =>
+          parseInt(a.substring(0, 2)) - parseInt(b.substring(0, 2))
+      )
+      .forEach((category: string) => {
+        categoryData.push(category.toUpperCase());
+      });
+    cat
+      .filter(
+        (f: string) =>
+          f.toUpperCase().includes("VARONIL") &&
+          f.toUpperCase().includes("INICIACION_DEPORTIVA")
+      )
+      .sort(
+        (a: any, b: any) =>
+          parseInt(a.substring(0, 2)) - parseInt(b.substring(0, 2))
+      )
+      .forEach((category: string) => {
+        categoryData.push(category.toUpperCase());
+      });
+    cat
+      .filter(
+        (f: string) =>
+          f.toUpperCase().includes("VARONIL") &&
+          f.toUpperCase().includes("ALTO_RENDIMIENTO")
+      )
+      .sort(
+        (a: any, b: any) =>
+          parseInt(a.substring(0, 2)) - parseInt(b.substring(0, 2))
+      )
+      .forEach((category: string) => {
+        categoryData.push(category.toUpperCase());
+      });
+  }
+  return categoryData;
+};
+
+const competitionUsersByCategoryAppService = async (
+  competitionId: string,
+  category: string
+): Promise<Partial<CompetitionUser>[]> => {
+  let list = await CompetitionUserModel.find({
+    status: Status.ACTIVO,
+    competition: competitionId,
+  }).populate("user");
+  console.log({ competitionId, category})
+  list.forEach((ele:CompetitionUser) => ele.category = `${ele.category ?? ""} ${ele.typeAthlete ?? "AVANZADO"} ${(ele.user as Partial<User>).gender ?? "---"}`)
+
+  list = list.filter(ele => ele.category.toUpperCase() == category.toUpperCase());
+  let arr: Partial<CompetitionUser>[] = [];
+  for (let item of list) {
+    arr.push(await formatCompetitionUserData(item));
+  }
+  return arr;
+};
+
+const competitionUserAppService = async (
+  competitionId: string,
+  userId: string
+): Promise<Partial<CompetitionUser>> => {
+  // const item = await CompetitionUserModel.findOne({
+  //   status: Status.ACTIVO,
+  //   competition: competitionId,
+  //   user: userId,
+  // }).populate("user");
+
+  const list = await CompetitionUserModel.aggregate([
+    {
+      $match: {
+        status: Status.ACTIVO,
+        competition: new Types.ObjectId(competitionId),
+        user: new Types.ObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        as: "competitionUserTest",
+        from: "competitionusertests",
+        foreignField: "competitionUser",
+        localField: "_id",
+      },
+    },
+  ]);
+  await CompetitionUserModel.populate(list, "user");
+
+  if (list.length == 0) throw Error("NO EXISTE REGISTRO USUARIO COMPETENCIA");
+
+  var userTest = await CompetitionTestModel.find({
+    competition: list[0].competition,
+  });
+  list[0].userTest = [];
+  for (let test of userTest) {
+    if (test)
+      list[0].userTest.push(getUserTest(list[0].category, list[0].typeAthlete, test));
+  }
+  return await formatCompetitionUserData(list[0], "judge");
 };
 
 const competitionUsersAppService = async (
@@ -64,15 +253,18 @@ const competitionUsersAppService = async (
     competition: competitionId,
   }).populate("user");
 
-  let arr:Partial<CompetitionUser>[] = [];
+  let arr: Partial<CompetitionUser>[] = [];
   for (let item of list) {
-    var userTest = await CompetitionTestModel.find({competition: item.competition })
+    var userTest = await CompetitionTestModel.find({
+      competition: item.competition,
+    });
     item.userTest = [];
-    for(let test of userTest){
-      if(test) item.userTest.push(getUserTest(item.category, item.typeAthlete, test))
+    for (let test of userTest) {
+      if (test)
+        item.userTest.push(getUserTest(item.category, item.typeAthlete, test));
     }
     arr.push(await formatCompetitionUserData(item));
-  };
+  }
   return arr;
 };
 
@@ -80,7 +272,7 @@ const competitionSaveTestService = async (
   userId: string,
   data: Partial<CompetitionUserTest>
 ): Promise<Partial<CompetitionUser>> => {
-  console.log(data)
+  console.log(data);
   const exist = await CompetitionUserModel.findOne({
     _id: data.competitionUser,
   });
@@ -133,7 +325,7 @@ const competitionUpdateTestService = async (
     _id: new Types.ObjectId(data.id),
   });
   if (!exist) throw Error("NO EXISTE REGISTRO PRUEBAS USUARIO");
-console.log(data)
+  console.log(data);
   const update = await CompetitionUserTestModel.findOneAndUpdate(
     { _id: data.id },
     {
@@ -153,36 +345,35 @@ console.log(data)
 
   if (!update) throw Error("ERROR ACTUALIZAR RESULTADOS PRUEBAS");
 
-  
-
   const userCompetence = await CompetitionUserModel.findOne({
     _id: exist.competitionUser,
   });
 
   const allTest = await CompetitionUserTestModel.find({
-    competitionUser: exist.competitionUser, status: Status.ACTIVO
+    competitionUser: exist.competitionUser,
+    status: Status.ACTIVO,
   });
 
   let judgeStatus = userCompetence?.judgeStatus;
   let link = "";
   let observation = "";
-  allTest.every(element => {
-    if(element.isPending == false){
-      judgeStatus = "calificado"
+  allTest.every((element) => {
+    if (element.isPending == false) {
+      judgeStatus = "calificado";
       return true;
     }
-    if(element.isPending == true){
-      judgeStatus = "en espera atleta"
+    if (element.isPending == true) {
+      judgeStatus = "en espera atleta";
       link = element.url;
       observation = element.judgeObservation;
       return false;
     }
-    if(element.isValid == null){
+    if (element.isValid == null) {
       judgeStatus = userCompetence?.judgeStatus;
       return false;
     }
   });
-console.log(judgeStatus)
+  console.log(judgeStatus);
   await CompetitionUserModel.findOneAndUpdate(
     { _id: userCompetence?.id },
     {
@@ -193,7 +384,6 @@ console.log(judgeStatus)
     }
   );
 
-
   const user = await UserModel.findOne({
     _id: userCompetence?.user,
   });
@@ -203,8 +393,11 @@ console.log(judgeStatus)
 
 export {
   loginAppService,
+  competitionCategoryUsersAppService,
+  competitionUsersByCategoryAppService,
   competitionsAppService,
   competitionUsersAppService,
   competitionSaveTestService,
   competitionUpdateTestService,
+  competitionUserAppService,
 };

@@ -3,9 +3,12 @@ import { checkJwt, isJudge } from "../middlewares/session";
 import {
   competitions,
   competitionUsers,
+  competitionUsersByCategory,
   login,
   competitionSaveTest,
   competitionUpdateTest,
+  category,
+  competitionUser,
 } from "../controllers/app";
 import multer, { FileFilterCallback } from "multer";
 
@@ -45,7 +48,10 @@ let upload = multer({
 
 const router = Router();
 router.get("/", checkJwt, isJudge, competitions);
-router.get("/users/:competitionId", checkJwt, isJudge, competitionUsers);
+router.get("/category/:competitionId", checkJwt, isJudge, category);
+router.get("/users/:competitionId/:category", checkJwt, isJudge, competitionUsersByCategory);
+router.get("/userById/:competitionId/:userId", checkJwt, isJudge, competitionUser);
+//router.get("/users/:competitionId", checkJwt, isJudge, competitionUsers);
 router.post("/login", login);
 router.post("/judge/saveResult", checkJwt, isJudge, competitionSaveTest);
 router.post("/judge/updateResult", checkJwt, isJudge, competitionUpdateTest);

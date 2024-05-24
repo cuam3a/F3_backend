@@ -4,9 +4,12 @@ import { ActionResponse, GetListResponse, LoginResponse } from "../interfaces/ty
 import {
   loginAppService,
   competitionsAppService,
+  competitionCategoryUsersAppService,
+  competitionUsersByCategoryAppService,
   competitionUsersAppService,
   competitionSaveTestService,
   competitionUpdateTestService,
+  competitionUserAppService,
 } from "../services/app";
 import { handleError } from "../utils/error.handle";
 const fs = require("fs");
@@ -40,6 +43,61 @@ const competitions = async ({ idUser }: RequestExt, res: Response) => {
     handleError(res, "ERROR COMPETITIONS ", e);
   }
 };
+
+const category = async (
+  { params, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const { competitionId } = params;
+    const array = await competitionCategoryUsersAppService(competitionId);
+    const response: GetListResponse = {
+      status: 200,
+      data: array,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR REPORT COMPETENCE USERS", e);
+  }
+};
+
+const competitionUsersByCategory = async (
+  { params, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const { competitionId, category } = params;
+    const array = await competitionUsersByCategoryAppService(competitionId,category);
+    const response: GetListResponse = {
+      status: 200,
+      data: array,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR REPORT COMPETENCE USERS", e);
+  }
+};
+
+const competitionUser = async (
+  { params, idUser }: RequestExt,
+  res: Response
+) => {
+  try {
+    const idU = idUser?.idUser;
+    const { competitionId, userId } = params;
+    const array = await competitionUserAppService(competitionId, userId);
+    const response: GetListResponse = {
+      status: 200,
+      data: array,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR REPORT COMPETENCE USERS", e);
+  }
+};
+
 
 const competitionUsers = async (
   { params, idUser }: RequestExt,
@@ -96,7 +154,10 @@ const competitionUpdateTest = async (
 export {
   login,
   competitions,
+  category,
   competitionUsers,
+  competitionUser,
   competitionSaveTest,
   competitionUpdateTest,
+  competitionUsersByCategory,
 };
