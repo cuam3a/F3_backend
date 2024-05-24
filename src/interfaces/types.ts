@@ -377,6 +377,7 @@ export type CompetitionTest = {
 }
 
 export type UserTest = {
+  id: string;
   name: string;
   edgeSupported: string[];
   description: string;

@@ -316,6 +316,7 @@ export const getUserTest = (category:string, typeAthlete:string, competitionTest
     for(let i=0; i< test.length; i++){
       let userTest = test[i];
       if(userTest.edgeSupported.includes(category)){
+        userTest.id = competitionTest.id;
         userTest.Cap = competitionTest.Cap;
         userTest.name = competitionTest.name;
         userTest.ordenTest = competitionTest.ordenTest;
@@ -331,6 +332,7 @@ export const getUserTest = (category:string, typeAthlete:string, competitionTest
     for(let i=0; i< test.length; i++){
       let userTest = test[i];
       if(userTest.edgeSupported.includes(category)){
+        userTest.id = competitionTest.id;
         userTest.Cap = competitionTest.Cap;
         userTest.name = competitionTest.name;
         userTest.ordenTest = competitionTest.ordenTest;
