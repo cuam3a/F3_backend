@@ -309,6 +309,7 @@ const formatCompetitionUserTestData = (
   competitionUserTestType.status = model.status;
   competitionUserTestType.isValid = model.isValid ?? true;
   competitionUserTestType.isPending = model.isPending ?? false;
+  competitionUserTestType.competitionTest = model.competitionTest;
   if (type == "judge") {
     competitionUserTestType.judgeTime = model.judgeTime ?? "";
     competitionUserTestType.judgeReps = model.judgeReps ?? 0;
