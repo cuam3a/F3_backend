@@ -59,7 +59,13 @@ const CompetitionUserTest = new Schema<CompetitionUserTest>(
     competitionTest: {
       type: Schema.Types.ObjectId,
       ref:"competitiontest"
-    }
+    },
+    place: {
+      type: Number,
+    },
+    points: {
+        type: Number,
+    },
   },
   {
     versionKey: false,

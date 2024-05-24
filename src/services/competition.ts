@@ -22,7 +22,8 @@ import {
 import { Types } from "mongoose";
 import { RegisteredCompetition } from "../utils/init";
 import CompetitionUserTestModel from "../models/competitionUserTest.model";
-import { getBonus } from "../utils/competition";
+import { getBonus, getUserTest } from "../utils/competition";
+import CompetitionTestModel from "../models/competitionTest.model";
 var nodemailer = require("nodemailer");
 
 const competitionsService = async (
@@ -336,13 +337,37 @@ const competitionUpdateService = async (): Promise<Partial<User>[]> => {
 const competitionUsersService = async (
   competitionId: string
 ): Promise<Partial<CompetitionUser>[]> => {
-  const list = await CompetitionUserModel.find({
-    status: Status.ACTIVO,
-    competition: competitionId,
-  }).populate("user");
+  // const list = await CompetitionUserModel.find({
+  //   status: Status.ACTIVO,
+  //   competition: competitionId,
+  // }).populate("user");
 
+  const list = await CompetitionUserModel.aggregate([
+    {
+      $match: {
+        competition: new Types.ObjectId(competitionId),
+        status: Status.ACTIVO,
+      },
+    },
+    {
+      $lookup: {
+        as: "competitionUserTest",
+        from: "competitionusertests",
+        foreignField: "competitionUser",
+        localField: "_id",
+      },
+    },
+  ]);
+  await CompetitionUserModel.populate(list, "user");
+  
   let arr:Partial<CompetitionUser>[] = [];
   for (const item of list) {
+
+    var userTest = await CompetitionTestModel.find({
+      competition: item.competition,
+    });
+    item.userTest = userTest
+    
     arr.push(await formatCompetitionUserData(item));
   };
   return arr;

@@ -14,12 +14,12 @@ import {
   formatCompetitionUserData,
   formatCompetitionUserTestData,
 } from "../utils/modelToType";
-import { getUserTest } from "../utils/competition";
+import { getUserTest, setPointsAthleteR } from "../utils/competition";
 import CompetitionTestModel from "../models/competitionTest.model";
 import { verified } from "../utils/bcypt.handle";
 import { generateToken } from "../utils/jwt.handle";
 import CompetitionUserTestModel from "../models/competitionUserTest.model";
-import { Types } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 import { category } from "../controllers/app";
 
 const loginAppService = async ({ user, password }: Partial<User>) => {
@@ -318,6 +318,8 @@ const competitionSaveTestService = async (
   console.log(update);
   if (!update) throw Error("ERROR ACTUALIZAR RESULTADOS PRUEBAS");
 
+  await setPointsAthleteR((exist.competition as string));
+  
   return formatCompetitionUserData(update, "judge");
 };
 
@@ -355,44 +357,17 @@ const competitionUpdateTestService = async (
     _id: exist.competitionUser,
   });
 
-  const allTest = await CompetitionUserTestModel.find({
-    competitionUser: exist.competitionUser,
-    status: Status.ACTIVO,
-  });
-
-  let judgeStatus = userCompetence?.judgeStatus;
-  let link = "";
-  let observation = "";
-  allTest.every((element) => {
-    if (element.isPending == false) {
-      judgeStatus = "calificado";
-      return true;
-    }
-    if (element.isPending == true) {
-      judgeStatus = "en espera atleta";
-      link = element.url;
-      observation = element.judgeObservation;
-      return false;
-    }
-    if (element.isValid == null) {
-      judgeStatus = userCompetence?.judgeStatus;
-      return false;
-    }
-  });
-  console.log(judgeStatus);
   await CompetitionUserModel.findOneAndUpdate(
     { _id: userCompetence?.id },
     {
-      judgeStatus: judgeStatus,
+      judgeStatus: "calificado",
     },
     {
       new: true,
     }
   );
 
-  const user = await UserModel.findOne({
-    _id: userCompetence?.user,
-  });
+  if(userCompetence) await setPointsAthleteR((userCompetence.competition as string));
 
   return formatCompetitionUserTestData(update, "judge");
 };

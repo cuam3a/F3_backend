@@ -268,6 +268,8 @@ export type CompetitionUserTest = {
   qualificationDate: Date;
   status: Status;
   competitionTest: Types.ObjectId | Partial<CompetitionTest>;
+  place: number;
+  points: number;
 };
 
 export enum TestType {

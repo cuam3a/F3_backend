@@ -1,5 +1,12 @@
 import { Types } from "mongoose";
-import { Competition, CompetitionTest, CompetitionUser, Status, User, UserTest } from "../interfaces/types";
+import {
+  Competition,
+  CompetitionTest,
+  CompetitionUser,
+  Status,
+  User,
+  UserTest,
+} from "../interfaces/types";
 import CompetitionModel from "../models/competition.model";
 import CompetitionUserModel from "../models/competitionUser.model";
 import CompetitionUserTestModel from "../models/competitionUserTest.model";
@@ -230,14 +237,29 @@ const setForTime10 = async (arr: any[], category: string) => {
     .filter((f) => f.time !== "" && f.category == category)
     .sort(
       (a, b) =>
-        parseFloat((a.time ?? "99:99").replace(":", ".")) -
-        parseFloat((b.time ?? "99:99").replace(":", "."))
+        parseFloat((a.time ?? "00:99:99").replace(":", ".")) -
+        parseFloat((b.time ?? "00:99:99").replace(":", "."))
     )) {
     item.time === lastTime ? (place = place) : (place = real);
 
-    lastTime = item.time ?? "00:00";
+    lastTime = item.time ?? "00:00:00";
     item.place = place;
+    item.points = 100 - ((place - 1)*10)
     real = real + 1;
+    if(item.idTest != 0){
+      await CompetitionUserTestModel.findOneAndUpdate(
+        { _id: item.idTest },
+        {
+          place: item.place,
+          points: item.points,
+        },
+        {
+          new: true,
+        }
+      );
+    }else{
+      item.points = 0;
+    }
   }
   last = -1;
   for await (let item of arr
@@ -247,8 +269,24 @@ const setForTime10 = async (arr: any[], category: string) => {
 
     last = item.reps;
     item.place = place;
+    item.points = 100 - ((place - 1)*10)
     real = real + 1;
+    if(item.idTest != 0){
+      await CompetitionUserTestModel.findOneAndUpdate(
+        { _id: item.idTest },
+        {
+          place: item.place,
+          points: item.points,
+        },
+        {
+          new: true,
+        }
+      );
+    }else{
+      item.points = 0;
+    }
   }
+
   return arr;
 };
 
@@ -263,7 +301,59 @@ const setForTime10Weight = async (arr: any[], category: string) => {
 
     last = item.weight;
     item.place = place;
+    item.points = 100 - ((place - 1)*10)
     real = real + 1;
+    if(item.idTest != 0){
+      await CompetitionUserTestModel.findOneAndUpdate(
+        { _id: item.idTest },
+        {
+          place: item.place,
+          points: item.points,
+        },
+        {
+          new: true,
+        }
+      );
+    }else{
+      item.points = 0;
+    }
+  
+  }
+  return arr;
+};
+
+const setOnlyTime = async (arr: any[], category: string) => {
+  let place = 1;
+  let real = 1;
+  let last = -1;
+  let lastTime = "";
+  for await (let item of arr
+    .filter((f) => f.time !== "" && f.category == category)
+    .sort(
+      (a, b) =>
+        parseFloat((a.time ?? "00:99:99").replace(":", ".")) -
+        parseFloat((b.time ?? "00:99:99").replace(":", "."))
+    )) {
+    item.time === lastTime ? (place = place) : (place = real);
+
+    lastTime = item.time ?? "00:00:00";
+    item.place = place;
+    item.points = 100 - ((place - 1)*10)
+    real = real + 1;
+    if(item.idTest != 0){
+      await CompetitionUserTestModel.findOneAndUpdate(
+        { _id: item.idTest },
+        {
+          place: item.place,
+          points: item.points,
+        },
+        {
+          new: true,
+        }
+      );
+    }else{
+      item.points = 0;
+    }
   }
   return arr;
 };
@@ -271,7 +361,7 @@ const setForTime10Weight = async (arr: any[], category: string) => {
 export const getBonus = async (userId: string) => {
   const competitions = await CompetitionUserModel.find<CompetitionUser>({
     useBonus: { $ne: true },
-    typeEvent: 'online',
+    typeEvent: "online",
     user: userId,
     status: Status.ACTIVO,
     place: { $lte: 10 },
@@ -282,8 +372,12 @@ export const getBonus = async (userId: string) => {
   }
 
   const competition = competitions.sort((a, b) => b.amount - a.amount);
-  
-  if(competition[0].amount == 0 && (competition[0].competition as Competition)?.region.toString() == "65f7d1441dbb758962e93534")
+
+  if (
+    competition[0].amount == 0 &&
+    (competition[0].competition as Competition)?.region.toString() ==
+      "65f7d1441dbb758962e93534"
+  )
     return 550;
 
   return competition[0].amount;
@@ -310,12 +404,21 @@ export const setUseBonus = async (userId: string) => {
   return true;
 };
 
-export const getUserTest = (category:string, typeAthlete:string, competitionTest:CompetitionTest) : Partial<UserTest> => {
-  if(typeAthlete.toUpperCase() == "ALTO_RENDIMIENTO" || typeAthlete.toLowerCase() == "avanzado" ){
-    const test : UserTest[] = competitionTest.altoRendimiento.map(ele => {return JSON.parse(ele)})
-    for(let i=0; i< test.length; i++){
+export const getUserTest = (
+  category: string,
+  typeAthlete: string,
+  competitionTest: CompetitionTest
+): Partial<UserTest> => {
+  if (
+    typeAthlete.toUpperCase() == "ALTO_RENDIMIENTO" ||
+    typeAthlete.toLowerCase() == "avanzado"
+  ) {
+    const test: UserTest[] = competitionTest.altoRendimiento.map((ele) => {
+      return JSON.parse(ele);
+    });
+    for (let i = 0; i < test.length; i++) {
       let userTest = test[i];
-      if(userTest.edgeSupported.includes(category)){
+      if (userTest.edgeSupported.includes(category)) {
         userTest.id = competitionTest.id;
         userTest.Cap = competitionTest.Cap;
         userTest.name = competitionTest.name;
@@ -327,11 +430,16 @@ export const getUserTest = (category:string, typeAthlete:string, competitionTest
       }
     }
   }
-  if(typeAthlete.toUpperCase() == "INICIACION_DEPORTIVA" || typeAthlete.toLowerCase() == "principiante" ){
-    const test : UserTest[] = competitionTest.iniciacionDeportiva.map(ele => {return JSON.parse(ele)})
-    for(let i=0; i< test.length; i++){
+  if (
+    typeAthlete.toUpperCase() == "INICIACION_DEPORTIVA" ||
+    typeAthlete.toLowerCase() == "principiante"
+  ) {
+    const test: UserTest[] = competitionTest.iniciacionDeportiva.map((ele) => {
+      return JSON.parse(ele);
+    });
+    for (let i = 0; i < test.length; i++) {
       let userTest = test[i];
-      if(userTest.edgeSupported.includes(category)){
+      if (userTest.edgeSupported.includes(category)) {
         userTest.id = competitionTest.id;
         userTest.Cap = competitionTest.Cap;
         userTest.name = competitionTest.name;
@@ -344,4 +452,234 @@ export const getUserTest = (category:string, typeAthlete:string, competitionTest
     }
   }
   return {};
-}
+};
+
+//Evaluacion
+export const setPointsAthleteR = async (id: string) => {
+  const exist = await CompetitionModel.findOne({
+    _id: id,
+  });
+  if (!exist) throw Error("NO EXISTE COMPETENCIA");
+
+  //Atletas calificados
+  const athletes = await CompetitionUserModel.find<CompetitionUser>({
+    competition: exist.id,
+    judgeStatus: "calificado",
+    status: Status.ACTIVO,
+  });
+  await CompetitionUserModel.populate(athletes, "user");
+  let arrCHICHEN_ITZA = [];
+  let arrTAJ_MAHAL = [];
+  let arrPETRA = [];
+  let arrLA_GRAN_MURALLA = [];
+  let arrEL_COLISEO = [];
+console.log(athletes)
+  for await (let user of athletes) {
+    let test = await CompetitionUserTestModel.find({
+      competitionUser: user.id,
+      competitionTest: "6643b78e6b00bcf7672bca5c",
+      status: Status.ACTIVO,
+    });
+
+    let category = `${user.category ?? ""} ${user.typeAthlete ?? "AVANZADO"} ${
+      ((user?.user ?? {}) as Partial<User>).gender ?? "---"
+    }`;
+    let CHICHEN_ITZA = test.find((f) => f.isValid == true);
+    if (CHICHEN_ITZA) {
+      arrCHICHEN_ITZA.push({
+        id: user.id,
+        category: category,
+        reps:
+          CHICHEN_ITZA.judgeReps == 0
+            ? CHICHEN_ITZA.reps
+            : CHICHEN_ITZA.judgeReps,
+        time:
+          CHICHEN_ITZA.judgeTime == ""
+            ? CHICHEN_ITZA.time
+            : CHICHEN_ITZA.judgeTime,
+        place: 0,
+        points: 0,
+        idTest: CHICHEN_ITZA.id,
+      });
+    } else {
+      arrCHICHEN_ITZA.push({
+        id: user.id,
+        category: category,
+        reps: 0,
+        place: 0,
+        time: "",
+        points: 0,
+        idTest: 0,
+      });
+    }
+
+    test = await CompetitionUserTestModel.find({
+      competitionUser: user.id,
+      competitionTest: "664846318384a00b6de1327b",
+      status: Status.ACTIVO,
+    });
+    let TAJ_MAHAL = test.find((f) => f.isValid == true);
+    if (TAJ_MAHAL) {
+      arrTAJ_MAHAL.push({
+        id: user.id,
+        category: category,
+        reps: TAJ_MAHAL.judgeReps == 0 ? TAJ_MAHAL.reps : TAJ_MAHAL.judgeReps,
+        time: TAJ_MAHAL.judgeTime == "" ? TAJ_MAHAL.time : TAJ_MAHAL.judgeTime,
+        place: 0,
+        points: 0,
+        idTest: TAJ_MAHAL.id,
+      });
+    } else {
+      arrTAJ_MAHAL.push({
+        id: user.id,
+        category: category,
+        reps: 0,
+        place: 0,
+        time: "",
+        points: 0,
+        idTest: 0,
+      });
+    }
+
+    test = await CompetitionUserTestModel.find({
+      competitionUser: user.id,
+      competitionTest: "664848e08384a00b6de1327d",
+      status: Status.ACTIVO,
+    });
+    let PETRA = test.find((f) => f.isValid == true);
+    if (PETRA) {
+      arrPETRA.push({
+        id: user.id,
+        category: category,
+        reps: PETRA.judgeReps == 0 ? PETRA.reps : PETRA.judgeReps,
+        time: PETRA.judgeTime == "" ? PETRA.time : PETRA.judgeTime,
+        weight: PETRA.weight ? PETRA.weight : PETRA.judgeWeight,
+        place: 0,
+        points: 0,
+        idTest: PETRA.id,
+      });
+    } else {
+      arrPETRA.push({
+        id: user.id,
+        category: category,
+        reps: 0,
+        place: 0,
+        time: "",
+        weight: 0,
+        points: 0,
+        idTest: 0,
+      });
+    }
+
+    test = await CompetitionUserTestModel.find({
+      competitionUser: user.id,
+      competitionTest: "664849908384a00b6de1327f",
+      status: Status.ACTIVO,
+    });
+    let LA_GRAN_MURALLA = test.find((f) => f.isValid == true);
+    if (LA_GRAN_MURALLA) {
+      arrLA_GRAN_MURALLA.push({
+        id: user.id,
+        category: category,
+        time:
+          LA_GRAN_MURALLA.judgeTime == ""
+            ? LA_GRAN_MURALLA.time
+            : LA_GRAN_MURALLA.judgeTime,
+        place: 0,
+        points: 0,
+        idTest: LA_GRAN_MURALLA.id,
+      });
+    } else {
+      arrLA_GRAN_MURALLA.push({
+        id: user.id,
+        category: category,
+        place: 0,
+        weight: 0,
+        points: 0,
+        idTest: 0,
+      });
+    }
+
+    test = await CompetitionUserTestModel.find({
+      competitionUser: user.id,
+      competitionTest: "66484a138384a00b6de13281",
+      status: Status.ACTIVO,
+    });
+    let EL_COLISEO = test.find((f) => f.isValid == true);
+    if (EL_COLISEO) {
+      arrEL_COLISEO.push({
+        id: user.id,
+        category: category,
+        weight: EL_COLISEO.weight ? EL_COLISEO.weight : EL_COLISEO.judgeWeight,
+        place: 0,
+        points: 0,
+        idTest: EL_COLISEO.id,
+      });
+    } else {
+      arrEL_COLISEO.push({
+        id: user.id,
+        category: category,
+        place: 0,
+        weight: 0,
+        points: 0,
+        idTest: 0,
+      });
+    }
+  }
+
+  const arrCategory = arrCHICHEN_ITZA
+    .map((m: any) => {
+      return m.category;
+    })
+    .filter(
+      (value: any, index: any, array: any) => array.indexOf(value) === index
+    );
+  for await (let category of arrCategory) {
+    arrCHICHEN_ITZA = await setForTime10(arrCHICHEN_ITZA, category);
+    arrTAJ_MAHAL = await setForTime10(arrTAJ_MAHAL, category);
+    arrPETRA = await setForTime10(arrPETRA, category);
+    arrLA_GRAN_MURALLA = await setOnlyTime(arrLA_GRAN_MURALLA, category);
+    arrEL_COLISEO = await setForTime10Weight(arrEL_COLISEO, category);
+  }
+
+  for await (let user of athletes) {
+    const totalCHICHEN_ITZA = arrCHICHEN_ITZA.find((f) => f.id == user.id)?.points ?? 0;
+    const totalTAJ_MAHAL = arrTAJ_MAHAL.find((f) => f.id == user.id)?.points ?? 0;
+    const totalPETRA = arrPETRA.find((f) => f.id == user.id)?.points ?? 0;
+    const totalLA_GRAN_MURALLA = arrLA_GRAN_MURALLA.find((f) => f.id == user.id)?.points ?? 0;
+    const totalEL_COLISEO = arrEL_COLISEO.find((f) => f.id == user.id)?.points ?? 0;
+
+    user.points = totalCHICHEN_ITZA + totalTAJ_MAHAL + totalPETRA + totalLA_GRAN_MURALLA + totalEL_COLISEO;
+  }
+
+  for await (let category of arrCategory) {
+    const athletesCategory = athletes.filter(
+      (f) =>
+        `${f.category ?? ""} ${f.typeAthlete ?? "AVANZADO"} ${
+          ((f?.user ?? {}) as Partial<User>).gender ?? "---"
+        }` == category
+    );
+    let place = 1;
+    let real = 1;
+    let last = -1;
+    for await (let athlete of athletesCategory.sort(
+      (a, b) => b.points - a.points
+    )) {
+      athlete.points === last ? (place = place) : (place = real);
+      last = athlete.points;
+      athlete.place = place;
+      await CompetitionUserModel.findOneAndUpdate(
+        { _id: athlete.id },
+        {
+          place: place,
+          points: athlete.points,
+        },
+        {
+          new: true,
+        }
+      );
+
+      real = real + 1;
+    }
+  }
+};
