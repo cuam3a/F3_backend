@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 
 export type User = {
   id: Types.ObjectId | string;
@@ -397,4 +397,10 @@ export type EjerciceTest = {
   order: number;
   name: string;
   value: number;
+}
+
+export type CompetitionsHeats = {
+  id: string;
+  lanes: string[];
+  competitiontest: ObjectId | Partial<CompetitionTest>
 }

@@ -9,6 +9,7 @@ import {
   competitionUpdateTest,
   category,
   competitionUser,
+  hits,
 } from "../controllers/app";
 import multer, { FileFilterCallback } from "multer";
 
@@ -48,6 +49,7 @@ let upload = multer({
 
 const router = Router();
 router.get("/", checkJwt, isJudge, competitions);
+router.get("/heats/:competitionTestId/:heat", hits)
 router.get("/category/:competitionId", checkJwt, isJudge, category);
 router.get("/users/:competitionId/:category", checkJwt, isJudge, competitionUsersByCategory);
 router.get("/userById/:competitionId/:userId", checkJwt, isJudge, competitionUser);

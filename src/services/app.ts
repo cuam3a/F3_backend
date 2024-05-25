@@ -21,6 +21,7 @@ import { generateToken } from "../utils/jwt.handle";
 import CompetitionUserTestModel from "../models/competitionUserTest.model";
 import { ObjectId, Types } from "mongoose";
 import { category } from "../controllers/app";
+import CompetitionsHeatsModel from "../models/competitionsHeats";
 
 const loginAppService = async ({ user, password }: Partial<User>) => {
   if (user == "" || password == "" || user == null || password == null)
@@ -372,6 +373,49 @@ const competitionUpdateTestService = async (
   return formatCompetitionUserTestData(update, "judge");
 };
 
+const hitsAppService = async (competitionTestId:string, heat:number): Promise<any> => {
+  console.log(competitionTestId)
+  const competitionTest = await CompetitionsHeatsModel.findOne({ competitiontest: competitionTestId })
+
+  if(!competitionTest) throw Error("NO EXISTE REGISTRO");
+
+  const lanes = competitionTest.lanes.map((ele) => {
+    return JSON.parse(ele);
+  });
+
+  const heatInf = lanes.find(ele => ele.heat == heat)
+  console.log(heatInf)
+
+  let users :any[] = []
+  for await(let ele of heatInf.carriles){
+    if(ele.competitionuser.$oid != ""){
+      // const competitionUser = await CompetitionUserModel.findOne<CompetitionUser>({ _id: ele.competitionuser.$oid })  
+      // console.log(competitionUser)
+      // if(competitionUser) users.push(competitionUser)
+
+        const list = await CompetitionUserModel.find({
+          status: Status.ACTIVO,
+          _id: ele.competitionuser.$oid,
+        }).populate("user");
+      
+        
+        for (let item of list) {
+          var userTest = await CompetitionTestModel.find({
+            competition: item.competition,
+          });
+          item.userTest = [];
+          for (let test of userTest) {
+            if (test)
+              item.userTest.push(getUserTest(item.category, item.typeAthlete, test));
+          }
+          users.push(await formatCompetitionUserData(item));
+        }
+    }
+    
+  }
+  return users;
+}
+
 export {
   loginAppService,
   competitionCategoryUsersAppService,
@@ -381,4 +425,5 @@ export {
   competitionSaveTestService,
   competitionUpdateTestService,
   competitionUserAppService,
+  hitsAppService,
 };

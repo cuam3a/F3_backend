@@ -10,6 +10,7 @@ import {
   competitionSaveTestService,
   competitionUpdateTestService,
   competitionUserAppService,
+  hitsAppService,
 } from "../services/app";
 import { handleError } from "../utils/error.handle";
 const fs = require("fs");
@@ -151,6 +152,22 @@ const competitionUpdateTest = async (
   }
 };
 
+const hits = async ({ idUser, params }: RequestExt, res: Response) => {
+  try {
+    const idU = idUser?.idUser;
+    const { competitionTestId, heat } = params
+    const array = await hitsAppService(competitionTestId, parseInt(heat));
+    const response: GetListResponse = {
+      status: 200,
+      data: array,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR COMPETITIONS ", e);
+  }
+};
+
+
 export {
   login,
   competitions,
@@ -160,4 +177,5 @@ export {
   competitionSaveTest,
   competitionUpdateTest,
   competitionUsersByCategory,
+  hits,
 };
