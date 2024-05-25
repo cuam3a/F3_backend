@@ -395,12 +395,23 @@ const hitsAppService = async (competitionTestId:string, heat:number): Promise<an
       // console.log(competitionUser)
       // if(competitionUser) users.push(competitionUser)
 
-        const list = await CompetitionUserModel.find({
-          status: Status.ACTIVO,
-          _id: ele.competitionuser.$oid,
-        }).populate("user");
+        const list = await CompetitionUserModel.aggregate([
+          {
+            $match: {
+              _id: new Types.ObjectId(ele.competitionuser.$oid as string),
+            },
+          },
+          {
+            $lookup: {
+              as: "competitionUserTest",
+              from: "competitionusertests",
+              foreignField: "competitionUser",
+              localField: "_id",
+            },
+          },
+        ]);
+        await CompetitionUserModel.populate(list, "user");
       
-        
         for (let item of list) {
           item.testName = test?.name ?? "";
           item.carril = ele.carril;
