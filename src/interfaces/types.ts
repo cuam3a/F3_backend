@@ -247,6 +247,8 @@ export type CompetitionUser = {
   competitionUserTest: Partial<CompetitionUserTest>[];
   hasTest: boolean | null;
   userTest: Partial<UserTest>[];
+  testName: string;
+  carril: string;
 };
 
 export type CompetitionUserTest = {

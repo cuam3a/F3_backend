@@ -379,6 +379,8 @@ const hitsAppService = async (competitionTestId:string, heat:number): Promise<an
 
   if(!competitionTest) throw Error("NO EXISTE REGISTRO");
 
+  const test = await CompetitionTestModel.findOne({ _id: competitionTestId })
+
   const lanes = competitionTest.lanes.map((ele) => {
     return JSON.parse(ele);
   });
@@ -400,6 +402,8 @@ const hitsAppService = async (competitionTestId:string, heat:number): Promise<an
       
         
         for (let item of list) {
+          item.testName = test?.name ?? "";
+          item.carril = ele.carril;
           var userTest = await CompetitionTestModel.find({
             competition: item.competition,
           });

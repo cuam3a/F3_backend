@@ -278,6 +278,8 @@ const formatCompetitionUserData = async (
       }) ?? [];
   }
   competitionType.userTest = model.userTest;
+  competitionType.testName = model.testName;
+  competitionType.carril = model.carril;
 
   return competitionType;
 };
