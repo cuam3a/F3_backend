@@ -663,7 +663,7 @@ export const setPointsAthleteR = async (id: string) => {
     );
   for await (let category of arrCategory) {
     arrCHICHEN_ITZA = await setForTime10(arrCHICHEN_ITZA, category, '00:08:00');
-    arrTAJ_MAHAL = await setForTime10(arrTAJ_MAHAL, category, '00:08:00');
+    arrTAJ_MAHAL = await setForTime10(arrTAJ_MAHAL, category, '00:07:00');
     arrPETRA = await setForTime10(arrPETRA, category, '00:03:00');
     arrLA_GRAN_MURALLA = await setOnlyTime(arrLA_GRAN_MURALLA, category);
     arrEL_COLISEO = await setForTime10Weight(arrEL_COLISEO, category);
