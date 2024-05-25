@@ -231,14 +231,14 @@ const setRoundsCap12 = async (arr: any[], category: string) => {
 const setForTime10 = async (
   arr: any[],
   category: string,
-  total: number = 0
+  totalTime: string = ''
 ) => {
   let place = 1;
   let real = 1;
   let last = -1;
   let lastTime = "";
   for await (let item of arr
-    .filter((f) => f.time !== "" && f.category == category && f.reps >= total)
+    .filter((f) => f.time !== "" && f.category == category && f.time != totalTime)
     .sort(
       (a, b) =>
         parseFloat((a.time ?? "00:99:99").replace(":", ".")) -
@@ -266,7 +266,7 @@ const setForTime10 = async (
     }
   }
   for await (let item of arr
-    .filter((f) => f.time !== "" && f.category == category && f.reps < total)
+    .filter((f) => f.time !== "" && f.category == category && f.time == totalTime)
     .sort((a, b) => b.reps - a.reps)) {
     item.reps === last ? (place = place) : (place = real);
 
@@ -662,9 +662,9 @@ export const setPointsAthleteR = async (id: string) => {
       (value: any, index: any, array: any) => array.indexOf(value) === index
     );
   for await (let category of arrCategory) {
-    arrCHICHEN_ITZA = await setForTime10(arrCHICHEN_ITZA, category, 126);
-    arrTAJ_MAHAL = await setForTime10(arrTAJ_MAHAL, category, 90);
-    arrPETRA = await setForTime10(arrPETRA, category, 65);
+    arrCHICHEN_ITZA = await setForTime10(arrCHICHEN_ITZA, category, '00:08:00');
+    arrTAJ_MAHAL = await setForTime10(arrTAJ_MAHAL, category, '00:08:00');
+    arrPETRA = await setForTime10(arrPETRA, category, '00:03:00');
     arrLA_GRAN_MURALLA = await setOnlyTime(arrLA_GRAN_MURALLA, category);
     arrEL_COLISEO = await setForTime10Weight(arrEL_COLISEO, category);
   }
