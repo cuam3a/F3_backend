@@ -228,13 +228,17 @@ const setRoundsCap12 = async (arr: any[], category: string) => {
   return arr;
 };
 
-const setForTime10 = async (arr: any[], category: string) => {
+const setForTime10 = async (
+  arr: any[],
+  category: string,
+  total: number = 0
+) => {
   let place = 1;
   let real = 1;
   let last = -1;
   let lastTime = "";
   for await (let item of arr
-    .filter((f) => f.time !== "" && f.category == category)
+    .filter((f) => f.time !== "" && f.category == category && f.reps >= total)
     .sort(
       (a, b) =>
         parseFloat((a.time ?? "00:99:99").replace(":", ".")) -
@@ -244,9 +248,9 @@ const setForTime10 = async (arr: any[], category: string) => {
 
     lastTime = item.time ?? "00:00:00";
     item.place = place;
-    item.points = 100 - ((place - 1)*10)
+    item.points = 100 - (place - 1) * 10;
     real = real + 1;
-    if(item.idTest != 0){
+    if (item.idTest != 0) {
       await CompetitionUserTestModel.findOneAndUpdate(
         { _id: item.idTest },
         {
@@ -257,7 +261,31 @@ const setForTime10 = async (arr: any[], category: string) => {
           new: true,
         }
       );
-    }else{
+    } else {
+      item.points = 0;
+    }
+  }
+  for await (let item of arr
+    .filter((f) => f.time !== "" && f.category == category && f.reps < total)
+    .sort((a, b) => b.reps - a.reps)) {
+    item.reps === last ? (place = place) : (place = real);
+
+    last = item.reps;
+    item.place = place;
+    item.points = 100 - (place - 1) * 10;
+    real = real + 1;
+    if (item.idTest != 0) {
+      await CompetitionUserTestModel.findOneAndUpdate(
+        { _id: item.idTest },
+        {
+          place: item.place,
+          points: item.points,
+        },
+        {
+          new: true,
+        }
+      );
+    } else {
       item.points = 0;
     }
   }
@@ -269,9 +297,9 @@ const setForTime10 = async (arr: any[], category: string) => {
 
     last = item.reps;
     item.place = place;
-    item.points = 100 - ((place - 1)*10)
+    item.points = 100 - (place - 1) * 10;
     real = real + 1;
-    if(item.idTest != 0){
+    if (item.idTest != 0) {
       await CompetitionUserTestModel.findOneAndUpdate(
         { _id: item.idTest },
         {
@@ -282,7 +310,7 @@ const setForTime10 = async (arr: any[], category: string) => {
           new: true,
         }
       );
-    }else{
+    } else {
       item.points = 0;
     }
   }
@@ -301,9 +329,9 @@ const setForTime10Weight = async (arr: any[], category: string) => {
 
     last = item.weight;
     item.place = place;
-    item.points = 100 - ((place - 1)*10)
+    item.points = 100 - (place - 1) * 10;
     real = real + 1;
-    if(item.idTest != 0){
+    if (item.idTest != 0) {
       await CompetitionUserTestModel.findOneAndUpdate(
         { _id: item.idTest },
         {
@@ -314,10 +342,9 @@ const setForTime10Weight = async (arr: any[], category: string) => {
           new: true,
         }
       );
-    }else{
+    } else {
       item.points = 0;
     }
-  
   }
   return arr;
 };
@@ -338,9 +365,9 @@ const setOnlyTime = async (arr: any[], category: string) => {
 
     lastTime = item.time ?? "00:00:00";
     item.place = place;
-    item.points = 100 - ((place - 1)*10)
+    item.points = 100 - (place - 1) * 10;
     real = real + 1;
-    if(item.idTest != 0){
+    if (item.idTest != 0) {
       await CompetitionUserTestModel.findOneAndUpdate(
         { _id: item.idTest },
         {
@@ -351,7 +378,7 @@ const setOnlyTime = async (arr: any[], category: string) => {
           new: true,
         }
       );
-    }else{
+    } else {
       item.points = 0;
     }
   }
@@ -473,7 +500,7 @@ export const setPointsAthleteR = async (id: string) => {
   let arrPETRA = [];
   let arrLA_GRAN_MURALLA = [];
   let arrEL_COLISEO = [];
-console.log(athletes)
+  console.log(athletes);
   for await (let user of athletes) {
     let test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
@@ -635,21 +662,30 @@ console.log(athletes)
       (value: any, index: any, array: any) => array.indexOf(value) === index
     );
   for await (let category of arrCategory) {
-    arrCHICHEN_ITZA = await setForTime10(arrCHICHEN_ITZA, category);
-    arrTAJ_MAHAL = await setForTime10(arrTAJ_MAHAL, category);
-    arrPETRA = await setForTime10(arrPETRA, category);
+    arrCHICHEN_ITZA = await setForTime10(arrCHICHEN_ITZA, category, 126);
+    arrTAJ_MAHAL = await setForTime10(arrTAJ_MAHAL, category, 90);
+    arrPETRA = await setForTime10(arrPETRA, category, 65);
     arrLA_GRAN_MURALLA = await setOnlyTime(arrLA_GRAN_MURALLA, category);
     arrEL_COLISEO = await setForTime10Weight(arrEL_COLISEO, category);
   }
 
   for await (let user of athletes) {
-    const totalCHICHEN_ITZA = arrCHICHEN_ITZA.find((f) => f.id == user.id)?.points ?? 0;
-    const totalTAJ_MAHAL = arrTAJ_MAHAL.find((f) => f.id == user.id)?.points ?? 0;
+    const totalCHICHEN_ITZA =
+      arrCHICHEN_ITZA.find((f) => f.id == user.id)?.points ?? 0;
+    const totalTAJ_MAHAL =
+      arrTAJ_MAHAL.find((f) => f.id == user.id)?.points ?? 0;
     const totalPETRA = arrPETRA.find((f) => f.id == user.id)?.points ?? 0;
-    const totalLA_GRAN_MURALLA = arrLA_GRAN_MURALLA.find((f) => f.id == user.id)?.points ?? 0;
-    const totalEL_COLISEO = arrEL_COLISEO.find((f) => f.id == user.id)?.points ?? 0;
+    const totalLA_GRAN_MURALLA =
+      arrLA_GRAN_MURALLA.find((f) => f.id == user.id)?.points ?? 0;
+    const totalEL_COLISEO =
+      arrEL_COLISEO.find((f) => f.id == user.id)?.points ?? 0;
 
-    user.points = totalCHICHEN_ITZA + totalTAJ_MAHAL + totalPETRA + totalLA_GRAN_MURALLA + totalEL_COLISEO;
+    user.points =
+      totalCHICHEN_ITZA +
+      totalTAJ_MAHAL +
+      totalPETRA +
+      totalLA_GRAN_MURALLA +
+      totalEL_COLISEO;
   }
 
   for await (let category of arrCategory) {
