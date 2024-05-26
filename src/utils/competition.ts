@@ -274,7 +274,7 @@ const setForTime10 = async (
 
     last = item.reps;
     item.place = place;
-    item.points = 100 - (place - 1) * 10;
+    item.points = (100 - (place - 1)) * 10;
     real = real + 1;
     if (item.idTest != 0) {
       await CompetitionUserTestModel.findOneAndUpdate(
@@ -506,6 +506,7 @@ export const setPointsAthleteR = async (id: string) => {
   let arrPETRA = [];
   let arrLA_GRAN_MURALLA = [];
   let arrEL_COLISEO = [];
+  let arrCHICHEN_ITZA_2 = [];
   for await (let user of athletes) {
     let test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
@@ -657,6 +658,32 @@ export const setPointsAthleteR = async (id: string) => {
         idTest: 0,
       });
     }
+
+    test = await CompetitionUserTestModel.find({
+      competitionUser: user.id,
+      competitionTest: "665397a5dbf7430711b5e2c4",
+      status: Status.ACTIVO,
+    });
+    let CHICHEN_ITZA_2 = test.find((f) => f.isValid == true);
+    if (CHICHEN_ITZA_2) {
+      arrCHICHEN_ITZA_2.push({
+        id: user.id,
+        category: category,
+        weight: CHICHEN_ITZA_2.weight ? CHICHEN_ITZA_2.weight : CHICHEN_ITZA_2.judgeWeight,
+        place: 0,
+        points: 0,
+        idTest: CHICHEN_ITZA_2.id,
+      });
+    } else {
+      arrCHICHEN_ITZA_2.push({
+        id: user.id,
+        category: category,
+        place: 0,
+        weight: 0,
+        points: 0,
+        idTest: 0,
+      });
+    }
   }
   //console.log(arrTAJ_MAHAL)
   //console.log(arrPETRA)
@@ -673,6 +700,7 @@ export const setPointsAthleteR = async (id: string) => {
     arrPETRA = await setForTime10(arrPETRA, category, '00:03:00');
     arrLA_GRAN_MURALLA = await setOnlyTime(arrLA_GRAN_MURALLA, category);
     arrEL_COLISEO = await setForTime10Weight(arrEL_COLISEO, category);
+    arrCHICHEN_ITZA_2 = await setForTime10(arrCHICHEN_ITZA_2, category, '00:08:00');
   }
 
   for await (let user of athletes) {
@@ -685,12 +713,15 @@ export const setPointsAthleteR = async (id: string) => {
       arrLA_GRAN_MURALLA.find((f) => f.id == user.id)?.points ?? 0;
     const totalEL_COLISEO =
       arrEL_COLISEO.find((f) => f.id == user.id)?.points ?? 0;
+      const totalCHICHEN_ITZA_2 =
+      arrCHICHEN_ITZA_2.find((f) => f.id == user.id)?.points ?? 0;
 
     user.points =
       totalCHICHEN_ITZA +
       totalTAJ_MAHAL +
       totalPETRA +
       totalLA_GRAN_MURALLA +
+      totalCHICHEN_ITZA_2 +
       totalEL_COLISEO;
   }
 
