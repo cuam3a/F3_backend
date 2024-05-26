@@ -685,8 +685,9 @@ export const setPointsAthleteR = async (id: string) => {
       arrCHICHEN_ITZA_2.push({
         id: user.id,
         category: category,
+        reps: 0,
         place: 0,
-        weight: 0,
+        time: "",
         points: 0,
         idTest: 0,
       });
