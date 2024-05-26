@@ -241,11 +241,11 @@ const setForTime10 = async (
     .filter((f) => f.time !== "" && f.category == category && f.time != totalTime)
     .sort(
       (a, b) =>
-        parseFloat((a.time ?? "00:99:99").replace(":", ".")) -
-        parseFloat((b.time ?? "00:99:99").replace(":", "."))
+        parseFloat((a.time ?? "00:99:99").substring(3).replace(":", ".")) -
+        parseFloat((b.time ?? "00:99:99").substring(3).replace(":", "."))
     )) {
     item.time === lastTime ? (place = place) : (place = real);
-
+      
     lastTime = item.time ?? "00:00:00";
     item.place = place;
     item.points = 100 - (place - 1) * 10;
@@ -264,6 +264,8 @@ const setForTime10 = async (
     } else {
       item.points = 0;
     }
+    //if(category == "21-29 años ALTO_RENDIMIENTO VARONIL") (console.log(item));
+    //console.log(item)
   }
   for await (let item of arr
     .filter((f) => f.time !== "" && f.category == category && f.time == totalTime)
@@ -288,7 +290,9 @@ const setForTime10 = async (
     } else {
       item.points = 0;
     }
+    if(category == "21-29 años ALTO_RENDIMIENTO VARONIL") (console.log(item));
   }
+  
   last = -1;
   for await (let item of arr
     .filter((f) => f.time === "" && f.category == category)
@@ -358,8 +362,8 @@ const setOnlyTime = async (arr: any[], category: string) => {
     .filter((f) => f.time !== "" && f.category == category)
     .sort(
       (a, b) =>
-        parseFloat((a.time ?? "00:99:99").replace(":", ".")) -
-        parseFloat((b.time ?? "00:99:99").replace(":", "."))
+        parseFloat((a.time ?? "00:99:99").substring(3).replace(":", ".")) -
+        parseFloat((b.time ?? "00:99:99").substring(3).replace(":", "."))
     )) {
     item.time === lastTime ? (place = place) : (place = real);
 
@@ -489,18 +493,19 @@ export const setPointsAthleteR = async (id: string) => {
   if (!exist) throw Error("NO EXISTE COMPETENCIA");
 
   //Atletas calificados
-  const athletes = await CompetitionUserModel.find<CompetitionUser>({
+  let athletes = await CompetitionUserModel.find<CompetitionUser>({
     competition: exist.id,
     judgeStatus: "calificado",
     status: Status.ACTIVO,
   });
+  //athletes = athletes.filter(ele => ele.id == new Types.ObjectId("66465fce33f964a433b2a244") || ele.id == new Types.ObjectId("662f2d4d35fb4385425ab00f"))
+  //console.log(athletes)
   await CompetitionUserModel.populate(athletes, "user");
   let arrCHICHEN_ITZA = [];
   let arrTAJ_MAHAL = [];
   let arrPETRA = [];
   let arrLA_GRAN_MURALLA = [];
   let arrEL_COLISEO = [];
-  console.log(athletes);
   for await (let user of athletes) {
     let test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
@@ -653,8 +658,9 @@ export const setPointsAthleteR = async (id: string) => {
       });
     }
   }
-
-  const arrCategory = arrCHICHEN_ITZA
+  //console.log(arrTAJ_MAHAL)
+  //console.log(arrPETRA)
+  const arrCategory = arrTAJ_MAHAL
     .map((m: any) => {
       return m.category;
     })
