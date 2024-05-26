@@ -274,7 +274,7 @@ const setForTime10 = async (
 
     last = item.reps;
     item.place = place;
-    item.points = (100 - (place - 1)) * 10;
+    item.points = 100 - (place - 1) * 10;
     real = real + 1;
     if (item.idTest != 0) {
       await CompetitionUserTestModel.findOneAndUpdate(
@@ -669,7 +669,14 @@ export const setPointsAthleteR = async (id: string) => {
       arrCHICHEN_ITZA_2.push({
         id: user.id,
         category: category,
-        weight: CHICHEN_ITZA_2.weight ? CHICHEN_ITZA_2.weight : CHICHEN_ITZA_2.judgeWeight,
+        reps:
+        CHICHEN_ITZA_2.judgeReps == 0
+            ? CHICHEN_ITZA_2.reps
+            : CHICHEN_ITZA_2.judgeReps,
+        time:
+        CHICHEN_ITZA_2.judgeTime == ""
+            ? CHICHEN_ITZA_2.time
+            : CHICHEN_ITZA_2.judgeTime,
         place: 0,
         points: 0,
         idTest: CHICHEN_ITZA_2.id,
