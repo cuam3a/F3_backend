@@ -359,6 +359,7 @@ const competitionUsersService = async (
     },
   ]);
   await CompetitionUserModel.populate(list, "user");
+  await CompetitionUserModel.populate(list, "competition");
   
   let arr:Partial<CompetitionUser>[] = [];
   for (const item of list) {
