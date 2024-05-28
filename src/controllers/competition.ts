@@ -238,11 +238,11 @@ const competitionUpdate = async ({ idUser }: RequestExt, res: Response) => {
 };
 
 const competitionUsers = async (
-  { params, idUser }: RequestExt,
+  { params }: Request,
   res: Response
 ) => {
   try {
-    const idU = idUser?.idUser;
+    //const idU = idUser?.idUser;
     const { competitionId } = params;
     const array = await competitionUsersService(competitionId);
     const response: GetListResponse = {

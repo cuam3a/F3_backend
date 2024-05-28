@@ -60,7 +60,7 @@ const router = Router();
 router.get("/", checkJwt, competitions);
 router.get("/byId/:id", checkJwt, competitionById);
 router.get("/byUserId/:userId", checkJwt, competitionByUserId);
-router.get("/users/:competitionId", checkJwt, competitionUsers);
+router.get("/users/:competitionId", competitionUsers);
 router.get("/getResult/:id/:userId", checkJwt, competitionGetResult);
 router.post("/", checkJwt, competitionAdd);
 router.post("/registration", checkJwt, competitionRegistration);
