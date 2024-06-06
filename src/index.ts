@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: true, limit:'50mb' }));
 app.use(router);
 
 app.get("/", async (req, res) => {
-await setPointsAthleteR("661e0c205f3c504e0bab6ba3");
+await setPointsAthleteR("661e08725f3c504e0bab6ba1");
   //await setPointsAthlete("65f7424513aa8cf747df7a62");
 
   // const newUser = await UserModel.findOne({ _id: "65a70d4deb1d06a3b1b24277" });

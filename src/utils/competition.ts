@@ -510,7 +510,7 @@ export const setPointsAthleteR = async (id: string) => {
   for await (let user of athletes) {
     let test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "6643b78e6b00bcf7672bca5c",
+      competitionTest: "665e036a16f78d6290533482",
       status: Status.ACTIVO,
     });
 
@@ -548,7 +548,7 @@ export const setPointsAthleteR = async (id: string) => {
 
     test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "664846318384a00b6de1327b",
+      competitionTest: "665e02c016f78d629053347e",
       status: Status.ACTIVO,
     });
     let TAJ_MAHAL = test.find((f) => f.isValid == true);
@@ -576,7 +576,7 @@ export const setPointsAthleteR = async (id: string) => {
 
     test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "664848e08384a00b6de1327d",
+      competitionTest: "665e030b16f78d629053347f",
       status: Status.ACTIVO,
     });
     let PETRA = test.find((f) => f.isValid == true);
@@ -606,7 +606,7 @@ export const setPointsAthleteR = async (id: string) => {
 
     test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "664849908384a00b6de1327f",
+      competitionTest: "665e032b16f78d6290533480",
       status: Status.ACTIVO,
     });
     let LA_GRAN_MURALLA = test.find((f) => f.isValid == true);
@@ -635,7 +635,7 @@ export const setPointsAthleteR = async (id: string) => {
 
     test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "66484a138384a00b6de13281",
+      competitionTest: "665e034f16f78d6290533481",
       status: Status.ACTIVO,
     });
     let EL_COLISEO = test.find((f) => f.isValid == true);
@@ -661,7 +661,7 @@ export const setPointsAthleteR = async (id: string) => {
 
     test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "665397a5dbf7430711b5e2c4",
+      competitionTest: "665e038d16f78d6290533483",
       status: Status.ACTIVO,
     });
     let CHICHEN_ITZA_2 = test.find((f) => f.isValid == true);
