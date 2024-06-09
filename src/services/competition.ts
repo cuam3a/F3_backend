@@ -625,6 +625,114 @@ const competitionVerifyDiscountService = async (
   return 0;
 };
 
+const competitionUsersGlobalService = async (
+  test:string
+): Promise<Partial<CompetitionUser>[]> => {
+
+  let listTest: any = [];
+  if(test == "TAJ MAHAL"){
+    listTest = await CompetitionUserTestModel.find({
+      place: 1,
+      competitionTest: { $in: ['665e02c016f78d629053347e','664846318384a00b6de1327b'] }
+    })
+  }
+  if(test == "PETRA"){
+    listTest = await CompetitionUserTestModel.find({
+      place: 1,
+      competitionTest: { $in: ['664848e08384a00b6de1327d','665e030b16f78d629053347f'] }
+    })
+  }
+  if(test == "LA GRAN MURALLA"){
+    listTest = await CompetitionUserTestModel.find({
+      place: 1,
+      competitionTest: { $in: ['664849908384a00b6de1327f','665e032b16f78d6290533480'] }
+    })
+  }
+  if(test == "EL COLISEO"){
+    listTest = await CompetitionUserTestModel.find({
+      place: 1,
+      competitionTest: { $in: ['66484a138384a00b6de13281','665e034f16f78d6290533481'] }
+    })
+  }
+  if(test == "CHICHEN ITZA 1"){
+    listTest = await CompetitionUserTestModel.find({
+      place: 1,
+      competitionTest: { $in: ['6643b78e6b00bcf7672bca5c','665e036a16f78d6290533482'] }
+    })
+  }
+  if(test == "CHICHEN ITZA 2"){
+    listTest = await CompetitionUserTestModel.find({
+      place: 1,
+      competitionTest: { $in: ['665397a5dbf7430711b5e2c4','665e038d16f78d6290533483'] }
+    })
+  }
+  let arr:Partial<CompetitionUser>[] = [];
+  for await(var item of listTest){
+    var userTest = await CompetitionTestModel.find({
+      _id: item.competitionTest
+    });
+    if(userTest.length > 0){
+      // var competitionUser = await CompetitionUserModel.findOne<any>({
+      //   _id: item.competitionUser
+      // })
+
+       const competitionUser = await CompetitionUserModel.aggregate([
+        {
+          $match: {
+            _id: item.competitionUser,
+          },
+        },
+        {
+          $lookup: {
+            as: "competitionUserTest",
+            from: "competitionusertests",
+            foreignField: "competitionUser",
+            localField: "_id",
+          },
+        },
+      ]);
+      competitionUser[0].userTest = userTest
+      await CompetitionUserModel.populate(competitionUser[0], "user");
+      await CompetitionUserModel.populate(competitionUser[0], "competition");
+      await CompetitionModel.populate(competitionUser[0].competition, "region");
+      arr.push(await formatCompetitionUserData(competitionUser[0]));
+    }
+    
+  }
+
+  // const list = await CompetitionUserModel.aggregate([
+  //   {
+  //     $match: {
+  //       status: Status.ACTIVO,
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       as: "competitionUserTest",
+  //       from: "competitionusertests",
+  //       foreignField: "competitionUser",
+  //       localField: "_id",
+  //     },
+  //   },
+  // ]);
+  // await CompetitionUserModel.populate(list, "user");
+  // await CompetitionUserModel.populate(list, "competition");
+  
+  // let arr:Partial<CompetitionUser>[] = [];
+  // for (const item of list) {
+
+  //   var userTest = await CompetitionTestModel.find({
+  //     competition: item.competition,
+  //     place: 1,
+      
+  //   });
+  //   item.userTest = userTest
+    
+  //   arr.push(await formatCompetitionUserData(item));
+  // };
+  return arr;
+};
+
 export {
   competitionsService,
   competitionByIdService,
@@ -642,4 +750,5 @@ export {
   competitionUserResultJudgeService,
   competitionUpdateResultJudgeStartService,
   competitionVerifyDiscountService,
+  competitionUsersGlobalService,
 };

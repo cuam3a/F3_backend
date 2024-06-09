@@ -18,6 +18,7 @@ import {
   competitionUserResultJudgeService,
   competitionUpdateResultJudgeStartService,
   competitionVerifyDiscountService,
+  competitionUsersGlobalService,
 } from "../services/competition";
 import { handleError } from "../utils/error.handle";
 import path from "path";
@@ -381,6 +382,24 @@ const competitionVerifyDiscountCode = async (
   }
 };
 
+const competitionGlobalUsers = async (
+  { params }: Request,
+  res: Response
+) => {
+  try {
+    //const idU = idUser?.idUser;
+    const { test } = params;
+    const array = await competitionUsersGlobalService(test);
+    const response: GetListResponse = {
+      status: 200,
+      data: array,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR REPORT COMPETENCE USERS", e);
+  }
+};
+
 export {
   competitions,
   competitionById,
@@ -397,5 +416,6 @@ export {
   competitionUserUpdate,
   competitionUserResultJudge,
   competitionUpdateResultJudgeStart,
-  competitionVerifyDiscountCode
+  competitionVerifyDiscountCode,
+  competitionGlobalUsers
 };
