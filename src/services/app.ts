@@ -365,6 +365,10 @@ const competitionSaveTestService = async (
   // )
   //   throw Error("USUARIO CALIFICADO POR OTRO JUEZ");
   // if (exist.judgeStatus == "calificado") throw Error("USUARIO CALIFICADO");
+  if((data.time?.length ?? 0) > 3){
+    let newTime = data.time?.replace(":","");
+    data.time = `${newTime?.substring(0,2)}:${newTime?.substring(2,4)}:${newTime?.substring(4,6)}` 
+  }
   const create = await CompetitionUserTestModel.create({
     competitionUser: exist._id,
     testType: data.testType,
@@ -411,6 +415,11 @@ const competitionUpdateTestService = async (
   });
   if (!exist) throw Error("NO EXISTE REGISTRO PRUEBAS USUARIO");
   console.log(data);
+  if((data.time?.length ?? 0) > 3){
+    let newTime = data.time?.replace(":","");
+    data.time = `${newTime?.substring(0,2)}:${newTime?.substring(2,4)}:${newTime?.substring(4,6)}` 
+  }
+
   const update = await CompetitionUserTestModel.findOneAndUpdate(
     { _id: data.id },
     {
@@ -467,6 +476,7 @@ const hitsAppService = async (
   const test = await CompetitionTestModel.findOne({ _id: competitionTestId });
 
   const lanes = competitionTest.lanes.map((ele) => {
+    console.log(ele)
     return JSON.parse(ele);
   });
 
