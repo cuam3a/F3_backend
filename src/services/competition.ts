@@ -644,6 +644,7 @@ const competitionUsersGlobalService = async (
           "665e02c016f78d629053347e",
           "664846318384a00b6de1327b",
           "667bc188857435fcfce04245",
+          "661e12315f3c504e0bab6bb4",
         ],
       },
     });
@@ -656,6 +657,7 @@ const competitionUsersGlobalService = async (
           "664848e08384a00b6de1327d",
           "665e030b16f78d629053347f",
           "667bc188857435fcfce04246",
+          "669195274f42829c32c93261",
         ],
       },
     });
@@ -668,6 +670,7 @@ const competitionUsersGlobalService = async (
           "664849908384a00b6de1327f",
           "665e032b16f78d6290533480",
           "667bc188857435fcfce04247",
+          "669195334f42829c32c93263",
         ],
       },
     });
@@ -680,6 +683,7 @@ const competitionUsersGlobalService = async (
           "66484a138384a00b6de13281",
           "665e034f16f78d6290533481",
           "667bc188857435fcfce04248",
+          "6691953c4f42829c32c93265",
         ],
       },
     });
@@ -692,6 +696,7 @@ const competitionUsersGlobalService = async (
           "6643b78e6b00bcf7672bca5c",
           "665e036a16f78d6290533482",
           "667bc188857435fcfce04249",
+          "669195484f42829c32c93267",
         ],
       },
     });
@@ -704,6 +709,7 @@ const competitionUsersGlobalService = async (
           "665397a5dbf7430711b5e2c4",
           "665e038d16f78d6290533483",
           "667bc188857435fcfce0424a",
+          "669195574f42829c32c93269",
         ],
       },
     });

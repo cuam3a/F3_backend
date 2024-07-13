@@ -290,7 +290,7 @@ const setForTime10 = async (
     } else {
       item.points = 0;
     }
-    if(category == "21-29 años ALTO_RENDIMIENTO VARONIL") (console.log(item));
+    // if(category == "21-29 años ALTO_RENDIMIENTO VARONIL") (console.log(item));
   }
   
   last = -1;
@@ -510,7 +510,7 @@ export const setPointsAthleteR = async (id: string) => {
   for await (let user of athletes) {
     let test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "667bc188857435fcfce04249",//"6643b78e6b00bcf7672bca5c",//"665e036a16f78d6290533482",
+      competitionTest: "669195484f42829c32c93267",//"667bc188857435fcfce04249",//"6643b78e6b00bcf7672bca5c",//"665e036a16f78d6290533482",
       status: Status.ACTIVO,
     });
 
@@ -548,7 +548,7 @@ export const setPointsAthleteR = async (id: string) => {
 
     test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "667bc188857435fcfce04245",//"664846318384a00b6de1327b",//"665e02c016f78d629053347e",
+      competitionTest: "6691950a4f42829c32c9325f",//"667bc188857435fcfce04245",//"664846318384a00b6de1327b",//"665e02c016f78d629053347e",
       status: Status.ACTIVO,
     });
     let TAJ_MAHAL = test.find((f) => f.isValid == true);
@@ -576,7 +576,7 @@ export const setPointsAthleteR = async (id: string) => {
 
     test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "667bc188857435fcfce04246",//"664848e08384a00b6de1327d",//"665e030b16f78d629053347f",
+      competitionTest: "669195274f42829c32c93261",//"667bc188857435fcfce04246",//"664848e08384a00b6de1327d",//"665e030b16f78d629053347f",
       status: Status.ACTIVO,
     });
     let PETRA = test.find((f) => f.isValid == true);
@@ -606,7 +606,7 @@ export const setPointsAthleteR = async (id: string) => {
 
     test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "667bc188857435fcfce04247",//"664849908384a00b6de1327f",//"665e032b16f78d6290533480",
+      competitionTest: "669195334f42829c32c93263",//"667bc188857435fcfce04247",//"664849908384a00b6de1327f",//"665e032b16f78d6290533480",
       status: Status.ACTIVO,
     });
     let LA_GRAN_MURALLA = test.find((f) => f.isValid == true);
@@ -635,7 +635,7 @@ export const setPointsAthleteR = async (id: string) => {
 
     test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "667bc188857435fcfce04248",//"66484a138384a00b6de13281",//"665e034f16f78d6290533481",
+      competitionTest: "6691953c4f42829c32c93265",//"667bc188857435fcfce04248",//"66484a138384a00b6de13281",//"665e034f16f78d6290533481",
       status: Status.ACTIVO,
     });
     let EL_COLISEO = test.find((f) => f.isValid == true);
@@ -661,7 +661,7 @@ export const setPointsAthleteR = async (id: string) => {
 
     test = await CompetitionUserTestModel.find({
       competitionUser: user.id,
-      competitionTest: "667bc188857435fcfce0424a",//"665397a5dbf7430711b5e2c4",//"665e038d16f78d6290533483",
+      competitionTest: "669195574f42829c32c93269",//"667bc188857435fcfce0424a",//"665397a5dbf7430711b5e2c4",//"665e038d16f78d6290533483",
       status: Status.ACTIVO,
     });
     let CHICHEN_ITZA_2 = test.find((f) => f.isValid == true);

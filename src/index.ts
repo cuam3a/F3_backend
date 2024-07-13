@@ -32,7 +32,7 @@ app.use(router);
 
 app.get("/", async (req, res) => {
   //await setPointsAthleteR("661e08725f3c504e0bab6ba1");
-  await setPointsAthleteR("661e0c205f3c504e0bab6ba3");
+  await setPointsAthleteR("661e12315f3c504e0bab6bb4");
 
   // const newUser = await UserModel.findOne({ _id: "65a70d4deb1d06a3b1b24277" });
   // if (newUser) {
