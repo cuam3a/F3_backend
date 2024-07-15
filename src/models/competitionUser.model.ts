@@ -52,6 +52,13 @@ const CompetitionUser = new Schema<CompetitionUser>(
             enum: ["ACTIVO", "INACTIVO", "ELIMINADO"],
             required: true,
           },
+        kit: {
+            type: Boolean,
+            default: false,
+        },
+        team: {
+            type: String,
+        }
     },
     {
         versionKey: false,

@@ -91,6 +91,12 @@ const Competition = new Schema<Competition>(
       enum: ["ACTIVO", "INACTIVO", "ELIMINADO"],
       required: true,
     },
+    evenType: {
+      type: String,
+    },
+    usersList:{
+      type: [String],
+    }
   },
   {
     versionKey: false,

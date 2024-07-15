@@ -55,6 +55,16 @@ const competitionsService = async (
     list[item].registeredPlace = exist ? exist.place ?? 0 : 0;
     list[item].userRegion =
       exist && exist.user ? (exist.user as Partial<User>).region : "";
+    
+    list[item].canRegistered = true;
+    if(list[item].evenType == "nacional"){
+      var existUser = list[item].usersList.find((ele:string) => ele == idU)
+      if(existUser){
+        list[item].canRegistered = true;
+      }else{
+        list[item].canRegistered = false;
+      }
+    }
   }
   // list.forEach(async (f:any) => {
   //   f.registered = await RegisteredCompetition(idU, f._id);

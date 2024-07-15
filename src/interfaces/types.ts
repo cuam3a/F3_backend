@@ -66,6 +66,8 @@ export type User = {
   registeredAs?:string;
   transferFile?:string;
   paymentMethod?:string;
+  kit?:boolean;
+  team?:string;
 };
 
 export enum Rol {
@@ -216,6 +218,9 @@ export type Competition = {
   userRegion: string;
   bonus:number;
   competitionSteps: CompetitionSteps[];
+  evenType: string;
+  canRegistered: boolean;
+  usersList:string[];
 };
 
 export type CompetitionSteps = {
@@ -249,6 +254,8 @@ export type CompetitionUser = {
   userTest: Partial<UserTest>[];
   testName: string;
   carril: string;
+  team:string;
+  kit:boolean;
 };
 
 export type CompetitionUserTest = {

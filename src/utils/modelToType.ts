@@ -221,6 +221,7 @@ const formatCompetitionData = (model: any): Partial<Competition> => {
     registeredScore: model.registeredScore ?? 0,
     status: model.status,
     bonus: model.bonus,
+    canRegistered: model.canRegistered,
     region: formatRegionData(model.region ?? null),
     competitionSteps:
       model.competitionSteps?.map((itemStep: any) => {

@@ -322,6 +322,8 @@ const paymentCompetenceService = async (
       ));
   }
   bonus = await getBonus(user.id);
+  if(item.kit) amout = amout + 799.99;
+
   if (amout - bonus != item.transaction_amount) throw Error("MONTO DIFERENTE");
   amout = amout - bonus;
 
@@ -428,6 +430,8 @@ const paymentCompetenceService = async (
       registeredAs: item.registeredAs ?? "atleta",
       payment: paymentUser.id,
       status: Status.ACTIVO,
+      kit: item.kit ?? false,
+      team: item.team ?? "",
     });
     console.log(competitionUser);
   }
