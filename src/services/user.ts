@@ -322,7 +322,7 @@ const paymentCompetenceService = async (
       ));
   }
   bonus = await getBonus(user.id);
-  if(item.kit) amout = amout + 799.99;
+  if(item.kit == true) amout = amout + 799.99;
 
   if(competitionM.evenType == "nacional"){
     if(item.typeAthlete?.toUpperCase() == "INICIACION_DEPORTIVA EQUIPO"){
@@ -332,7 +332,7 @@ const paymentCompetenceService = async (
       amout = 7000;
     }
   }
-
+  console.log(amout);
   if (amout - bonus != item.transaction_amount) throw Error("MONTO DIFERENTE");
   amout = amout - bonus;
 
