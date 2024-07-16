@@ -68,6 +68,7 @@ export type User = {
   paymentMethod?:string;
   kit?:boolean;
   team?:string;
+  teamName?:string;
 };
 
 export enum Rol {
@@ -254,8 +255,9 @@ export type CompetitionUser = {
   userTest: Partial<UserTest>[];
   testName: string;
   carril: string;
-  team:string;
-  kit:boolean;
+  team: string;
+  kit: boolean;
+  teamName: string;
 };
 
 export type CompetitionUserTest = {

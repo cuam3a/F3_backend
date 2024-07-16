@@ -58,6 +58,9 @@ const CompetitionUser = new Schema<CompetitionUser>(
         },
         team: {
             type: String,
+        },
+        teamName: {
+            type: String,
         }
     },
     {

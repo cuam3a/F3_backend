@@ -432,6 +432,7 @@ const paymentCompetenceService = async (
       status: Status.ACTIVO,
       kit: item.kit ?? false,
       team: item.team ?? "",
+      teamName: item.teamName ?? "",
     });
     console.log(competitionUser);
   }
