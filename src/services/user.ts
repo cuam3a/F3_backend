@@ -324,6 +324,15 @@ const paymentCompetenceService = async (
   bonus = await getBonus(user.id);
   if(item.kit) amout = amout + 799.99;
 
+  if(competitionM.evenType == "nacional"){
+    if(item.typeAthlete?.toUpperCase() == "INICIACION_DEPORTIVA EQUIPO"){
+      amout = 5000;
+    }
+    if(item.typeAthlete?.toUpperCase() == "ALTO_RENDIMIENTO EQUIPO"){
+      amout = 7000;
+    }
+  }
+
   if (amout - bonus != item.transaction_amount) throw Error("MONTO DIFERENTE");
   amout = amout - bonus;
 
