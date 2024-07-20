@@ -107,6 +107,16 @@ const competitionByIdService = async (
       exist && exist.user ? (exist.user as Partial<User>).region : "";
     item[0].bonus = await getBonus(idU);
 
+    item[0].canRegistered = true;
+    if(item[0].evenType == "nacional"){
+      var existUser = item[0].usersList.find((ele:string) => ele == idU)
+      if(existUser){
+        item[0].canRegistered = true;
+      }else{
+        item[0].canRegistered = false;
+      }
+    }
+
     return formatCompetitionData(item[0]);
   } else {
     return formatCompetitionData(null);
