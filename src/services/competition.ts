@@ -31,7 +31,7 @@ const competitionsService = async (
   idU: string
 ): Promise<Partial<Competition>[]> => {
   const list = await CompetitionModel.aggregate([
-    { $match: { status: Status.ACTIVO } },
+    { $match: { status: Status.ACTIVO, evenType: { $ne: 'taller'} } },
     {
       $lookup: {
         as: "competitionSteps",
@@ -1245,6 +1245,54 @@ const setOnlyTime = async (arr: any[], category: string) => {
   return arr;
 };
 
+const coursesService = async (
+  idU: string
+): Promise<Partial<Competition>[]> => {
+  const list = await CompetitionModel.aggregate([
+    { $match: { status: Status.ACTIVO, evenType: 'taller' } },
+    {
+      $lookup: {
+        as: "competitionSteps",
+        from: "competitionsteps",
+        foreignField: "competition",
+        localField: "_id",
+      },
+    },
+  ]);
+  await CompetitionModel.populate(list, "region");
+  for (var item in list) {
+    var exist = await CompetitionUserModel.findOne({
+      user: new Types.ObjectId(idU),
+      competition: new Types.ObjectId(list[item]._id),
+    }).populate("user");
+    list[item].registered = exist ? true : false;
+    list[item].registeredAs = list[item].registered ? "atleta" : "";
+    list[item].registeredCategory = exist ? exist.category ?? "" : "";
+    list[item].registeredTypeAthlete = exist ? exist.typeAthlete ?? "" : "";
+    list[item].registeredScore = exist ? exist.points ?? 0 : 0;
+    list[item].registeredPlace = exist ? exist.place ?? 0 : 0;
+    list[item].userRegion =
+      exist && exist.user ? (exist.user as Partial<User>).region : "";
+    
+    list[item].canRegistered = true;
+    if(list[item].evenType == "nacional"){
+      var existUser = list[item].usersList.find((ele:string) => ele == idU)
+      if(existUser){
+        list[item].canRegistered = true;
+      }else{
+        list[item].canRegistered = false;
+      }
+    }
+  }
+  // list.forEach(async (f:any) => {
+  //   f.registered = await RegisteredCompetition(idU, f._id);
+  //   f.registeredAs = f.registered ? "atleta" : "";
+  // });
+  return list.map((item) => {
+    return formatCompetitionData(item);
+  });
+};
+
 export {
   competitionsService,
   competitionByIdService,
@@ -1263,4 +1311,5 @@ export {
   competitionUpdateResultJudgeStartService,
   competitionVerifyDiscountService,
   competitionUsersGlobalService,
+  coursesService,
 };
