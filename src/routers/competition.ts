@@ -19,6 +19,8 @@ import {
   competitionVerifyDiscountCode,
   competitionGlobalUsers,
   courses,
+  AllowCourses,
+  AllowCompetitionById,
 } from "../controllers/competition";
 import multer, { FileFilterCallback } from "multer";
 
@@ -73,6 +75,8 @@ router.put("/", checkJwt, competitionUpdate);
 router.put("/updateResult/:id", checkJwt, upload.any(), competitionUpdateResult);
 router.put("/userUpdate/", checkJwt, competitionUserUpdate);//n
 router.get("/courses/", checkJwt, courses);
+router.get("/allow/courses/", AllowCourses);
+router.get("/allow/byId/:id", AllowCompetitionById);
 //juez
 router.get("/judge/:id", checkJwt, isJudge, competitionUsersJudge);//n
 router.get("/judge/:id/:userId", checkJwt, isJudge, competitionUserResultJudge);//n

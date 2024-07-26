@@ -16,6 +16,7 @@ import MercadoPagoConfig, { Payment } from "mercadopago";
 import { getBonus, setUseBonus } from "../utils/competition";
 import { competitionVerifyDiscountService } from "./competition";
 import { payment } from "../mail/payment";
+import { endurance } from "../mail/endurance";
 var nodemailer = require("nodemailer");
 
 const getSingleUser = async (id: string): Promise<Partial<User>> => {
@@ -470,6 +471,32 @@ const paymentCompetenceService = async (
       console.log(error);
     });
   }
+
+  if (competition?.id == "66a22e73364165170e9b0e2b") {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.zoho.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "hola@mexicof3.com",
+        pass: "2EBHKpbcqh9.",
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+
+    const email = {
+      from: "hola@mexicof3.com",
+      to: user.user,
+      subject: "Registro taller Endurance",
+      html: await endurance(),
+    };
+    await transporter.sendMail(email).catch((error: any) => {
+      console.log(error);
+    });
+  }
+  
   return formatUserData({ model: user });
 };
 
@@ -518,6 +545,206 @@ const getPaymentService = async (
   });
 };
 
+const allowPaymentCompetenceService = async (
+  item: Partial<User>
+): Promise<Partial<User>> => {
+  console.log(item);
+  const user = await UserModel.findOne({ _id: item.id });
+  if (!user) throw Error("NO EXISTE REGISTRO USUARIO");
+
+  const competitionM = await CompetitioModel.findOne({
+    _id: item.competenceId,
+  });
+  if (!competitionM) throw Error("NO EXISTE COMPETENCIA");
+
+  let amout = competitionM.cost ?? 0;
+  let bonus = 0;
+  if (item.discountCode && item.discountCode?.toLowerCase().trim() != "") {
+    amout =
+      amout -
+      (await competitionVerifyDiscountService(
+        competitionM.id,
+        item.discountCode ?? ""
+      ));
+  }
+  bonus = await getBonus(user.id);
+  if(item.kit == true) amout = amout + 799.99;
+
+  if(competitionM.evenType == "nacional"){
+    if(item.typeAthlete?.toUpperCase() == "INICIACION_DEPORTIVA EQUIPO"){
+      amout = 5000;
+    }
+    if(item.typeAthlete?.toUpperCase() == "ALTO_RENDIMIENTO EQUIPO"){
+      amout = 7000;
+    }
+  }
+  console.log(amout);
+  if (amout - bonus != item.transaction_amount) throw Error("MONTO DIFERENTE");
+  amout = amout - bonus;
+
+  console.log(amout);
+  let resp: any = {};
+  if (item.paymentMethod == "tarjeta") {
+    //let newUser : Partial<User> = {};
+    const client = new MercadoPagoConfig({
+      accessToken:
+        "APP_USR-913357541633645-060718-4787491c0ca96bdc245134bacb38901a-1135472336",
+      options: { timeout: 5000 },
+    });
+    const payment = new Payment(client);
+
+    resp = await payment.create({
+      body: {
+        token: item.token,
+        installments: parseInt(item.installments as any),
+        transaction_amount: amout,
+        description: item.descripcion,
+        payment_method_id: item.payment_method_id,
+        payer: {
+          email: item.email,
+        },
+      },
+    });
+    console.log(resp);
+    if (resp.status !== "approved" && resp.status !== "in_process") {
+      throw Error(
+        "PAGO INCORRECTO, MERCADOPAGO: " +
+          paymentError(resp.status_detail as string)
+      );
+    }
+  } else {
+    if (!item.transferFile) throw Error("NO EXISTE ARCHIVO TRANSFERENCIA");
+    resp.status = "TRANSFER PENDING";
+    resp.description = item.descripcion;
+    resp.transaction_amount = amout;
+  }
+
+  var paymentUser = await PaymentModel.create({
+    user: user.id,
+    cardName: resp?.card?.cardholder?.name ?? "",
+    cardNumber: `${resp?.card?.first_six_digits ?? ""}** **** ${
+      resp?.card?.last_four_digits ?? ""
+    }`,
+    year: resp?.card?.expiration_year ?? "",
+    month: resp?.card?.expiration_month ?? "",
+    amount: resp?.transaction_amount ?? 0,
+    date: new Date(),
+    authorization: resp?.authorization_code ?? "",
+    reference: resp?.transaction_details?.payment_method_reference_id ?? "",
+    description: resp?.description ?? "",
+    mp_id: resp?.id ?? "",
+    status: resp?.status ?? "",
+    transferFile: item.transferFile ?? "",
+    paymentMethod: item.paymentMethod ?? "",
+  });
+
+  const year = await getYears(user.dateOfBirth ?? new Date());
+  let category = "";
+  if (year >= 13 && year <= 14) category = "13-14 años";
+  if (year >= 15 && year <= 16) category = "15-16 años";
+  if (year >= 17 && year <= 18) category = "17-18 años";
+  if (year >= 19 && year <= 20) category = "19-20 años";
+  if (year >= 21 && year <= 29) category = "21-29 años";
+  if (year >= 30 && year <= 34) category = "30-34 años";
+  if (year >= 35 && year <= 39) category = "35-39 años";
+  if (year >= 40 && year <= 44) category = "40-44 años";
+  if (year >= 45 && year <= 49) category = "45-49 años";
+  if (year >= 50 && year <= 54) category = "50-54 años";
+  if (year >= 55 && year <= 59) category = "55-59 años";
+  if (year >= 60 && year <= 64) category = "60-64 años";
+  if (year >= 65) category = "65+ años";
+
+  var competence = await CompetenceModel.findOne({ _id: item.competenceId });
+  if (competence) {
+    const competenceUser = await CompetenceUserModel.create({
+      competenceId: competence.id,
+      userId: user.id,
+      years: year,
+      amount: item.transaction_amount,
+      category: category.toUpperCase(),
+      typeAthlete: item.typeAthlete?.toUpperCase() ?? "",
+    });
+    console.log(competenceUser);
+  }
+
+  if (bonus > 0) {
+    await setUseBonus(user.id);
+  }
+
+  var competition = await CompetitionModel.findOne({ _id: item.competenceId });
+  if (competition) {
+    const competitionUser = await CompetitionUserModel.create({
+      competition: competition.id,
+      user: user.id,
+      years: year,
+      amount: item.transaction_amount,
+      category: category,
+      typeAthlete: item.typeAthlete?.toUpperCase() ?? "",
+      place: 0,
+      points: 0,
+      registeredAs: item.registeredAs ?? "atleta",
+      payment: paymentUser.id,
+      status: Status.ACTIVO,
+      kit: item.kit ?? false,
+      team: item.team ?? "",
+      teamName: item.teamName ?? "",
+    });
+    console.log(competitionUser);
+  }
+
+  if (item.paymentMethod == "transferencia") {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.zoho.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "hola@mexicof3.com",
+        pass: "2EBHKpbcqh9.",
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+
+    const email = {
+      from: "hola@mexicof3.com",
+      to: user.user,
+      subject: "Registro de inscripcion en proceso",
+      html: await payment(user),
+    };
+    await transporter.sendMail(email).catch((error: any) => {
+      console.log(error);
+    });
+  }
+
+  if (competition?.id == "66a22e73364165170e9b0e2b") {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.zoho.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "hola@mexicof3.com",
+        pass: "2EBHKpbcqh9.",
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+
+    const email = {
+      from: "hola@mexicof3.com",
+      to: user.user,
+      subject: "Registro taller Endurance",
+      html: await endurance(),
+    };
+    await transporter.sendMail(email).catch((error: any) => {
+      console.log(error);
+    });
+  }
+
+  return formatUserData({ model: user });
+};
+
 export {
   getSingleUser,
   getListUser,
@@ -535,4 +762,5 @@ export {
   paymentCompetenceService,
   sendCoachUsers,
   getPaymentService,
+  allowPaymentCompetenceService,
 };

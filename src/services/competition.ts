@@ -141,6 +141,7 @@ const competitionByUserIdService = async (
     competition.registeredTypeAthlete = f.typeAthlete ?? "";
     competition.registeredScore = f.points ?? 0;
     competition.registeredPlace = f.place ?? 0;
+    competition.typeEvent = competition.typeEvent ?? "";
     listC.push(competition);
   });
   await CompetitionModel.populate(listC, "region");
@@ -1293,6 +1294,48 @@ const coursesService = async (
   });
 };
 
+const AllowCoursesService = async (): Promise<Partial<Competition>[]> => {
+  const list = await CompetitionModel.aggregate([
+    { $match: { status: Status.ACTIVO, evenType: 'taller' } },
+    {
+      $lookup: {
+        as: "competitionSteps",
+        from: "competitionsteps",
+        foreignField: "competition",
+        localField: "_id",
+      },
+    },
+  ]);
+  await CompetitionModel.populate(list, "region");
+  
+  return list.map((item) => {
+    return formatCompetitionData(item);
+  });
+};
+
+const AllowCompetitionByIdService = async (
+  id: string,
+): Promise<Partial<Competition>> => {
+  const item = await CompetitionModel.aggregate([
+    { $match: { _id: new Types.ObjectId(id) } },
+    {
+      $lookup: {
+        as: "competitionSteps",
+        from: "competitionsteps",
+        foreignField: "competition",
+        localField: "_id",
+      },
+    },
+  ]);
+  await CompetitionModel.populate(item, "region");
+
+  if (item.length > 0) {
+    return formatCompetitionData(item[0]);
+  } else {
+    return formatCompetitionData(null);
+  }
+};
+
 export {
   competitionsService,
   competitionByIdService,
@@ -1312,4 +1355,6 @@ export {
   competitionVerifyDiscountService,
   competitionUsersGlobalService,
   coursesService,
+  AllowCoursesService,
+  AllowCompetitionByIdService,
 };

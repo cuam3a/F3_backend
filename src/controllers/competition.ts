@@ -20,6 +20,8 @@ import {
   competitionVerifyDiscountService,
   competitionUsersGlobalService,
   coursesService,
+  AllowCoursesService,
+  AllowCompetitionByIdService,
 } from "../services/competition";
 import { handleError } from "../utils/error.handle";
 import path from "path";
@@ -415,6 +417,36 @@ const courses = async ({ idUser }: RequestExt, res: Response) => {
   }
 };
 
+const AllowCourses = async (req: Request, res: Response) => {
+  try {
+    const array = await AllowCoursesService();
+    const response: GetListResponse = {
+      status: 200,
+      data: array,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR REPORT DEMANDS", e);
+  }
+};
+
+const AllowCompetitionById = async (
+  { params }: RequestExt,
+  res: Response
+) => {
+  try {
+    const { id } = params;
+    const item = await AllowCompetitionByIdService(id);
+    const response: GetListResponse = {
+      status: 200,
+      data: item,
+    };
+    res.send(response);
+  } catch (e: any) {
+    handleError(res, "ERROR REPORT COMPETENCE USERS", e);
+  }
+};
+
 export {
   competitions,
   competitionById,
@@ -434,4 +466,6 @@ export {
   competitionVerifyDiscountCode,
   competitionGlobalUsers,
   courses,
+  AllowCourses,
+  AllowCompetitionById,
 };
