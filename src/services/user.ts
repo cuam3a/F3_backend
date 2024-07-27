@@ -558,6 +558,7 @@ const allowPaymentCompetenceService = async (
       lastName: item.lastName,
       celphone: item.celphone,
       password: passHash,
+      rol: 'USUARIO',
       registeredAs: item.registeredAs ?? "atleta",
       status: Status.ACTIVO,
     });
