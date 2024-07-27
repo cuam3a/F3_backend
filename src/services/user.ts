@@ -549,8 +549,20 @@ const allowPaymentCompetenceService = async (
   item: Partial<User>
 ): Promise<Partial<User>> => {
   console.log(item);
-  const user = await UserModel.findOne({ _id: item.id });
-  if (!user) throw Error("NO EXISTE REGISTRO USUARIO");
+  let user = await UserModel.findOne({ user: item.user?.toUpperCase() });
+  if (!user){
+    const passHash = await encrypt("Atleta001");
+    user = await UserModel.create({
+      user: item.user,
+      name: item.name,
+      lastName: item.lastName,
+      celphone: item.celphone,
+      password: passHash,
+      registeredAs: item.registeredAs ?? "atleta",
+      status: Status.ACTIVO,
+    });
+    if (!user) throw Error("ERROR CREAR USUARIO");
+  }
 
   const competitionM = await CompetitioModel.findOne({
     _id: item.competenceId,
@@ -578,7 +590,7 @@ const allowPaymentCompetenceService = async (
       amout = 7000;
     }
   }
-  console.log(amout);
+
   if (amout - bonus != item.transaction_amount) throw Error("MONTO DIFERENTE");
   amout = amout - bonus;
 
