@@ -472,7 +472,7 @@ const paymentCompetenceService = async (
     });
   }
 
-  if (competition?.id == "66a22e73364165170e9b0e2b") {
+  if (competition?.evenType == "taller") {
     const transporter = nodemailer.createTransport({
       host: "smtp.zoho.com",
       port: 587,
@@ -490,7 +490,7 @@ const paymentCompetenceService = async (
       from: "hola@mexicof3.com",
       to: user.user,
       subject: "Registro taller Endurance",
-      html: await endurance(),
+      html: await endurance(competition),
     };
     await transporter.sendMail(email).catch((error: any) => {
       console.log(error);
@@ -730,7 +730,7 @@ const allowPaymentCompetenceService = async (
     });
   }
 
-  if (competition?.id == "66a22e73364165170e9b0e2b") {
+  if (competition?.evenType == "taller") {
     const transporter = nodemailer.createTransport({
       host: "smtp.zoho.com",
       port: 587,
@@ -748,7 +748,7 @@ const allowPaymentCompetenceService = async (
       from: "hola@mexicof3.com",
       to: user.user,
       subject: "Registro taller Endurance",
-      html: await endurance(),
+      html: await endurance(competition),
     };
     await transporter.sendMail(email).catch((error: any) => {
       console.log(error);

@@ -111,7 +111,6 @@ const saveTestService = async (
 
   let score = 0;
   for (var item of data) {
-    console.log(item);
     const testUserAnswer = await TestUserAnswersModel.create({
       testUser: testUser._id,
       questionTest: item.questionTest,
@@ -134,7 +133,6 @@ const saveTestService = async (
               return f == element;
             })
           ) {
-            console.log("ENTRO");
             score = score + 1;
           }
         });
