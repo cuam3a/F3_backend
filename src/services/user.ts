@@ -327,10 +327,10 @@ const paymentCompetenceService = async (
 
   if(competitionM.evenType == "nacional"){
     if(item.typeAthlete?.toUpperCase() == "INICIACION_DEPORTIVA EQUIPO"){
-      amout = 5000;
+      amout = 5500;
     }
     if(item.typeAthlete?.toUpperCase() == "ALTO_RENDIMIENTO EQUIPO"){
-      amout = 7000;
+      amout = 7500;
     }
   }
   console.log(amout);
