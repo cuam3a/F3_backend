@@ -105,7 +105,9 @@ const formatUserData = async ({
     folio: model.folio ?? "",
     coachAccepted: model.coachAccepted ?? false,
     judgeTest: model.judgeTest ?? false,
-    coachTest: model.coachTest ?? false
+    coachTest: model.coachTest ?? false,
+    team: model.team ?? "",
+    teamName: model.teamName ?? "",
   };
   return await userType;
 };
@@ -281,7 +283,8 @@ const formatCompetitionUserData = async (
   competitionType.userTest = model.userTest;
   competitionType.testName = model.testName;
   competitionType.carril = model.carril;
-
+  competitionType.team = model.team;
+  competitionType.teamName = model.teamName;
   return competitionType;
 };
 
