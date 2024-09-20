@@ -14,7 +14,7 @@ import {
   formatCompetitionUserData,
   formatCompetitionUserTestData,
 } from "../utils/modelToType";
-import { getUserTest, setPointsAthleteR } from "../utils/competition";
+import { getUserTest, setPointsAthleteN, setPointsAthleteR } from "../utils/competition";
 import CompetitionTestModel from "../models/competitionTest.model";
 import { verified } from "../utils/bcypt.handle";
 import { generateToken } from "../utils/jwt.handle";
@@ -317,7 +317,7 @@ const competitionUserAppService = async (
   });
   list[0].userTest = [];
   for (let test of userTest) {
-    if (test)
+    if (test && (((list[0].team ?? "") != "" && test.testAppears.includes("equipo")) || ((list[0].team ?? "") == "" && test.testAppears.includes("individual"))))
       list[0].userTest.push(
         getUserTest(list[0].category, list[0].typeAthlete, test)
       );
@@ -402,7 +402,7 @@ const competitionSaveTestService = async (
   console.log(update);
   if (!update) throw Error("ERROR ACTUALIZAR RESULTADOS PRUEBAS");
 
-  await setPointsAthleteR(exist.competition as string);
+  await setPointsAthleteN(exist.competition as string);
 
   return formatCompetitionUserData(update, "judge");
 };
@@ -457,7 +457,7 @@ const competitionUpdateTestService = async (
   );
 
   if (userCompetence)
-    await setPointsAthleteR(userCompetence.competition as string);
+    await setPointsAthleteN(userCompetence.competition as string);
 
   return formatCompetitionUserTestData(update, "judge");
 };
@@ -506,7 +506,7 @@ const hitsAppService = async (
         },
       ]);
       await CompetitionUserModel.populate(list, "user");
-
+      
       for (let item of list) {
         item.testName = test?.name ?? "";
         item.carril = ele.carril;

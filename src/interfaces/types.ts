@@ -387,6 +387,7 @@ export type CompetitionTest = {
   altoRendimiento: string[];
   iniciacionDeportiva: string[];
   testSubType: string;
+  testAppears: string;
 }
 
 export type UserTest = {
@@ -402,6 +403,7 @@ export type UserTest = {
   Observations: string;
   value: number;
   testSubType: string;
+  testAppears: string;
 }
 
 export type EjerciceTest = {

@@ -14,7 +14,7 @@ require("dotenv").config();
 var nodemailer = require("nodemailer");
 const fs = require("fs");
 import path from "path";
-import { getUserTest, setPointsAthlete, setPointsAthleteR } from "./utils/competition";
+import { getUserTest, setPointsAthlete, setPointsAthleteN, setPointsAthleteR } from "./utils/competition";
 import CompetitionTestModel from "./models/competitionTest.model";
 
 const PORT = process.env.PORT || 9000;
@@ -32,7 +32,7 @@ app.use(router);
 
 app.get("/", async (req, res) => {
   //await setPointsAthleteR("661e08725f3c504e0bab6ba1");
-  await setPointsAthleteR("661e0c205f3c504e0bab6ba3");
+  await setPointsAthleteN("66957252564abbe3a59547cb");
 
   // const newUser = await UserModel.findOne({ _id: "65a70d4deb1d06a3b1b24277" });
   // if (newUser) {

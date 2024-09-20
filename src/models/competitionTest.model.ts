@@ -31,6 +31,9 @@ const CompetitionTest = new Schema<CompetitionTest>(
         testSubType:{
             type: String,
         },
+        testAppears:{
+            type: String
+        }
     },
     {
         versionKey: false,
