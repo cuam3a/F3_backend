@@ -1142,7 +1142,7 @@ export const setPointsAthleteN = async (id: string) => {
     );
   for await (let category of arrCategory) {
     arrTestTime1 = await setForTime10(arrTestTime1, category, '00:20:00');
-    arrTestTime2 = await setForTime10(arrTestTime2, category, '00:20:00');
+    arrTestTime2 = await setForTime10(arrTestTime2, category, '00:18:00');
     arrTestTime3 = await setForTime10(arrTestTime3, category, '00:08:00');
     arrTestTime4 = await setForTime10(arrTestTime4, category, '00:08:00');
     arrTestTime5 = await setForTime10(arrTestTime5, category, '00:10:00');
