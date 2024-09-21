@@ -443,7 +443,6 @@ export const getUserTest = (
     typeAthlete.toLowerCase() == "avanzado"
   ) {
     const test: UserTest[] = competitionTest.altoRendimiento.map((ele) => {
-      console.log(ele)
       return JSON.parse(ele);
     });
     for (let i = 0; i < test.length; i++) {

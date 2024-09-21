@@ -255,10 +255,15 @@ const competitionUsersByCategoryAppService = async (
         });
         item.userTest = [];
         for (let test of userTest) {
-          if (test)
-            item.userTest.push(
-              getUserTest(item.category, item.typeAthlete, test)
-            );
+          if (test && test.testAppears != "equipo")
+          {
+            var t = getUserTest(item.category, item.typeAthlete, test);
+            if(Object.keys(t).length > 0 && t.constructor === Object){
+              item.userTest.push(
+                t
+              );
+            }
+          }
         }
         users.push(await formatCompetitionUserData(item));
       }
@@ -317,10 +322,11 @@ const competitionUserAppService = async (
   });
   list[0].userTest = [];
   for (let test of userTest) {
-    if (test && (((list[0].team ?? "") != "" && test.testAppears.includes("equipo")) || ((list[0].team ?? "") == "" && test.testAppears.includes("individual"))))
+    if (test && test.testAppears != "equipo"){
       list[0].userTest.push(
         getUserTest(list[0].category, list[0].typeAthlete, test)
       );
+    }
   }
   return await formatCompetitionUserData(list[0], "judge");
 };
@@ -340,7 +346,7 @@ const competitionUsersAppService = async (
     });
     item.userTest = [];
     for (let test of userTest) {
-      if (test)
+      if (test && test.testAppears != "equipo")
         item.userTest.push(getUserTest(item.category, item.typeAthlete, test));
     }
     arr.push(await formatCompetitionUserData(item));
@@ -515,7 +521,7 @@ const hitsAppService = async (
         });
         item.userTest = [];
         for (let test of userTest) {
-          if (test)
+          if (test && test.testAppears != "equipo")
             item.userTest.push(
               getUserTest(item.category, item.typeAthlete, test)
             );
