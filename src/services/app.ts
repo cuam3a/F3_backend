@@ -255,10 +255,9 @@ const competitionUsersByCategoryAppService = async (
         });
         item.userTest = [];
         for (let test of userTest) {
-          if (test && test.testAppears != "equipo")
-          {
+          if (test && test.testAppears != "equipo") {
             var t = getUserTest(item.category, item.typeAthlete, test);
-            if(Object.keys(t).length > 0 && t.constructor === Object){
+            if (Object.keys(t).length > 0 && t.constructor === Object) {
               item.userTest.push(
                 t
               );
@@ -322,10 +321,13 @@ const competitionUserAppService = async (
   });
   list[0].userTest = [];
   for (let test of userTest) {
-    if (test && test.testAppears != "equipo"){
-      list[0].userTest.push(
-        getUserTest(list[0].category, list[0].typeAthlete, test)
-      );
+    if (test && test.testAppears != "equipo") {
+      var t = getUserTest(list[0].category, list[0].typeAthlete, test);
+      if (Object.keys(t).length > 0 && t.constructor === Object) {
+        list[0].userTest.push(
+          t
+        );
+      }
     }
   }
   return await formatCompetitionUserData(list[0], "judge");
@@ -346,8 +348,14 @@ const competitionUsersAppService = async (
     });
     item.userTest = [];
     for (let test of userTest) {
-      if (test && test.testAppears != "equipo")
-        item.userTest.push(getUserTest(item.category, item.typeAthlete, test));
+      if (test && test.testAppears != "equipo") {
+        var t = getUserTest(item.category, item.typeAthlete, test);
+        if (Object.keys(t).length > 0 && t.constructor === Object) {
+          item.userTest.push(
+            t
+          );
+        }
+      }
     }
     arr.push(await formatCompetitionUserData(item));
   }
@@ -371,9 +379,9 @@ const competitionSaveTestService = async (
   // )
   //   throw Error("USUARIO CALIFICADO POR OTRO JUEZ");
   // if (exist.judgeStatus == "calificado") throw Error("USUARIO CALIFICADO");
-  if((data.time?.length ?? 0) > 3){
-    let newTime = data.time?.replace(":","").replace(":","");
-    data.time = `${newTime?.substring(0,2)}:${newTime?.substring(2,4)}:${newTime?.substring(4,6)}` 
+  if ((data.time?.length ?? 0) > 3) {
+    let newTime = data.time?.replace(":", "").replace(":", "");
+    data.time = `${newTime?.substring(0, 2)}:${newTime?.substring(2, 4)}:${newTime?.substring(4, 6)}`
   }
   const create = await CompetitionUserTestModel.create({
     competitionUser: exist._id,
@@ -421,9 +429,9 @@ const competitionUpdateTestService = async (
   });
   if (!exist) throw Error("NO EXISTE REGISTRO PRUEBAS USUARIO");
   console.log(data);
-  if((data.time?.length ?? 0) > 3){
-    let newTime = data.time?.replace(":","").replace(":","");
-    data.time = `${newTime?.substring(0,2)}:${newTime?.substring(2,4)}:${newTime?.substring(4,6)}` 
+  if ((data.time?.length ?? 0) > 3) {
+    let newTime = data.time?.replace(":", "").replace(":", "");
+    data.time = `${newTime?.substring(0, 2)}:${newTime?.substring(2, 4)}:${newTime?.substring(4, 6)}`
   }
 
   const update = await CompetitionUserTestModel.findOneAndUpdate(
@@ -512,7 +520,7 @@ const hitsAppService = async (
         },
       ]);
       await CompetitionUserModel.populate(list, "user");
-      
+
       for (let item of list) {
         item.testName = test?.name ?? "";
         item.carril = ele.carril;
@@ -521,10 +529,14 @@ const hitsAppService = async (
         });
         item.userTest = [];
         for (let test of userTest) {
-          if (test && test.testAppears != "equipo")
-            item.userTest.push(
-              getUserTest(item.category, item.typeAthlete, test)
-            );
+          if (test && test.testAppears != "equipo") {
+            var t = getUserTest(item.category, item.typeAthlete, test);
+            if (Object.keys(t).length > 0 && t.constructor === Object) {
+              item.userTest.push(
+                t
+              );
+            }
+          }
         }
         users.push(await formatCompetitionUserData(item));
       }

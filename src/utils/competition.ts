@@ -1141,16 +1141,16 @@ export const setPointsAthleteN = async (id: string) => {
       (value: any, index: any, array: any) => array.indexOf(value) === index
     );
   for await (let category of arrCategory) {
-    arrTestTime1 = await setForTime10(arrTestTime1, category, '00:08:00');
-    arrTestTime2 = await setForTime10(arrTestTime2, category, '00:08:00');
+    arrTestTime1 = await setForTime10(arrTestTime1, category, '00:20:00');
+    arrTestTime2 = await setForTime10(arrTestTime2, category, '00:20:00');
     arrTestTime3 = await setForTime10(arrTestTime3, category, '00:08:00');
     arrTestTime4 = await setForTime10(arrTestTime4, category, '00:08:00');
-    arrTestTime5 = await setForTime10(arrTestTime5, category, '00:08:00');
-    arrTestTime6 = await setForTime10(arrTestTime6, category, '00:08:00');
-    arrTestTime7 = await setForTime10(arrTestTime7, category, '00:08:00');
-    arrTestTime8 = await setForTime10Weight(arrTestTime8, category);
-    arrTestTime9 = await setForTime10(arrTestTime9, category, '00:08:00');
-    arrTestTime10 = await setForTime10(arrTestTime10, category, '00:08:00');
+    arrTestTime5 = await setForTime10(arrTestTime5, category, '00:10:00');
+    arrTestTime6 = await setForTime10(arrTestTime6, category, '00:10:00');
+    arrTestTime7 = await setForTime10Weight(arrTestTime7, category);
+    arrTestTime8 = await setForTime10(arrTestTime8, category, '00:05:00');
+    arrTestTime9 = await setForTime10(arrTestTime9, category, '00:10:00');
+    arrTestTime10 = await setForTime10(arrTestTime10, category, '00:09:00');
   }
 
   for await (let user of athletes) {
