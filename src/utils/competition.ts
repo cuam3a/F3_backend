@@ -763,7 +763,7 @@ export const setPointsAthleteR = async (id: string) => {
 };
 
 //Evaluacion Nacional
-export const setPointsAthleteN = async (id: string) => {
+export const setPointsAthleteN = async (id: string, categoryC:string) => {
   const exist = await CompetitionModel.findOne({
     _id: id,
   });
@@ -1168,32 +1168,34 @@ export const setPointsAthleteN = async (id: string) => {
   }
 
   for await (let category of arrCategory) {
-    const athletesCategory = athletes.filter(
-      (f) =>
-        `${f.category ?? ""} ${f.typeAthlete ?? "AVANZADO"} ${((f?.user ?? {}) as Partial<User>).gender ?? "---"
-        }` == category
-    );
-    let place = 1;
-    let real = 1;
-    let last = -1;
-    for await (let athlete of athletesCategory.sort(
-      (a, b) => b.points - a.points
-    )) {
-      athlete.points === last ? (place = place) : (place = real);
-      last = athlete.points;
-      athlete.place = place;
-      await CompetitionUserModel.findOneAndUpdate(
-        { _id: athlete.id },
-        {
-          place: place,
-          points: athlete.points,
-        },
-        {
-          new: true,
-        }
+    if(category == categoryC || categoryC == ""){
+      const athletesCategory = athletes.filter(
+        (f) =>
+          `${f.category ?? ""} ${f.typeAthlete ?? "AVANZADO"} ${((f?.user ?? {}) as Partial<User>).gender ?? "---"
+          }` == category
       );
+      let place = 1;
+      let real = 1;
+      let last = -1;
+      for await (let athlete of athletesCategory.sort(
+        (a, b) => b.points - a.points
+      )) {
+        athlete.points === last ? (place = place) : (place = real);
+        last = athlete.points;
+        athlete.place = place;
+        await CompetitionUserModel.findOneAndUpdate(
+          { _id: athlete.id },
+          {
+            place: place,
+            points: athlete.points,
+          },
+          {
+            new: true,
+          }
+        );
 
-      real = real + 1;
+        real = real + 1;
+      }
     }
   }
 };

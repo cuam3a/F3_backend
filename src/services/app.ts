@@ -416,7 +416,11 @@ const competitionSaveTestService = async (
   console.log(update);
   if (!update) throw Error("ERROR ACTUALIZAR RESULTADOS PRUEBAS");
 
-  await setPointsAthleteN(exist.competition as string);
+  let user = await UserModel.findOne({
+    _id: exist.user,
+  });
+  let category = `${exist.category ?? ""} ${exist.typeAthlete ?? "AVANZADO"} ${user?.gender ?? "---"}`;
+  await setPointsAthleteN(exist.competition as string, category);
 
   return formatCompetitionUserData(update, "judge");
 };
@@ -470,9 +474,14 @@ const competitionUpdateTestService = async (
     }
   );
 
-  if (userCompetence)
-    await setPointsAthleteN(userCompetence.competition as string);
-
+  if (userCompetence){
+    let user = await UserModel.findOne({
+      _id: userCompetence.user,
+    });
+    let category = `${userCompetence.category ?? ""} ${userCompetence.typeAthlete ?? "AVANZADO"} ${user?.gender ?? "---"}`;
+    await setPointsAthleteN(userCompetence.competition as string, category);
+  }
+  
   return formatCompetitionUserTestData(update, "judge");
 };
 
